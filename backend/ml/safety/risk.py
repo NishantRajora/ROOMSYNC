@@ -1,0 +1,2 @@
+def safety_report(lat, lng):
+    return {"lat": lat, "lng": lng, "geo_risk_score": 32, "band": "moderate", "campus": {"name": "The NorthCap University", "distance_km": 1.8, "commute": "short ride"}, "components": {"crime_index": 35, "police_proximity": 20, "hospital_proximity": 25, "transit_proximity": 30, "lighting_proxy": 40}, "nearest_amenities": [{"type": "police", "distance_m": 850}, {"type": "hospital", "distance_m": 1200}, {"type": "metro", "distance_m": 1400}], "source": "SAMPLE demo metrics; replace with documented NCRB/OSM extracts"}
