@@ -1,67 +1,147 @@
 @startuml
+!define RECTANGLE class
 skinparam componentStyle uml2
+skinparam packageStyle rectangle
+skinparam monochrome false
+skinparam shadowing false
 
-package "Frontend (React + Vite)" {
-    [App Shell / Navigation] as UI
-    [Auth & Profile Management] as AuthUI
-    [Discovery & Radar Match] as Disc
-    [Safety Map & SOS] as Safe
-    [Agreement Verifier] as Agr
-    [Expense Splitter & Pacts] as Fin
+package "Frontend (React)" {
+    component [App.tsx] as App <<Router/State Coordinator>>
+
+    package "Views/Components" {
+        component [Discovery.tsx] as Discovery
+        component [RadarMatch.tsx] as Radar
+        component [Chat.tsx] as Chat
+        component [ChatPopup.tsx] as ChatPopup
+        component [AgreementVerifier.tsx] as AgreementVerifier
+        component [ExpenseSplitter.tsx] as ExpenseSplitter
+        component [RoommatePact.tsx] as RoommatePact
+        component [FlatVisitCompanion.tsx] as FlatVisit
+        component [SocietyReviews.tsx] as SocietyReviews
+        component [StudentVerification.tsx] as StudentVerify
+        component [AdminDatabaseInspector.tsx] as AdminDB
+    }
+
+    component [blockchain.ts] as BC_Client <<ethers.js>>
 }
 
 package "Backend (Django API)" {
-    [URL Router] as Router
-    [Account Service] as AuthSvc
-    [Listing Service] as ListSvc
-    [Chat Service] as ChatSvc
-    [Community Service] as CommSvc
-    [Upload Service] as UpSvc
-}
+    component [apps/api.py] as CoreAPI <<Main Controller>>
+    component [apps/chat.py] as ChatAPI
+    component [apps/community.py] as CommunityAPI
+    component [apps/uploads.py] as UploadAPI
 
-package "Intelligence Layer (ML/NLP)" {
-    [Matching Engine] as MatchEng
-    [Trust & Safety Engine] as TrustEng
-    [NLP Agreement Analyser] as NLPEng
-}
-
-database "Persistence" {
-    folder "SQLite Database" {
-        [Accounts]
-        [Conversations]
-        [Community Data]
+    package "ML/NLP Engines" {
+        component [ml/matching/engine.py] as MatchEngine <<Weighted Similarity>>
+        component [ml/verification/trust.py] as TrustEngine <<Heuristic Scorer>>
+        component [ml/safety/risk.py] as SafetyEngine <<Geo-Risk Mock>>
+        component [ml/nlp/analyser.py] as NLPAnalyser <<Regex Engine>>
+        component [ml/nlp/enhanced_analyser.py] as EnhancedNLP <<Summarizer>>
     }
-    storage "Media Storage" as Media
-    storage "Blockchain Anchor" as BC
 }
 
-' Relationships
-UI --> AuthUI
-UI --> Disc
-UI --> Safe
-UI --> Agr
-UI --> Fin
+database "SQLite3 (db.sqlite3)" {
+    entity "roomsync_accounts" as TableAccounts {
+        * id : INT (PK)
+        --
+        email : TEXT (Unique)
+        password_hash : TEXT
+        budget : TEXT
+        sleep/cleanliness : TEXT
+    }
+    entity "roomsync_conversations" as TableConvs {
+        * id : INT (PK)
+        --
+        participant_1 : TEXT
+        participant_2 : TEXT
+        listing_id : INT
+    }
+    entity "roomsync_messages" as TableMsgs {
+        * id : INT (PK)
+        --
+        conversation_id : INT (FK)
+        sender : TEXT
+        text : TEXT
+        read : INT
+    }
+    entity "roomsync_expenses" as TableExp {
+        * id : INT (PK)
+        --
+        group_id : TEXT
+        amount : REAL
+        paid_by : TEXT
+        upi_id : TEXT
+    }
+    entity "roomsync_pacts" as TablePacts {
+        * id : INT (PK)
+        --
+        agreement_text : TEXT
+        sha256_hash : TEXT
+        tx_hash : TEXT
+    }
+    entity "roomsync_reviews" as TableReviews {
+        * id : INT (PK)
+        --
+        locality : TEXT
+        overall_rating : INT
+        deposit_returned : INT
+    }
+    entity "roomsync_visit_alerts" as TableAlerts {
+        * id : INT (PK)
+        --
+        user_email : TEXT
+        status : TEXT (active/safe/SOS)
+    }
+    entity "roomsync_student_verifications" as TableVerify {
+        * id : INT (PK)
+        --
+        email : TEXT (Unique)
+        otp : TEXT
+        verified : INT
+    }
+}
 
-AuthUI --> Router
-Disc --> Router
-Safe --> Router
-Agr --> Router
-Fin --> Router
+cloud "Blockchain (Ethereum/Polygon)" {
+    component [AgreementRegistry.sol] as SmartContract <<Smart Contract>>
+}
 
-Router --> AuthSvc
-Router --> ListSvc
-Router --> ChatSvc
-Router --> CommSvc
-Router --> UpSvc
+' --- Frontend to Backend Interactions ---
+Discovery --> CoreAPI : GET /api/listings/ (Search/Filter)
+Discovery --> CoreAPI : POST /api/listings/ (Create)
+Discovery --> CoreAPI : POST /api/listings/{id}/connect/ (Connect)
+Chat --> ChatAPI : GET /api/chat/conversations/
+Chat --> ChatAPI : POST /api/chat/messages/
+ChatPopup --> ChatAPI : POST /api/chat/conversations/ (Init)
+AgreementVerifier --> CoreAPI : POST /api/agreements/analyse/
+ExpenseSplitter --> CommunityAPI : GET /api/expenses/balances/
+RoommatePact --> CommunityAPI : POST /api/pacts/ (Gen Agreement)
+FlatVisit --> CommunityAPI : POST /api/safety/visit-alerts/ (Start/SOS)
+SocietyReviews --> CommunityAPI : GET/POST /api/reviews/
+StudentVerify --> CommunityAPI : POST /api/auth/student-otp/
+AdminDB --> CoreAPI : GET /api/admin/database/
 
-ListSvc --> TrustEng
-Disc --> MatchEng
-Agr --> NLPEng
+' --- Backend Internal Logic ---
+CoreAPI --> MatchEngine : rank_matches(profile, candidates)
+CoreAPI --> TrustEngine : listing_trust(listing)
+CoreAPI --> SafetyEngine : safety_report(lat, lng)
+CoreAPI --> NLPAnalyser : analyse_agreement(text)
+CoreAPI --> EnhancedNLP : summarize_agreement(text)
 
-AuthSvc --> [Accounts]
-ChatSvc --> [Conversations]
-CommSvc --> [Community Data]
-UpSvc --> Media
-Fin --> BC
+' --- Data Persistence ---
+CoreAPI ..> TableAccounts
+ChatAPI ..> TableConvs
+ChatAPI ..> TableMsgs
+CommunityAPI ..> TableExp
+CommunityAPI ..> TablePacts
+CommunityAPI ..> TableReviews
+CommunityAPI ..> TableAlerts
+CommunityAPI ..> TableVerify
+
+' --- Blockchain Integration ---
+AgreementVerifier --> BC_Client : registerHash(sha256)
+AgreementVerifier --> BC_Client : verifyHash(sha256)
+RoommatePact --> BC_Client : registerHash(sha256)
+BC_Client --> SmartContract : register(bytes32)
+BC_Client --> SmartContract : get(bytes32)
 
 @enduml
