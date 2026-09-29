@@ -182,7 +182,22 @@ export function App() {
         "The NorthCap University",
     );
     const [profilePhoto, setProfilePhoto] = useState("");
+    const [profileSleep, setProfileSleep] = useState("Night owl");
+    const [profileCleanliness, setProfileCleanliness] = useState("Calm & tidy");
+    const [profileBudget, setProfileBudget] = useState("₹10k – ₹18k");
     const [chatPopup, setChatPopup] = useState<{ recipient: string; listingId: number; title?: string } | null>(null);
+
+    const profileChecklist = [
+        { label: "Full Name", done: Boolean(profileName.trim()) },
+        { label: "Phone Number", done: Boolean(profilePhone.trim()) },
+        { label: "College / Campus", done: Boolean(profileCollege.trim()) },
+        { label: "Profile Photo", done: Boolean(profilePhoto) },
+        { label: "Sleep Routine", done: Boolean(profileSleep) },
+        { label: "Cleanliness Habit", done: Boolean(profileCleanliness) },
+        { label: "Budget Range", done: Boolean(profileBudget) },
+    ];
+    const completedItems = profileChecklist.filter((item) => item.done).length;
+    const completionPercentage = Math.round((completedItems / profileChecklist.length) * 100);
 
     const notify = (message: string) => {
         setToast(message);
@@ -251,6 +266,9 @@ export function App() {
             setProfileName(data.user.name);
             setAccountEmail(data.user.email);
             setProfilePhone(data.user.phone);
+            if (data.user.sleep) setProfileSleep(data.user.sleep);
+            if (data.user.cleanliness) setProfileCleanliness(data.user.cleanliness);
+            if (data.user.budget) setProfileBudget(data.user.budget);
             setProfilePhoto("");
             notify(`Welcome back, ${data.user.name}.`);
         } catch {
@@ -287,6 +305,9 @@ export function App() {
                 setProfileName(data.user.name);
                 setAccountEmail(data.user.email);
                 setProfilePhone(data.user.phone);
+                if (data.user.sleep) setProfileSleep(data.user.sleep);
+                if (data.user.cleanliness) setProfileCleanliness(data.user.cleanliness);
+                if (data.user.budget) setProfileBudget(data.user.budget);
                 setProfilePhoto("");
                 setRegisterData((current) => ({ ...current, password: "", confirmPassword: "" }));
                 notify(`Account created for ${data.user.email}.`);
@@ -317,7 +338,7 @@ export function App() {
     const handleProfileSave = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setShowProfile(false);
-        notify("Profile settings saved for this demo session.");
+        notify("Profile checklist saved! Your compatibility score is updated.");
     };
 
     const handleNav = (view: string) => {
@@ -461,7 +482,7 @@ export function App() {
                             className="primary"
                             onClick={() =>
                                 loggedIn
-                                    ? notify("Profile checklist opened.")
+                                    ? setShowProfile(true)
                                     : setShowLogin(true)
                             }
                         >
@@ -473,8 +494,8 @@ export function App() {
                         <div className="orbit-ring ring-one" />
                         <div className="orbit-ring ring-two" />
                         <div className="orbit-core">
-                            <span>{loggedIn ? "84" : "—"}</span>
-                            <small>{loggedIn ? "fit score" : "sign in first"}</small>
+                            <span>{loggedIn ? `${completionPercentage}%` : "—"}</span>
+                            <small>{loggedIn ? "profile complete" : "sign in first"}</small>
                         </div>
                         <span className="orbit-dot dot-one" />
                         <span className="orbit-dot dot-two" />
@@ -1087,10 +1108,11 @@ export function App() {
                         <button
                             className="modal-close"
                             onClick={() => setShowProfile(false)}
-                            aria-label="Close profile settings"
+                            aria-label="Close profile checklist"
                         >
                             <X size={18} />
                         </button>
+
                         <div className="profile-heading">
                             <div className="profile-photo">
                                 {profilePhoto ? (
@@ -1098,22 +1120,50 @@ export function App() {
                                 ) : (
                                     <UserRound size={28} />
                                 )}
-                                {selectedAdminPerson && (
-                                    <div className="modal-backdrop" onClick={() => setSelectedAdminPerson(undefined)}>
-                                        <section className="admin-person-modal" onClick={(event) => event.stopPropagation()}>
-                                            <button className="modal-close" onClick={() => setSelectedAdminPerson(undefined)} aria-label="Close user detail"><X size={18} /></button>
-                                            <div className="admin-person-header"><span className="large-person-avatar">{selectedAdminPerson.user.name.split(" ").map((name) => name[0]).join("")}</span><div><p className="eyebrow">PROFILE DETAIL · SYNTHETIC DEMO</p><h2>{selectedAdminPerson.user.name}</h2><span>Gurugram · profile available for pilot testing</span></div></div>
-                                            <div className="admin-person-stats"><div><strong>{selectedAdminPerson.score}</strong><span>compatibility score</span></div><div><strong>{selectedAdminPerson.reasons.length}</strong><span>positive reasons</span></div><div><strong>{selectedAdminPerson.conflicts.length}</strong><span>potential conflicts</span></div></div>
-                                            <div className="admin-detail-columns"><div><h3>Why this match</h3>{selectedAdminPerson.reasons.length ? selectedAdminPerson.reasons.map((reason) => <p className="admin-detail-reason" key={reason}><CheckCircle2 size={14} />{reason}</p>) : <p className="detail-muted">No explanation available.</p>}</div><div><h3>Potential conflicts</h3>{selectedAdminPerson.conflicts.length ? selectedAdminPerson.conflicts.map((conflict) => <p className="admin-detail-conflict" key={conflict}><AlertTriangle size={14} />{conflict}</p>) : <p className="detail-muted">No conflicts recorded.</p>}</div></div><div className="admin-data-note"><ShieldCheck size={16} /><span>Only fields currently available from the matching API are shown. No phone, email, religion, caste, or other protected details are invented or exposed.</span></div>
-                                        </section>
-                                    </div>
-                                )}
                             </div>
                             <div>
-                                <p className="eyebrow">ACCOUNT SETTINGS</p>
-                                <h2>Edit your profile</h2>
+                                <p className="eyebrow mint-text">YOUR PROFILE CHECKLIST</p>
+                                <h2>Profile & Preferences</h2>
+                                <span style={{ fontSize: "12px", color: "var(--teal)", fontWeight: 600 }}>
+                                    {completionPercentage}% completed ({completedItems} of {profileChecklist.length} steps)
+                                </span>
                             </div>
                         </div>
+
+                        {/* Interactive Checklist Visual Progress */}
+                        <div style={{ margin: "16px 0 20px" }}>
+                            <div style={{ height: "7px", borderRadius: "4px", background: "#e2e7e3", overflow: "hidden" }}>
+                                <div
+                                    style={{
+                                        width: `${completionPercentage}%`,
+                                        height: "100%",
+                                        background: completionPercentage === 100 ? "#48bb78" : "#117c74",
+                                        transition: "width 0.3s ease",
+                                    }}
+                                />
+                            </div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "10px" }}>
+                                {profileChecklist.map((item) => (
+                                    <span
+                                        key={item.label}
+                                        style={{
+                                            fontSize: "11px",
+                                            padding: "3px 8px",
+                                            borderRadius: "10px",
+                                            background: item.done ? "#e8f5e8" : "#f2f5f2",
+                                            color: item.done ? "#276749" : "#71808a",
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            gap: "4px",
+                                            fontWeight: 500,
+                                        }}
+                                    >
+                                        {item.done ? <CheckCircle2 size={11} /> : "○"} {item.label}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
                         <form onSubmit={handleProfileSave}>
                             <label>
                                 Profile photo
@@ -1140,15 +1190,58 @@ export function App() {
                                 <input
                                     value={profilePhone}
                                     onChange={(event) => setProfilePhone(event.target.value)}
+                                    placeholder="+91 98765 43210"
                                 />
                             </label>
                             <label>
-                                College
+                                College / University
                                 <input
                                     value={profileCollege}
                                     onChange={(event) => setProfileCollege(event.target.value)}
+                                    placeholder="The NorthCap University"
                                 />
                             </label>
+
+                            <div className="settings-divider">
+                                <p className="eyebrow">HOUSEHOLD DNA & HABITS</p>
+                                <label>
+                                    Daily Routine / Sleep
+                                    <select
+                                        value={profileSleep}
+                                        onChange={(e) => setProfileSleep(e.target.value)}
+                                        style={{ border: "1px solid #d5dfdb", borderRadius: "6px", padding: "10px", color: "var(--ink)", font: "inherit", outline: "none", background: "#fff" }}
+                                    >
+                                        <option value="Early bird">Early bird (Up before 7 AM)</option>
+                                        <option value="Night owl">Night owl (Best after 10 PM)</option>
+                                        <option value="Flexible">Flexible (Depends on schedule)</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    Living Habits & Cleanliness
+                                    <select
+                                        value={profileCleanliness}
+                                        onChange={(e) => setProfileCleanliness(e.target.value)}
+                                        style={{ border: "1px solid #d5dfdb", borderRadius: "6px", padding: "10px", color: "var(--ink)", font: "inherit", outline: "none", background: "#fff" }}
+                                    >
+                                        <option value="Calm & tidy">Calm & tidy (Clear surfaces, clear mind)</option>
+                                        <option value="Lived-in & warm">Lived-in & warm (Comfort over perfection)</option>
+                                        <option value="Social & spirited">Social & spirited (Friends always welcome)</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    Monthly Rent Budget
+                                    <select
+                                        value={profileBudget}
+                                        onChange={(e) => setProfileBudget(e.target.value)}
+                                        style={{ border: "1px solid #d5dfdb", borderRadius: "6px", padding: "10px", color: "var(--ink)", font: "inherit", outline: "none", background: "#fff" }}
+                                    >
+                                        <option value="₹8k – ₹12k">₹8k – ₹12k (Budget friendly)</option>
+                                        <option value="₹10k – ₹18k">₹10k – ₹18k (Comfort standard)</option>
+                                        <option value="₹18k – ₹25k">₹18k – ₹25k (Premium / Private)</option>
+                                    </select>
+                                </label>
+                            </div>
+
                             <div className="settings-divider">
                                 <p className="eyebrow">SECURITY</p>
                                 <label>
@@ -1169,7 +1262,7 @@ export function App() {
                                 </label>
                             </div>
                             <button className="primary login-submit" type="submit">
-                                Save changes <CheckCircle2 size={16} />
+                                Save checklist & preferences <CheckCircle2 size={16} />
                             </button>
                         </form>
                         <button className="logout-button" onClick={handleLogout}>
@@ -1177,8 +1270,18 @@ export function App() {
                             Log out
                         </button>
                         <small>
-                            Changes are stored in this browser session only in the demo.
+                            Changes are saved for this session and refresh your matching compatibility.
                         </small>
+                    </section>
+                </div>
+            )}
+            {selectedAdminPerson && (
+                <div className="modal-backdrop" onClick={() => setSelectedAdminPerson(undefined)}>
+                    <section className="admin-person-modal" onClick={(event) => event.stopPropagation()}>
+                        <button className="modal-close" onClick={() => setSelectedAdminPerson(undefined)} aria-label="Close user detail"><X size={18} /></button>
+                        <div className="admin-person-header"><span className="large-person-avatar">{selectedAdminPerson.user.name.split(" ").map((name) => name[0]).join("")}</span><div><p className="eyebrow">PROFILE DETAIL · SYNTHETIC DEMO</p><h2>{selectedAdminPerson.user.name}</h2><span>Gurugram · profile available for pilot testing</span></div></div>
+                        <div className="admin-person-stats"><div><strong>{selectedAdminPerson.score}</strong><span>compatibility score</span></div><div><strong>{selectedAdminPerson.reasons.length}</strong><span>positive reasons</span></div><div><strong>{selectedAdminPerson.conflicts.length}</strong><span>potential conflicts</span></div></div>
+                        <div className="admin-detail-columns"><div><h3>Why this match</h3>{selectedAdminPerson.reasons.length ? selectedAdminPerson.reasons.map((reason) => <p className="admin-detail-reason" key={reason}><CheckCircle2 size={14} />{reason}</p>) : <p className="detail-muted">No explanation available.</p>}</div><div><h3>Potential conflicts</h3>{selectedAdminPerson.conflicts.length ? selectedAdminPerson.conflicts.map((conflict) => <p className="admin-detail-conflict" key={conflict}><AlertTriangle size={14} />{conflict}</p>) : <p className="detail-muted">No conflicts recorded.</p>}</div></div><div className="admin-data-note"><ShieldCheck size={16} /><span>Only fields currently available from the matching API are shown. No phone, email, religion, caste, or other protected details are invented or exposed.</span></div>
                     </section>
                 </div>
             )}
