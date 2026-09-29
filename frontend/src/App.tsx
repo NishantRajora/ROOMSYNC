@@ -26,6 +26,7 @@ import { Discovery } from "./Discovery";
 import { Chat } from "./Chat";
 import { SafetyMap } from "./SafetyMap";
 import { AgreementVerifier } from "./AgreementVerifier";
+import { ChatPopup } from "./ChatPopup";
 
 type Match = {
     user: { name: string };
@@ -181,6 +182,7 @@ export function App() {
         "The NorthCap University",
     );
     const [profilePhoto, setProfilePhoto] = useState("");
+    const [chatPopup, setChatPopup] = useState<{ recipient: string; listingId: number; title?: string } | null>(null);
 
     const notify = (message: string) => {
         setToast(message);
@@ -303,6 +305,7 @@ export function App() {
         setSearchTerm("");
         setActiveView("Overview");
         setProfilePhoto("");
+        setChatPopup(null);
         notify("You have been logged out.");
     };
 
@@ -640,7 +643,12 @@ export function App() {
                         )}
                         {(activeView === "Overview" || activeView === "Find your people") && (
                             <>
-                                <Discovery api={api} onNotify={notify} currentUser={accountEmail} onOpenChat={() => setActiveView("Messages")} />
+                                <Discovery
+                                    api={api}
+                                    onNotify={notify}
+                                    currentUser={accountEmail}
+                                    onOpenChat={(recipient, listingId, title) => setChatPopup({ recipient, listingId, title })}
+                                />
                                 <div className="section-heading">
                                     <div>
                                         <p className="eyebrow">YOUR SIGNALS</p>
@@ -1175,6 +1183,17 @@ export function App() {
                 </div>
             )}
             {selectedAdminAccount && <div className="modal-backdrop" onClick={() => setSelectedAdminAccount(undefined)}><section className="admin-person-modal" onClick={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setSelectedAdminAccount(undefined)} aria-label="Close account detail"><X size={18} /></button><div className="admin-person-header"><span className="large-person-avatar">{selectedAdminAccount.name.split(" ").map((name) => name[0]).join("")}</span><div><p className="eyebrow">REGISTERED ACCOUNT · BACKEND</p><h2>{selectedAdminAccount.name}</h2><span>{selectedAdminAccount.city} · account #{selectedAdminAccount.id}</span></div></div><div className="account-detail-grid"><div><strong>Email</strong><span>{selectedAdminAccount.email}</span></div><div><strong>Phone</strong><span>{selectedAdminAccount.phone}</span></div><div><strong>Sleep routine</strong><span>{selectedAdminAccount.sleep}</span></div><div><strong>Cleanliness</strong><span>{selectedAdminAccount.cleanliness}</span></div><div><strong>Budget</strong><span>{selectedAdminAccount.budget}</span></div></div><div className="admin-data-note"><ShieldCheck size={16} /><span>Password hashes are never returned to the admin UI. This data was loaded from the persistent backend account table.</span></div></section></div>}
+            {chatPopup && (
+                <ChatPopup
+                    api={api}
+                    currentUser={accountEmail}
+                    recipient={chatPopup.recipient}
+                    listingId={chatPopup.listingId}
+                    listingTitle={chatPopup.title}
+                    onClose={() => setChatPopup(null)}
+                    onNotify={notify}
+                />
+            )}
         </div>
     );
 }

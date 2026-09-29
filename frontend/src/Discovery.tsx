@@ -41,7 +41,7 @@ type DiscoveryProps = {
     api: string;
     onNotify: (message: string) => void;
     currentUser?: string;
-    onOpenChat?: () => void;
+    onOpenChat?: (recipient: string, listingId: number, title?: string) => void;
 };
 
 const highlights = [
@@ -208,7 +208,11 @@ export function Discovery({ api, onNotify, currentUser, onOpenChat }: DiscoveryP
                         listing_id: listing.id,
                     }),
                 }).catch(() => { });
-                onNotify(`Connected with ${owner}! Open Messages in the sidebar to chat.`);
+                onNotify(`Connected with ${owner}!`);
+                if (onOpenChat) {
+                    onOpenChat(owner, listing.id, listing.title);
+                }
+                setSelected(undefined);
             })
             .catch(() => onNotify("Connect request failed."));
     };
