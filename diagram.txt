@@ -1,0 +1,67 @@
+@startuml
+skinparam componentStyle uml2
+
+package "Frontend (React + Vite)" {
+    [App Shell / Navigation] as UI
+    [Auth & Profile Management] as AuthUI
+    [Discovery & Radar Match] as Disc
+    [Safety Map & SOS] as Safe
+    [Agreement Verifier] as Agr
+    [Expense Splitter & Pacts] as Fin
+}
+
+package "Backend (Django API)" {
+    [URL Router] as Router
+    [Account Service] as AuthSvc
+    [Listing Service] as ListSvc
+    [Chat Service] as ChatSvc
+    [Community Service] as CommSvc
+    [Upload Service] as UpSvc
+}
+
+package "Intelligence Layer (ML/NLP)" {
+    [Matching Engine] as MatchEng
+    [Trust & Safety Engine] as TrustEng
+    [NLP Agreement Analyser] as NLPEng
+}
+
+database "Persistence" {
+    folder "SQLite Database" {
+        [Accounts]
+        [Conversations]
+        [Community Data]
+    }
+    storage "Media Storage" as Media
+    storage "Blockchain Anchor" as BC
+}
+
+' Relationships
+UI --> AuthUI
+UI --> Disc
+UI --> Safe
+UI --> Agr
+UI --> Fin
+
+AuthUI --> Router
+Disc --> Router
+Safe --> Router
+Agr --> Router
+Fin --> Router
+
+Router --> AuthSvc
+Router --> ListSvc
+Router --> ChatSvc
+Router --> CommSvc
+Router --> UpSvc
+
+ListSvc --> TrustEng
+Disc --> MatchEng
+Agr --> NLPEng
+
+AuthSvc --> [Accounts]
+ChatSvc --> [Conversations]
+CommSvc --> [Community Data]
+UpSvc --> Media
+Fin --> BC
+
+@enduml
