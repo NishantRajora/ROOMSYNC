@@ -8,15 +8,21 @@ import {
     CheckCircle2,
     FileCheck2,
     Flag,
+    GraduationCap,
     Home,
+    IndianRupee,
     LockKeyhole,
     LogIn,
     LogOut,
     Map,
     MessageCircle,
+    Receipt,
     Search,
     Settings,
+    ShieldAlert,
     ShieldCheck,
+    Sparkles,
+    Star,
     UserCog,
     UserRound,
     Users,
@@ -27,6 +33,12 @@ import { Chat } from "./Chat";
 import { SafetyMap } from "./SafetyMap";
 import { AgreementVerifier } from "./AgreementVerifier";
 import { ChatPopup } from "./ChatPopup";
+import { ExpenseSplitter } from "./ExpenseSplitter";
+import { RoommatePact } from "./RoommatePact";
+import { RadarMatch } from "./RadarMatch";
+import { StudentVerification } from "./StudentVerification";
+import { FlatVisitCompanion } from "./FlatVisitCompanion";
+import { SocietyReviews } from "./SocietyReviews";
 
 type Match = {
     user: { name: string };
@@ -185,12 +197,15 @@ export function App() {
     const [profileSleep, setProfileSleep] = useState("Night owl");
     const [profileCleanliness, setProfileCleanliness] = useState("Calm & tidy");
     const [profileBudget, setProfileBudget] = useState("₹10k – ₹18k");
+    const [isStudentVerified, setIsStudentVerified] = useState(true);
+    const [verifiedCampus, setVerifiedCampus] = useState("The NorthCap University (NCU)");
     const [chatPopup, setChatPopup] = useState<{ recipient: string; listingId: number; title?: string } | null>(null);
 
     const profileChecklist = [
         { label: "Full Name", done: Boolean(profileName.trim()) },
         { label: "Phone Number", done: Boolean(profilePhone.trim()) },
         { label: "College / Campus", done: Boolean(profileCollege.trim()) },
+        { label: "Campus Verified", done: isStudentVerified },
         { label: "Profile Photo", done: Boolean(profilePhoto) },
         { label: "Sleep Routine", done: Boolean(profileSleep) },
         { label: "Cleanliness Habit", done: Boolean(profileCleanliness) },
@@ -372,7 +387,18 @@ export function App() {
                 </div>
                 <p className="eyebrow">YOUR RENTING COMPASS</p>
                 <nav>
-                    {(isAdmin ? [["Admin panel", Settings]] : [["Overview", Home], ["Find your people", Users], ["Messages", MessageCircle], ["Safety map", Map], ["Agreements", FileCheck2]]).map(([label, Icon]) => (
+                    {(isAdmin ? [["Admin panel", Settings]] : [
+                        ["Overview", Home],
+                        ["Find your people", Users],
+                        ["Messages", MessageCircle],
+                        ["Split bills", Receipt],
+                        ["Roommate pact", Sparkles],
+                        ["Compatibility radar", BarChart3],
+                        ["Safety map", Map],
+                        ["Visit SOS", ShieldAlert],
+                        ["Landlord reviews", Star],
+                        ["Agreements", FileCheck2],
+                    ]).map(([label, Icon]) => (
                         <button
                             className={activeView === label ? "active" : ""}
                             onClick={() => handleNav(label as string)}
@@ -401,6 +427,27 @@ export function App() {
                                         ? `Good morning, ${profileName.split(" ")[0]}.`
                                         : activeView
                                     : "Welcome to RoomSync."}
+                            {loggedIn && isStudentVerified && (
+                                <span
+                                    style={{
+                                        fontSize: "11px",
+                                        background: "#fef3c7",
+                                        color: "#92400e",
+                                        padding: "4px 10px",
+                                        borderRadius: "14px",
+                                        fontWeight: 700,
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "4px",
+                                        border: "1px solid #fde68a",
+                                        marginLeft: "10px",
+                                        verticalAlign: "middle",
+                                    }}
+                                    title={`Verified NCU Student · ${verifiedCampus}`}
+                                >
+                                    <GraduationCap size={13} style={{ color: "#d97706" }} /> Verified NCU Student
+                                </span>
+                            )}
                         </h1>
                     </div>
                     <div className="header-actions">
@@ -656,8 +703,23 @@ export function App() {
                         {activeView === "Messages" && (
                             <Chat api={api} currentUser={accountEmail} onNotify={notify} />
                         )}
+                        {activeView === "Split bills" && (
+                            <ExpenseSplitter api={api} currentUser={profileName} onNotify={notify} />
+                        )}
+                        {activeView === "Roommate pact" && (
+                            <RoommatePact api={api} currentUser={profileName} onNotify={notify} />
+                        )}
+                        {activeView === "Compatibility radar" && (
+                            <RadarMatch />
+                        )}
                         {activeView === "Safety map" && (
                             <SafetyMap safety={safety} listings={listings} onNotify={notify} />
+                        )}
+                        {activeView === "Visit SOS" && (
+                            <FlatVisitCompanion api={api} currentUser={accountEmail} onNotify={notify} />
+                        )}
+                        {activeView === "Landlord reviews" && (
+                            <SocietyReviews api={api} currentUser={accountEmail} onNotify={notify} />
                         )}
                         {activeView === "Agreements" && (
                             <AgreementVerifier api={api} onNotify={notify} />
@@ -1201,6 +1263,20 @@ export function App() {
                                     placeholder="The NorthCap University"
                                 />
                             </label>
+
+                            <div className="settings-divider">
+                                <StudentVerification
+                                    api={api}
+                                    currentUserEmail={accountEmail}
+                                    isVerified={isStudentVerified}
+                                    onVerified={(email, campus) => {
+                                        setIsStudentVerified(true);
+                                        setVerifiedCampus(campus);
+                                        setAccountEmail(email);
+                                    }}
+                                    onNotify={notify}
+                                />
+                            </div>
 
                             <div className="settings-divider">
                                 <p className="eyebrow">HOUSEHOLD DNA & HABITS</p>

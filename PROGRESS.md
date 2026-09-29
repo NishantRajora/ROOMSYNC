@@ -202,7 +202,38 @@ Routes are registered in `backend/config/urls.py` and implemented in `backend/ap
   - Dynamic calendar date and profile initials in dashboard header.
   - Fixed missing `@csrf_exempt` decorators and nested modal JSX bugs.
   - Comprehensive responsive mobile CSS rules added to `styles.css`.
-  - 14 automated backend tests passing.
+  - Floating right-side chat popup on clicking Connect on any listing.
+  - Interactive profile checklist with dynamic completion percentage and habit selectors.
+
+## Student Community & Safety Suite Completed
+
+- **Flatmate Bill & Expense Splitter (`backend/apps/community.py`, `frontend/src/ExpenseSplitter.tsx`)**:
+  - SQLite table `roomsync_expenses` storing shared expenses (Rent, WiFi, Electricity, Groceries).
+  - Balance & minimal settlement solver (`/api/expenses/balances/`) determining "who owes whom".
+  - Automatic UPI QR code generation (`upi://pay?pa=...&pn=...&am=...&cu=INR`) for instant 1-click payment via Google Pay / PhonePe / Paytm.
+
+- **Digital Roommate Pact Wizard (`backend/apps/community.py`, `frontend/src/RoommatePact.tsx`)**:
+  - 4-step wizard establishing mutual house rules: Quiet Hours, Cleaning Rota, Overnight Guest protocols, and Security Deposit refunds.
+  - Auto-generated Markdown cohabitation agreement with SHA-256 cryptographic digest.
+  - Digital signing + on-chain anchoring directly into the Solidity smart contract via MetaMask.
+
+- **AI Compatibility Radar Chart (`frontend/src/RadarMatch.tsx`)**:
+  - Recharts radar graph comparing 5 key living dimensions: Sleep Cycle, Cleanliness, Social/Noise Energy, Food Habits, and Budget Flexibility.
+  - Comparative personality synergy breakdown and pre-move-in conversation watchouts.
+
+- **Campus Domain University Verification (`backend/apps/community.py`, `frontend/src/StudentVerification.tsx`)**:
+  - Validates official student emails (`@ncuindia.edu`, `@*.edu`, `@*.ac.in`).
+  - 6-digit OTP verification flow granting the Gold "Verified NCU Student" badge on user profiles and header.
+
+- **Solo Flat Visit Companion & SOS Sentinel (`backend/apps/community.py`, `frontend/src/FlatVisitCompanion.tsx`)**:
+  - Timed safety countdown (15, 30, 45, 60 mins) for students inspecting off-campus rooms alone.
+  - Live animated countdown display with safe check-in disarm.
+  - One-click Emergency SOS broadcast with GPS coordinates and automated alerts to emergency contacts and campus safety.
+
+- **Landlord & Society Peer Review System (`backend/apps/community.py`, `frontend/src/SocietyReviews.tsx`)**:
+  - Student reviews and ratings for Gurugram localities (Sector 23, DLF Phase 3, Sushant Lok, Palam Vihar).
+  - Tracks Security Deposit Refund reliability, 24/7 Power/Water backup rating, and maintenance responsiveness.
+  - 19 automated backend tests passing across core, chat, uploads, NLP, and community features.
 
 ## Remaining Work
 
