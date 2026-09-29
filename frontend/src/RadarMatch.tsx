@@ -94,46 +94,54 @@ const CANDIDATES: CandidateProfile[] = [
   },
 ];
 
-export const RadarMatch: React.FC = () => {
+export interface RadarMatchProps {
+  currentUser?: string;
+  hideHeader?: boolean;
+}
+
+export const RadarMatch: React.FC<RadarMatchProps> = ({ currentUser, hideHeader = false }) => {
   const [selectedIdx, setSelectedIdx] = useState<number>(0);
   const current = CANDIDATES[selectedIdx];
+  const userName = currentUser?.trim() ? currentUser.trim() : "You";
 
   return (
-    <section className="radar-match-section" style={{ marginTop: "12px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
-        <div>
-          <p className="eyebrow mint-text">MULTI-DIMENSIONAL CO-LIVING ALIGNMENT</p>
-          <h2 style={{ fontFamily: "Space Grotesk", margin: "4px 0 8px" }}>AI Compatibility Radar Chart</h2>
-          <p style={{ color: "var(--muted)", margin: 0 }}>
-            Visualizes 5 core personality & living dimensions to reveal synergy zones and potential friction points before signing.
-          </p>
-        </div>
+    <section className="radar-match-section" style={{ marginTop: hideHeader ? "0" : "12px" }}>
+      {!hideHeader && (
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
+          <div>
+            <p className="eyebrow mint-text">MULTI-DIMENSIONAL CO-LIVING ALIGNMENT</p>
+            <h2 style={{ fontFamily: "Space Grotesk", margin: "4px 0 8px" }}>AI Compatibility Radar Chart</h2>
+            <p style={{ color: "var(--muted)", margin: 0 }}>
+              Visualizes 5 core personality & living dimensions to reveal synergy zones and potential friction points before signing.
+            </p>
+          </div>
 
-        {/* Candidate Selector */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ fontSize: "13px", color: "var(--muted)", fontWeight: 500 }}>Compare with:</span>
-          <select
-            value={selectedIdx}
-            onChange={(e) => setSelectedIdx(Number(e.target.value))}
-            style={{
-              padding: "9px 14px",
-              borderRadius: "10px",
-              border: "1px solid var(--line)",
-              background: "#fff",
-              fontWeight: 600,
-              color: "var(--ink)",
-              outline: "none",
-              cursor: "pointer",
-            }}
-          >
-            {CANDIDATES.map((cand, idx) => (
-              <option key={cand.name} value={idx}>
-                {cand.name} ({cand.overallScore}% Fit)
-              </option>
-            ))}
-          </select>
+          {/* Candidate Selector */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ fontSize: "13px", color: "var(--muted)", fontWeight: 500 }}>Compare with:</span>
+            <select
+              value={selectedIdx}
+              onChange={(e) => setSelectedIdx(Number(e.target.value))}
+              style={{
+                padding: "9px 14px",
+                borderRadius: "10px",
+                border: "1px solid var(--line)",
+                background: "#fff",
+                fontWeight: 600,
+                color: "var(--ink)",
+                outline: "none",
+                cursor: "pointer",
+              }}
+            >
+              {CANDIDATES.map((cand, idx) => (
+                <option key={cand.name} value={idx}>
+                  {cand.name} ({cand.overallScore}% Fit)
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      </div>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "24px" }}>
         {/* Radar Chart Display */}
@@ -162,7 +170,7 @@ export const RadarMatch: React.FC = () => {
                 <PolarAngleAxis dataKey="dimension" tick={{ fill: "#4a5568", fontSize: 12, fontWeight: 500 }} />
                 <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#cbd5e1" tick={false} />
                 <Radar
-                  name="You (Priya Sharma)"
+                  name={`You (${userName})`}
                   dataKey="You"
                   stroke="#117c74"
                   fill="#117c74"

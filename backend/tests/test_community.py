@@ -1,5 +1,10 @@
+import os
 import json
+import django
 from django.test import Client
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+django.setup()
 
 def test_expense_crud_and_balances():
     client = Client()
@@ -146,3 +151,20 @@ def test_landlord_reviews():
     )
     assert post_res.status_code == 201
     assert post_res.json()["landlord_name"] == "Mr. Kapoor"
+
+def test_expense_custom_user_mapping():
+    client = Client()
+    # Fetch expenses with a different logged-in user
+    res = client.get("/api/expenses/?group_id=flat-ncu-23&current_user=Rohan%20Gupta")
+    assert res.status_code == 200
+    expenses = res.json()["expenses"]
+    # Check that Rohan Gupta replaces Priya Sharma in expenses
+    assert any(e["paid_by"] == "Rohan Gupta" for e in expenses)
+    assert not any(e["paid_by"] == "Priya Sharma" for e in expenses)
+
+    # Fetch balances with Rohan Gupta
+    bal_res = client.get("/api/expenses/balances/?group_id=flat-ncu-23&current_user=Rohan%20Gupta")
+    assert bal_res.status_code == 200
+    balances = bal_res.json()["balances"]
+    assert "Rohan Gupta" in balances
+    assert "Priya Sharma" not in balances

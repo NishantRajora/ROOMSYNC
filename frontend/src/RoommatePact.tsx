@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { registerHash, verifyHash } from "./blockchain";
 import { FileCheck, Shield, CheckCircle2, Copy, Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
 
@@ -9,13 +9,20 @@ export interface RoommatePactProps {
 }
 
 export const RoommatePact: React.FC<RoommatePactProps> = ({ api, currentUser, onNotify }) => {
+  const effectiveUser = currentUser?.trim() || "Priya Sharma";
   const [step, setStep] = useState(1);
   const [title, setTitle] = useState("Flat 204 Cohabitation Agreement");
-  const [flatmates, setFlatmates] = useState("Priya Sharma, Aarav Mehta");
+  const [flatmates, setFlatmates] = useState(`${effectiveUser}, Aarav Mehta`);
   const [quietHours, setQuietHours] = useState("11:00 PM – 7:00 AM");
   const [cleaningCycle, setCleaningCycle] = useState("Weekly rotation (Sunday deep clean)");
   const [guestPolicy, setGuestPolicy] = useState("24-hour advance WhatsApp notice for overnight guests");
   const [depositPolicy, setDepositPolicy] = useState("Equal refund after landlord inspection with zero arbitrary deductions");
+
+  useEffect(() => {
+    if (currentUser?.trim()) {
+      setFlatmates(`${currentUser.trim()}, Aarav Mehta`);
+    }
+  }, [currentUser]);
 
   const [generatedPact, setGeneratedPact] = useState<{
     id: number;
@@ -139,7 +146,7 @@ export const RoommatePact: React.FC<RoommatePactProps> = ({ api, currentUser, on
                   type="text"
                   value={flatmates}
                   onChange={(e) => setFlatmates(e.target.value)}
-                  placeholder="e.g. Priya Sharma, Aarav Mehta"
+                  placeholder={`e.g. ${effectiveUser}, Aarav Mehta`}
                 />
               </label>
             </div>
@@ -299,12 +306,12 @@ export const RoommatePact: React.FC<RoommatePactProps> = ({ api, currentUser, on
               className="primary"
               onClick={() => {
                 setIsSigned(true);
-                onNotify("Digitally signed by Priya Sharma!");
+                onNotify(`Digitally signed by ${effectiveUser}!`);
               }}
               disabled={isSigned}
               style={{ display: "flex", alignItems: "center", gap: "6px", background: isSigned ? "#276749" : undefined }}
             >
-              <CheckCircle2 size={16} /> {isSigned ? "Digitally Signed ✓" : "Sign as Priya Sharma"}
+              <CheckCircle2 size={16} /> {isSigned ? "Digitally Signed ✓" : `Sign as ${effectiveUser}`}
             </button>
 
             <button

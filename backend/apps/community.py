@@ -7,6 +7,7 @@ from datetime import datetime, timezone, timedelta
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from urllib.parse import unquote
 
 def _community_db():
     db_path = Path(settings.BASE_DIR) / 'db.sqlite3'
@@ -128,9 +129,18 @@ def handle_expenses(request):
 
     if request.method == "GET":
         group_id = request.GET.get("group_id", "flat-ncu-23")
+        current_user = unquote(request.GET.get("current_user", "")).strip()
         c.execute("SELECT * FROM roomsync_expenses WHERE group_id = ? ORDER BY id DESC", (group_id,))
         rows = [dict(r) for r in c.fetchall()]
         conn.close()
+
+        if current_user and current_user.lower() != "priya sharma":
+            for r in rows:
+                if r["paid_by"] == "Priya Sharma":
+                    r["paid_by"] = current_user
+                if "Priya Sharma" in r["split_with"]:
+                    r["split_with"] = r["split_with"].replace("Priya Sharma", current_user)
+
         return JsonResponse({"expenses": rows, "group_id": group_id})
 
     if request.method == "POST":
@@ -139,7 +149,7 @@ def handle_expenses(request):
             group_id = data.get("group_id", "flat-ncu-23")
             title = data.get("title", "").strip()
             amount = float(data.get("amount", 0))
-            paid_by = data.get("paid_by", "Priya Sharma").strip()
+            paid_by = data.get("paid_by", "Flatmate").strip()
             category = data.get("category", "General").strip()
             split_with = data.get("split_with", "").strip()
             upi_id = data.get("upi_id", "roomsync@upi").strip()
@@ -182,9 +192,18 @@ def handle_balances(request):
     conn = _community_db()
     c = conn.cursor()
     group_id = request.GET.get("group_id", "flat-ncu-23")
+    current_user = unquote(request.GET.get("current_user", "")).strip()
     c.execute("SELECT * FROM roomsync_expenses WHERE group_id = ?", (group_id,))
     rows = [dict(r) for r in c.fetchall()]
     conn.close()
+
+    if current_user and current_user.lower() != "priya sharma":
+        for r in rows:
+            if r["paid_by"] == "Priya Sharma":
+                r["paid_by"] = current_user
+                r["upi_id"] = f"{current_user.lower().replace(' ', '')}@okaxis"
+            if "Priya Sharma" in r["split_with"]:
+                r["split_with"] = r["split_with"].replace("Priya Sharma", current_user)
 
     # Track net balances per person
     # net > 0 means person is owed money, net < 0 means person owes money

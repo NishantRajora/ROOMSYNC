@@ -279,3 +279,113 @@ def agreements_compare(request):
         return JsonResponse(compare_agreements(payload.get("text1", ""), payload.get("text2", "")))
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+
+def admin_database(request):
+    if request.method != "GET":
+        return JsonResponse({"error": "GET required"}, status=405)
+
+    db_path = Path(settings.BASE_DIR) / "db.sqlite3"
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    tables_meta = {
+        "roomsync_accounts": {
+            "title": "User Accounts & Habits",
+            "table_name": "roomsync_accounts",
+            "columns": ["id", "name", "email", "phone", "password_hash", "city", "sleep", "cleanliness", "budget", "created_at"],
+            "schema": "id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE, phone TEXT, password_hash TEXT, city TEXT, sleep TEXT, cleanliness TEXT, budget TEXT, created_at TEXT",
+            "description": "Stores authenticated student accounts and their co-living preferences. Passwords hashed using PBKDF2-SHA256 with random salting.",
+        },
+        "roomsync_expenses": {
+            "title": "Flatmate Expenses & Mini-Splitwise",
+            "table_name": "roomsync_expenses",
+            "columns": ["id", "group_id", "title", "amount", "paid_by", "category", "split_with", "upi_id", "created_at"],
+            "schema": "id INTEGER PRIMARY KEY, group_id TEXT, title TEXT, amount REAL, paid_by TEXT, category TEXT, split_with TEXT, upi_id TEXT, created_at TEXT",
+            "description": "Stores shared apartment expenses (rent, electricity, WiFi, groceries) and settlement info with 1-click UPI QR parameters.",
+        },
+        "roomsync_pacts": {
+            "title": "Digital Roommate Living Pacts",
+            "table_name": "roomsync_pacts",
+            "columns": ["id", "title", "flatmates", "rules_json", "agreement_text", "sha256_hash", "tx_hash", "status", "created_at"],
+            "schema": "id INTEGER PRIMARY KEY, title TEXT, flatmates TEXT, rules_json TEXT, agreement_text TEXT, sha256_hash TEXT, tx_hash TEXT, status TEXT, created_at TEXT",
+            "description": "Cohabitation agreements covering quiet hours, cleaning rota, overnight guests, and deposit splits with SHA-256 on-chain hash.",
+        },
+        "roomsync_conversations": {
+            "title": "Chat Conversations",
+            "table_name": "roomsync_conversations",
+            "columns": ["id", "participant_1", "participant_2", "listing_id", "created_at"],
+            "schema": "id INTEGER PRIMARY KEY, participant_1 TEXT, participant_2 TEXT, listing_id INTEGER, created_at TEXT",
+            "description": "Direct student-to-student and student-to-host messaging conversation threads.",
+        },
+        "roomsync_messages": {
+            "title": "Chat Messages",
+            "table_name": "roomsync_messages",
+            "columns": ["id", "conversation_id", "sender", "text", "created_at", "read"],
+            "schema": "id INTEGER PRIMARY KEY, conversation_id INTEGER, sender TEXT, text TEXT, created_at TEXT, read INTEGER",
+            "description": "Individual messages sent inside conversation threads with read receipts.",
+        },
+        "roomsync_reviews": {
+            "title": "Landlord & Society Reputation Reviews",
+            "table_name": "roomsync_reviews",
+            "columns": ["id", "locality", "landlord_name", "deposit_returned", "maintenance_rating", "water_power_rating", "overall_rating", "comment", "author_email", "created_at"],
+            "schema": "id INTEGER PRIMARY KEY, locality TEXT, landlord_name TEXT, deposit_returned INTEGER, maintenance_rating INTEGER, water_power_rating INTEGER, overall_rating INTEGER, comment TEXT, author_email TEXT, created_at TEXT",
+            "description": "Verified student community reviews evaluating deposit refund integrity, 24/7 power backup, and landlord behavior across NCR.",
+        },
+        "roomsync_visit_alerts": {
+            "title": "SOS Flat Visit Companion Alerts",
+            "table_name": "roomsync_visit_alerts",
+            "columns": ["id", "user_email", "listing_id", "destination", "duration_mins", "emergency_phone", "status", "started_at", "ends_at"],
+            "schema": "id INTEGER PRIMARY KEY, user_email TEXT, listing_id INTEGER, destination TEXT, duration_mins INTEGER, emergency_phone TEXT, status TEXT, started_at TEXT, ends_at TEXT",
+            "description": "Safety monitoring logs when students view prospective apartments alone in NCR.",
+        },
+        "roomsync_student_verifications": {
+            "title": "University Domain Email Verifications",
+            "table_name": "roomsync_student_verifications",
+            "columns": ["id", "email", "otp", "verified", "verified_at"],
+            "schema": "id INTEGER PRIMARY KEY, email TEXT UNIQUE, otp TEXT, verified INTEGER, verified_at TEXT",
+            "description": "Campus domain OTP verification records (@ncuindia.edu / accredited university domains) to combat fake brokers.",
+        },
+    }
+
+    tables_data = {}
+    summary = {}
+
+    for t_name, meta in tables_meta.items():
+        try:
+            cursor.execute(f"SELECT * FROM {t_name} ORDER BY id DESC")
+            raw_rows = cursor.fetchall()
+            row_list = []
+            for r in raw_rows:
+                d = dict(r)
+                if "password_hash" in d:
+                    salt = d["password_hash"].split("$")[0] if "$" in d["password_hash"] else "salt"
+                    d["password_hash_masked"] = f"pbkdf2_sha256${salt[:8]}...[salted]"
+                row_list.append(d)
+            tables_data[t_name] = {
+                **meta,
+                "count": len(row_list),
+                "rows": row_list,
+            }
+            summary[t_name] = len(row_list)
+        except Exception as e:
+            tables_data[t_name] = {
+                **meta,
+                "count": 0,
+                "rows": [],
+                "error": str(e),
+            }
+            summary[t_name] = 0
+
+    conn.close()
+
+    evaluated_listings = [_listing_response(item) for item in SYNTHETIC_LISTINGS]
+    summary["listings"] = len(evaluated_listings)
+
+    return JsonResponse({
+        "summary": summary,
+        "tables": tables_data,
+        "listings": evaluated_listings,
+    })
+

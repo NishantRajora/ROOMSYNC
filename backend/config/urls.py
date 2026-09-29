@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from apps.api import health, register_account, login_account, accounts, matches, listings, listing_detail, favorite_listing, connect_listing, safety, agreements, agreements_summary, agreements_compare
+from apps.api import health, register_account, login_account, accounts, matches, listings, listing_detail, favorite_listing, connect_listing, safety, agreements, agreements_summary, agreements_compare, admin_database
 from apps.chat import handle_conversations, handle_messages, handle_unread
 from apps.uploads import handle_uploads, delete_upload
 from apps.community import handle_expenses, handle_balances, handle_pacts, handle_student_otp, handle_verify_student, handle_visit_alerts, handle_reviews
@@ -12,6 +12,7 @@ urlpatterns = [
     path("api/auth/register/", register_account),
     path("api/auth/login/", login_account),
     path("api/auth/accounts/", accounts),
+    path("api/admin/database/", admin_database),
     path("api/matches/", matches),
     path("api/listings/", listings),
     path("api/listings/<int:listing_id>/", listing_detail),

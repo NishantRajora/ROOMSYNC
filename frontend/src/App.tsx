@@ -6,6 +6,7 @@ import {
     Bell,
     Camera,
     CheckCircle2,
+    Database,
     FileCheck2,
     Flag,
     GraduationCap,
@@ -39,6 +40,7 @@ import { RadarMatch } from "./RadarMatch";
 import { StudentVerification } from "./StudentVerification";
 import { FlatVisitCompanion } from "./FlatVisitCompanion";
 import { SocietyReviews } from "./SocietyReviews";
+import { AdminDatabaseInspector } from "./AdminDatabaseInspector";
 
 type Match = {
     user: { name: string };
@@ -200,6 +202,35 @@ export function App() {
     const [isStudentVerified, setIsStudentVerified] = useState(true);
     const [verifiedCampus, setVerifiedCampus] = useState("The NorthCap University (NCU)");
     const [chatPopup, setChatPopup] = useState<{ recipient: string; listingId: number; title?: string } | null>(null);
+    const [acceptedDeal, setAcceptedDeal] = useState<{
+        id: number;
+        title: string;
+        flatmate: string;
+        locality: string;
+        rent: number;
+    } | null>(() => {
+        try {
+            const saved = localStorage.getItem("roomsync_accepted_deal");
+            return saved ? JSON.parse(saved) : null;
+        } catch {
+            return null;
+        }
+    });
+
+    const handleAcceptDeal = (listing: any) => {
+        const deal = {
+            id: listing.id,
+            title: listing.title,
+            flatmate: listing.owner || "Aarav Mehta",
+            locality: listing.locality || "Sector 23",
+            rent: listing.rent,
+        };
+        setAcceptedDeal(deal);
+        try {
+            localStorage.setItem("roomsync_accepted_deal", JSON.stringify(deal));
+        } catch { }
+        notify(`🎉 Deal accepted for ${listing.title}! Split bills & Roommate Pact unlocked with ${deal.flatmate}.`);
+    };
 
     const profileChecklist = [
         { label: "Full Name", done: Boolean(profileName.trim()) },
@@ -342,6 +373,8 @@ export function App() {
         setActiveView("Overview");
         setProfilePhoto("");
         setChatPopup(null);
+        setAcceptedDeal(null);
+        try { localStorage.removeItem("roomsync_accepted_deal"); } catch { }
         notify("You have been logged out.");
     };
 
@@ -359,6 +392,10 @@ export function App() {
     const handleNav = (view: string) => {
         if (!loggedIn) {
             setShowLogin(true);
+            return;
+        }
+        if ((view === "Split bills" || view === "Roommate pact") && !acceptedDeal) {
+            notify("Accept a room deal in 'Find your people' to unlock bill splitting and roommate pacts.");
             return;
         }
         setActiveView(view);
@@ -391,9 +428,10 @@ export function App() {
                         ["Overview", Home],
                         ["Find your people", Users],
                         ["Messages", MessageCircle],
-                        ["Split bills", Receipt],
-                        ["Roommate pact", Sparkles],
-                        ["Compatibility radar", BarChart3],
+                        ...(acceptedDeal ? [
+                            ["Split bills", Receipt],
+                            ["Roommate pact", Sparkles],
+                        ] : []),
                         ["Safety map", Map],
                         ["Visit SOS", ShieldAlert],
                         ["Landlord reviews", Star],
@@ -559,7 +597,18 @@ export function App() {
                                     pilot.
                                 </p>
                             </div>
-                            <div className="admin-heading-actions"><span className="admin-badge"><LockKeyhole size={14} /> Staff only</span><button className="admin-details-jump" onClick={() => document.getElementById("admin-people")?.scrollIntoView({ behavior: "smooth", block: "start" })}><Users size={14} /> View all user details</button></div>
+                            <div className="admin-heading-actions">
+                                <span className="admin-badge"><LockKeyhole size={14} /> Staff only</span>
+                                <button className="admin-details-jump" onClick={() => document.getElementById("admin-db-inspector")?.scrollIntoView({ behavior: "smooth", block: "start" })}>
+                                    <Database size={14} /> View All Database Tables & Schemas
+                                </button>
+                                <button className="admin-details-jump" onClick={() => document.getElementById("admin-people")?.scrollIntoView({ behavior: "smooth", block: "start" })}>
+                                    <Users size={14} /> User directory
+                                </button>
+                            </div>
+                        </div>
+                        <div id="admin-db-inspector">
+                            <AdminDatabaseInspector api={api} onNotify={notify} />
                         </div>
                         <section className="admin-stat-grid">
                             <article>
@@ -688,7 +737,7 @@ export function App() {
                             </div>
                             <div className="service-list">
                                 {Object.entries(backendStatus).map(([name, working]) => <span className={working ? "service-working" : "service-offline"} key={name}><i />{name} endpoint: {working ? "Working" : "Offline"}</span>)}
-                                <span className="service-demo"><i />Storage: in-memory demo</span>
+                                <span className="service-working"><i />Storage: SQLite3 Persistent (backend/db.sqlite3)</span>
                             </div>
                             <button
                                 className="text-button"
@@ -729,9 +778,67 @@ export function App() {
                                 <Discovery
                                     api={api}
                                     onNotify={notify}
-                                    currentUser={accountEmail}
+                                    currentUser={profileName}
                                     onOpenChat={(recipient, listingId, title) => setChatPopup({ recipient, listingId, title })}
+                                    acceptedDeal={acceptedDeal}
+                                    onAcceptDeal={handleAcceptDeal}
+                                    onNavigate={handleNav}
                                 />
+                                {acceptedDeal && activeView === "Overview" && (
+                                    <div style={{
+                                        background: "#f0fdf4",
+                                        border: "1px solid #bbf7d0",
+                                        borderRadius: "14px",
+                                        padding: "16px 22px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        flexWrap: "wrap",
+                                        gap: "12px",
+                                        margin: "24px 0 10px"
+                                    }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                            <span style={{ width: "38px", height: "38px", borderRadius: "50%", background: "#16a34a", color: "#fff", display: "grid", placeItems: "center" }}>
+                                                <CheckCircle2 size={20} />
+                                            </span>
+                                            <div>
+                                                <strong style={{ fontSize: "15px", color: "#166534", display: "block" }}>
+                                                    Active Co-Living Deal: {acceptedDeal.title}
+                                                </strong>
+                                                <span style={{ fontSize: "12px", color: "#15803d" }}>
+                                                    Flatmate: {acceptedDeal.flatmate} · {acceptedDeal.locality} · ₹{acceptedDeal.rent.toLocaleString()}/month
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                                            <button
+                                                className="primary"
+                                                style={{ padding: "8px 14px", fontSize: "12px", display: "flex", alignItems: "center", gap: "5px" }}
+                                                onClick={() => handleNav("Roommate pact")}
+                                            >
+                                                <Sparkles size={14} /> Roommate Pact
+                                            </button>
+                                            <button
+                                                style={{
+                                                    padding: "8px 14px",
+                                                    fontSize: "12px",
+                                                    background: "#fff",
+                                                    border: "1px solid #16a34a",
+                                                    color: "#16a34a",
+                                                    borderRadius: "8px",
+                                                    fontWeight: 600,
+                                                    cursor: "pointer",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "5px"
+                                                }}
+                                                onClick={() => handleNav("Split bills")}
+                                            >
+                                                <Receipt size={14} /> Split Bills
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="section-heading">
                                     <div>
                                         <p className="eyebrow">YOUR SIGNALS</p>
@@ -802,11 +909,12 @@ export function App() {
                                             {visibleMatches.map((match) => (
                                                 <button
                                                     className="match-row match-button"
-                                                    onClick={() =>
+                                                    onClick={() => {
+                                                        handleNav("Find your people");
                                                         notify(
-                                                            `Opened compatibility details for ${match.user.name}.`,
-                                                        )
-                                                    }
+                                                            `Viewing rooms & flatmate compatibility for ${match.user.name}.`,
+                                                        );
+                                                    }}
                                                     key={match.user.name}
                                                 >
                                                     <div className="person-avatar">
