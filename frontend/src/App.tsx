@@ -13,6 +13,7 @@ import {
     LogIn,
     LogOut,
     Map,
+    MessageCircle,
     Search,
     Settings,
     ShieldCheck,
@@ -22,6 +23,9 @@ import {
     X,
 } from "lucide-react";
 import { Discovery } from "./Discovery";
+import { Chat } from "./Chat";
+import { SafetyMap } from "./SafetyMap";
+import { AgreementVerifier } from "./AgreementVerifier";
 
 type Match = {
     user: { name: string };
@@ -344,7 +348,7 @@ export function App() {
                 </div>
                 <p className="eyebrow">YOUR RENTING COMPASS</p>
                 <nav>
-                    {(isAdmin ? [["Admin panel", Settings]] : [["Overview", Home], ["Find your people", Users]]).map(([label, Icon]) => (
+                    {(isAdmin ? [["Admin panel", Settings]] : [["Overview", Home], ["Find your people", Users], ["Messages", MessageCircle], ["Safety map", Map], ["Agreements", FileCheck2]]).map(([label, Icon]) => (
                         <button
                             className={activeView === label ? "active" : ""}
                             onClick={() => handleNav(label as string)}
@@ -364,7 +368,7 @@ export function App() {
             <main>
                 <header>
                     <div>
-                        <p className="eyebrow">MONDAY, 28 SEPTEMBER 2026</p>
+                        <p className="eyebrow">{new Intl.DateTimeFormat("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date()).toUpperCase()}</p>
                         <h1>
                             {isAdmin
                                 ? "Admin command center."
@@ -412,7 +416,7 @@ export function App() {
                                     className="avatar avatar-button"
                                     onClick={() => setShowProfile(true)}
                                 >
-                                    {profilePhoto ? <img src={profilePhoto} alt="Profile" /> : "PS"}
+                                    {profilePhoto ? <img src={profilePhoto} alt="Profile" /> : profileName.split(" ").map(n => n[0]).join("")}
                                 </button>
                                 <button className="header-logout" onClick={handleLogout}>
                                     <LogOut size={14} />
@@ -625,163 +629,176 @@ export function App() {
                     </section>
                 ) : loggedIn ? (
                     <>
-                        <Discovery api={api} onNotify={notify} />
-                        <div className="section-heading">
-                            <div>
-                                <p className="eyebrow">YOUR SIGNALS</p>
-                                <h3>Everything in one view</h3>
-                            </div>
-                            <button
-                                className="text-button"
-                                onClick={() => notify("Activity timeline is up to date.")}
-                            >
-                                View activity <ArrowUpRight size={15} />
-                            </button>
-                        </div>
-                        <section className="stat-grid">
-                            <article className="stat-card mint-card">
-                                <span className="stat-icon">
-                                    <Users size={18} />
-                                </span>
-                                <strong>{matches.length}</strong>
-                                <span>compatible people</span>
-                                <small>+3 since yesterday</small>
-                            </article>
-                            <article className="stat-card sand-card">
-                                <span className="stat-icon">
-                                    <ShieldCheck size={18} />
-                                </span>
-                                <strong>
-                                    {listings[0]?.trust?.score || 0}
-                                    <small>/100</small>
-                                </strong>
-                                <span>top listing trust</span>
-                                <small>fully explained</small>
-                            </article>
-                            <article className="stat-card blue-card">
-                                <span className="stat-icon">
-                                    <Map size={18} />
-                                </span>
-                                <strong>
-                                    {safety?.geo_risk_score || 0}
-                                    <small>/100</small>
-                                </strong>
-                                <span>area risk score</span>
-                                <small>{safety?.campus?.commute || "campus nearby"}</small>
-                            </article>
-                            <article className="stat-card lilac-card">
-                                <span className="stat-icon">
-                                    <FileCheck2 size={18} />
-                                </span>
-                                <strong>1</strong>
-                                <span>agreement analysed</span>
-                                <small>needs your review</small>
-                            </article>
-                        </section>
-                        <section className="content-grid">
-                            <div className="panel">
-                                <div className="panel-heading">
+                        {activeView === "Messages" && (
+                            <Chat api={api} currentUser={accountEmail} onNotify={notify} />
+                        )}
+                        {activeView === "Safety map" && (
+                            <SafetyMap safety={safety} listings={listings} onNotify={notify} />
+                        )}
+                        {activeView === "Agreements" && (
+                            <AgreementVerifier api={api} onNotify={notify} />
+                        )}
+                        {(activeView === "Overview" || activeView === "Find your people") && (
+                            <>
+                                <Discovery api={api} onNotify={notify} currentUser={accountEmail} onOpenChat={() => setActiveView("Messages")} />
+                                <div className="section-heading">
                                     <div>
-                                        <p className="eyebrow">MATCH FEED</p>
-                                        <h3>People you might click with</h3>
+                                        <p className="eyebrow">YOUR SIGNALS</p>
+                                        <h3>Everything in one view</h3>
                                     </div>
                                     <button
                                         className="text-button"
-                                        onClick={() => handleNav("Find your people")}
+                                        onClick={() => notify("Activity timeline is up to date.")}
                                     >
-                                        See all <ArrowUpRight size={15} />
+                                        View activity <ArrowUpRight size={15} />
                                     </button>
                                 </div>
-                                <div className="match-list">
-                                    {visibleMatches.map((match) => (
-                                        <button
-                                            className="match-row match-button"
-                                            onClick={() =>
-                                                notify(
-                                                    `Opened compatibility details for ${match.user.name}.`,
-                                                )
-                                            }
-                                            key={match.user.name}
-                                        >
-                                            <div className="person-avatar">
-                                                {match.user.name
-                                                    .split(" ")
-                                                    .map((name) => name[0])
-                                                    .join("")}
-                                            </div>
-                                            <div className="person-copy">
-                                                <strong>{match.user.name}</strong>
-                                                <span>
-                                                    {match.reasons[0] ||
-                                                        "A promising compatibility signal"}
-                                                </span>
-                                                <div className="chips">
-                                                    {match.reasons.slice(0, 2).map((reason) => (
-                                                        <span className="chip positive" key={reason}>
-                                                            <CheckCircle2 size={12} />
-                                                            {reason}
-                                                        </span>
-                                                    ))}
-                                                    {match.conflicts.slice(0, 1).map((conflict) => (
-                                                        <span className="chip warning" key={conflict}>
-                                                            <AlertTriangle size={12} />
-                                                            {conflict}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className="score">
-                                                <strong>{match.score}</strong>
-                                                <span>match</span>
-                                            </div>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="panel place-panel">
-                                <div className="panel-heading">
-                                    <div>
-                                        <p className="eyebrow">SAFER PLACES</p>
-                                        <h3>Near your campus</h3>
-                                    </div>
-                                    <button
-                                        className="panel-icon"
-                                        onClick={() => handleNav("Safety map")}
-                                        aria-label="Open safety map"
-                                    >
-                                        <Map size={19} />
-                                    </button>
-                                </div>
-                                <div className="map-placeholder osm-map">
-                                    <iframe
-                                        title="OpenStreetMap map of NCU Gurugram"
-                                        src="https://www.openstreetmap.org/export/embed.html?bbox=77.00%2C28.42%2C77.06%2C28.48&layer=mapnik&marker=28.4595%2C77.0266"
-                                    />
-                                    <div className="map-card">
-                                        <strong>
-                                            {safety?.campus?.distance_km || "1.8"} km away
-                                        </strong>
-                                        <span>Short ride · Moderate risk</span>
-                                    </div>
-                                </div>
-                                <button
-                                    className="listing-mini listing-button"
-                                    onClick={() => notify("Listing trust report opened.")}
-                                >
-                                    <div>
-                                        <strong>
-                                            {listings[0]?.title || "Sunlit room near NCU"}
-                                        </strong>
-                                        <span>
-                                            ₹{listings[0]?.rent || "14,500"} · verified listing
+                                <section className="stat-grid">
+                                    <article className="stat-card mint-card">
+                                        <span className="stat-icon">
+                                            <Users size={18} />
                                         </span>
+                                        <strong>{matches.length}</strong>
+                                        <span>compatible people</span>
+                                        <small>+3 since yesterday</small>
+                                    </article>
+                                    <article className="stat-card sand-card">
+                                        <span className="stat-icon">
+                                            <ShieldCheck size={18} />
+                                        </span>
+                                        <strong>
+                                            {listings[0]?.trust?.score || 0}
+                                            <small>/100</small>
+                                        </strong>
+                                        <span>top listing trust</span>
+                                        <small>fully explained</small>
+                                    </article>
+                                    <article className="stat-card blue-card">
+                                        <span className="stat-icon">
+                                            <Map size={18} />
+                                        </span>
+                                        <strong>
+                                            {safety?.geo_risk_score || 0}
+                                            <small>/100</small>
+                                        </strong>
+                                        <span>area risk score</span>
+                                        <small>{safety?.campus?.commute || "campus nearby"}</small>
+                                    </article>
+                                    <article className="stat-card lilac-card">
+                                        <span className="stat-icon">
+                                            <FileCheck2 size={18} />
+                                        </span>
+                                        <strong>1</strong>
+                                        <span>agreement analysed</span>
+                                        <small>needs your review</small>
+                                    </article>
+                                </section>
+                                <section className="content-grid">
+                                    <div className="panel">
+                                        <div className="panel-heading">
+                                            <div>
+                                                <p className="eyebrow">MATCH FEED</p>
+                                                <h3>People you might click with</h3>
+                                            </div>
+                                            <button
+                                                className="text-button"
+                                                onClick={() => handleNav("Find your people")}
+                                            >
+                                                See all <ArrowUpRight size={15} />
+                                            </button>
+                                        </div>
+                                        <div className="match-list">
+                                            {visibleMatches.map((match) => (
+                                                <button
+                                                    className="match-row match-button"
+                                                    onClick={() =>
+                                                        notify(
+                                                            `Opened compatibility details for ${match.user.name}.`,
+                                                        )
+                                                    }
+                                                    key={match.user.name}
+                                                >
+                                                    <div className="person-avatar">
+                                                        {match.user.name
+                                                            .split(" ")
+                                                            .map((name) => name[0])
+                                                            .join("")}
+                                                    </div>
+                                                    <div className="person-copy">
+                                                        <strong>{match.user.name}</strong>
+                                                        <span>
+                                                            {match.reasons[0] ||
+                                                                "A promising compatibility signal"}
+                                                        </span>
+                                                        <div className="chips">
+                                                            {match.reasons.slice(0, 2).map((reason) => (
+                                                                <span className="chip positive" key={reason}>
+                                                                    <CheckCircle2 size={12} />
+                                                                    {reason}
+                                                                </span>
+                                                            ))}
+                                                            {match.conflicts.slice(0, 1).map((conflict) => (
+                                                                <span className="chip warning" key={conflict}>
+                                                                    <AlertTriangle size={12} />
+                                                                    {conflict}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <div className="score">
+                                                        <strong>{match.score}</strong>
+                                                        <span>match</span>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <span className="trust-badge">
-                                        {listings[0]?.trust?.score || 0}
-                                    </span>
-                                </button>
-                            </div>
-                        </section>
+                                    <div className="panel place-panel">
+                                        <div className="panel-heading">
+                                            <div>
+                                                <p className="eyebrow">SAFER PLACES</p>
+                                                <h3>Near your campus</h3>
+                                            </div>
+                                            <button
+                                                className="panel-icon"
+                                                onClick={() => handleNav("Safety map")}
+                                                aria-label="Open safety map"
+                                            >
+                                                <Map size={19} />
+                                            </button>
+                                        </div>
+                                        <div className="map-placeholder osm-map">
+                                            <iframe
+                                                title="OpenStreetMap map of NCU Gurugram"
+                                                src="https://www.openstreetmap.org/export/embed.html?bbox=77.00%2C28.42%2C77.06%2C28.48&layer=mapnik&marker=28.4595%2C77.0266"
+                                            />
+                                            <div className="map-card">
+                                                <strong>
+                                                    {safety?.campus?.distance_km || "1.8"} km away
+                                                </strong>
+                                                <span>Short ride · Moderate risk</span>
+                                            </div>
+                                        </div>
+                                        <button
+                                            className="listing-mini listing-button"
+                                            onClick={() => notify("Listing trust report opened.")}
+                                        >
+                                            <div>
+                                                <strong>
+                                                    {listings[0]?.title || "Sunlit room near NCU"}
+                                                </strong>
+                                                <span>
+                                                    ₹{listings[0]?.rent || "14,500"} · verified listing
+                                                </span>
+                                            </div>
+                                            <span className="trust-badge">
+                                                {listings[0]?.trust?.score || 0}
+                                            </span>
+                                        </button>
+                                    </div>
+                                </section>
+                            </>
+                        )}
                     </>
                 ) : (
                     <section className="logged-out-panel">

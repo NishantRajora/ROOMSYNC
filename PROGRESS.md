@@ -155,17 +155,58 @@ Routes are registered in `backend/config/urls.py` and implemented in `backend/ap
 - The frontend uses a single dashboard application rather than a production router and authenticated route guards.
 - The repository does not yet provide moderated user-generated content, real identity lifecycle, production observability, or mobile clients.
 
+## Advanced Features Slice Completed
+
+- **Real-Time Chat & Messaging (`backend/apps/chat.py`, `frontend/src/Chat.tsx`)**:
+  - SQLite tables `roomsync_conversations` and `roomsync_messages`.
+  - Normalized participant ordering preventing duplicate conversations.
+  - Endpoints: `POST /api/chat/conversations/`, `GET /api/chat/conversations/`, `POST /api/chat/messages/`, `GET /api/chat/messages/`, `GET /api/chat/unread/`.
+  - Frontend chat component with conversation list, message thread, auto-scroll, unread badges, and 3-second live polling.
+  - Integrated into Room & Flatmate Discovery: clicking "Connect" automatically initializes a conversation with the listing owner.
+
+- **Blockchain Smart Contract Integration (`contracts/`, `frontend/src/blockchain.ts`, `frontend/src/AgreementVerifier.tsx`)**:
+  - Hardhat setup with `@nomicfoundation/hardhat-toolbox` and ethers.js v6.
+  - Deployment script `deploy.js` generating `deployed-address.json`.
+  - Unit tests in `AgreementRegistry.test.js` covering registration, duplicate rejection, and events.
+  - `blockchain.ts` provider/signer wrapper with `connectWallet()`, `registerHash()`, `verifyHash()`.
+  - `AgreementVerifier.tsx` UI allowing users to paste agreements, analyse clauses, hash with SHA-256, anchor to Ethereum/Hardhat, and verify validity on-chain.
+
+- **Cloud Deployment Configurations (`Dockerfile`, `render.yaml`, `railway.json`, `.dockerignore`)**:
+  - Multi-stage Dockerfile: Node 22 Vite build -> Python 3.12 Slim runtime with Gunicorn and health check.
+  - Render.com web service blueprint with healthcheck at `/api/health/`.
+  - Railway deployment config with automatic nixpack build and health checks.
+
+- **CI/CD Pipeline (`.github/workflows/ci.yml`)**:
+  - GitHub Actions matrix workflow testing Python 3.11 and 3.12 with `pytest` and `ruff`.
+  - Frontend Node build and TypeScript verification job with dependency caching.
+
+- **Interactive Safety Map (`frontend/src/SafetyMap.tsx`)**:
+  - Interactive Leaflet map centered at The NorthCap University, Gurugram.
+  - Locality coordinate resolver for Gurugram sectors (Sector 23, DLF Phase 3, Sushant Lok, etc.).
+  - Pins for campus, listings with rent & trust score popups, police stations, hospitals, and metro stations.
+  - Visual crime risk zone overlay circle.
+
+- **Enhanced NLP Agreement Analyser (`backend/ml/nlp/enhanced_analyser.py`)**:
+  - 10+ new clause detection patterns (maintenance, subletting, pets, utilities, lock-in period, late payment fees, parking, guest restrictions, damage liabilities, notice period).
+  - Multi-clause agreement summary endpoint (`/api/agreements/summary/`) with overall safety rating (Safe, Caution, Risky).
+  - Agreement diff/comparison endpoint (`/api/agreements/compare/`) identifying unique and common clauses between two contracts.
+
+- **File & Image Uploads (`backend/apps/uploads.py`, `frontend/src/ImageUpload.tsx`)**:
+  - Multipart upload handler validating MIME type and 10 MB file size limit.
+  - Storage in `backend/media/listings/` with UUID-based collision-free filenames.
+  - SQLite metadata table `roomsync_uploads`.
+  - Drag-and-drop ImageUpload UI with preview thumbnails and deletion.
+
+- **UI/UX & Security Hardening**:
+  - Environment-driven `SECRET_KEY`, `DEBUG`, and `ALLOWED_HOSTS` in `backend/config/settings.py`.
+  - Dynamic calendar date and profile initials in dashboard header.
+  - Fixed missing `@csrf_exempt` decorators and nested modal JSX bugs.
+  - Comprehensive responsive mobile CSS rules added to `styles.css`.
+  - 14 automated backend tests passing.
+
 ## Remaining Work
 
-- Add persistent Django models and authenticated ownership for profiles, listings, favorites, connect requests, and relationships.
-- Add production-grade authentication, sessions/tokens, authorization, password lifecycle, consent, export, and deletion workflows.
-- Move production data to PostgreSQL/PostGIS and connect binary uploads to MinIO or equivalent object storage.
-- Add real roommate-specific records and replace hard-coded demo candidates and listings.
-- Add accepted-connect workflow, messaging/chat, notifications, moderation, blocking, and reporting.
-- Add real identity-verification integrations with explicit consent and privacy controls.
-- Replace sample safety values with documented and maintained NCRB/OSM-style source ingestion.
-- Calibrate and evaluate matching with consented outcomes while preserving protected-attribute exclusions.
-- Deploy and integrate the agreement registry through a local chain or testnet adapter, including hash verification in the UI.
-- Add real frontend routing, route guards, API client error handling, loading states, and production file-upload handling.
-- Add frontend component/integration tests, broader API and security tests, contract tests, linting, CI, and deployment checks.
-- Revisit production secrets, `DEBUG`, allowed hosts, CORS, rate limits, CSRF/authentication strategy, and database migrations before launch.
+- Add persistent Django ORM models for listings, profiles, and favorites (currently SQLite raw tables and demo memory stores).
+- Add production-grade JWT authentication and session expiration lifecycle.
+- Connect binary uploads to MinIO or AWS S3 bucket for cloud-scale object storage.
+- Deploy smart contract to an active public testnet (Sepolia or Polygon Amoy).

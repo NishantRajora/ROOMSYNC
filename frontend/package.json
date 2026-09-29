@@ -1,7 +1,7 @@
 {
     "name": "roomsync-frontend",
     "private": true,
-    "version": "0.1.0",
+    "version": "0.2.0",
     "type": "module",
     "scripts": {
         "dev": "vite --host 0.0.0.0",
@@ -15,12 +15,15 @@
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "lucide-react": "latest",
-        "recharts": "latest"
+        "recharts": "latest",
+        "leaflet": "^1.9.4",
+        "ethers": "^6.13.0"
     },
     "devDependencies": {
         "vitest": "latest",
         "jsdom": "latest",
         "@types/react": "latest",
-        "@types/react-dom": "latest"
+        "@types/react-dom": "latest",
+        "@types/leaflet": "latest"
     }
 }

@@ -198,6 +198,7 @@ def listings(request):
     return JsonResponse({"results": [_listing_response(item) for item in results], "total": len(results), "synthetic": True})
 
 
+@csrf_exempt
 def listing_detail(request, listing_id):
     listing = next((item for item in SYNTHETIC_LISTINGS if item["id"] == listing_id), None)
     if not listing:
@@ -242,6 +243,8 @@ def connect_listing(request, listing_id):
     return JsonResponse(request_record, status=201)
 
 
+from ml.nlp.enhanced_analyser import summarize_agreement, compare_agreements
+
 def safety(request):
     lat = float(request.GET.get("lat", 28.4595))
     lng = float(request.GET.get("lng", 77.0266))
@@ -254,5 +257,25 @@ def agreements(request):
     try:
         payload = json.loads(request.body or "{}")
         return JsonResponse(analyse_agreement(payload.get("text", "")))
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+@csrf_exempt
+def agreements_summary(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST a JSON body with text"}, status=405)
+    try:
+        payload = json.loads(request.body or "{}")
+        return JsonResponse(summarize_agreement(payload.get("text", "")))
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+@csrf_exempt
+def agreements_compare(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST a JSON body with text1 and text2"}, status=405)
+    try:
+        payload = json.loads(request.body or "{}")
+        return JsonResponse(compare_agreements(payload.get("text1", ""), payload.get("text2", "")))
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)

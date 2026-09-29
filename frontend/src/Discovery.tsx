@@ -37,7 +37,12 @@ type Listing = {
     };
     is_favorite?: boolean;
 };
-type DiscoveryProps = { api: string; onNotify: (message: string) => void };
+type DiscoveryProps = {
+    api: string;
+    onNotify: (message: string) => void;
+    currentUser?: string;
+    onOpenChat?: () => void;
+};
 
 const highlights = [
     "Attached washroom",
@@ -65,7 +70,7 @@ const amenities = [
     "Parking",
 ];
 
-export function Discovery({ api, onNotify }: DiscoveryProps) {
+export function Discovery({ api, onNotify, currentUser, onOpenChat }: DiscoveryProps) {
     const [mode, setMode] = useState<"room" | "roommate">("room");
     const [location, setLocation] = useState("Gurugram");
     const [minRent, setMinRent] = useState("");
@@ -188,10 +193,25 @@ export function Discovery({ api, onNotify }: DiscoveryProps) {
         });
     };
 
-    const connect = (listing: Listing) =>
-        fetch(`${api}/listings/${listing.id}/connect/`, { method: "POST" })
-            .then(() => onNotify("Connect request sent. Meet in public first."))
+    const connect = (listing: Listing) => {
+        const baseApi = api.replace(/\/api\/?$/, "") + "/api";
+        fetch(`${baseApi}/listings/${listing.id}/connect/`, { method: "POST" })
+            .then(() => {
+                const user = currentUser || "demo@roomsync.test";
+                const owner = listing.owner || "Listing Owner";
+                fetch(`${baseApi}/chat/conversations/`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        participant_1: user,
+                        participant_2: owner,
+                        listing_id: listing.id,
+                    }),
+                }).catch(() => { });
+                onNotify(`Connected with ${owner}! Open Messages in the sidebar to chat.`);
+            })
             .catch(() => onNotify("Connect request failed."));
+    };
 
     return (
         <section id="discovery" className="discovery-section">

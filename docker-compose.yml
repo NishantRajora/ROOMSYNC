@@ -5,6 +5,10 @@ services:
     volumes: [ "./backend:/app" ]
     command: sh -c "pip install -q -r requirements.txt && python manage.py runserver 0.0.0.0:8000"
     ports: [ "8000:8000" ]
+    environment:
+      - DJANGO_DEBUG=True
+      - DJANGO_SECRET_KEY=dev-only-change-me
+
   frontend:
     image: node:22-alpine
     working_dir: /app
@@ -12,3 +16,11 @@ services:
     command: sh -c "npm install --silent && npm run dev"
     ports: [ "5173:5173" ]
     depends_on: [ backend ]
+  # Optional: Local Hardhat blockchain node for agreement verification
+  # Uncomment to enable blockchain features
+  # hardhat:
+  #   image: node:22-alpine
+  #   working_dir: /app
+  #   volumes: [ "./contracts:/app" ]
+  #   command: sh -c "npm install --silent && npx hardhat node"
+  #   ports: [ "8545:8545" ]
