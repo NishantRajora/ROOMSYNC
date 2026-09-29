@@ -30,7 +30,7 @@ type Match = {
     conflicts: string[];
 };
 type Account = { id: number; name: string; email: string; phone: string; city: string; sleep: string; cleanliness: string; budget: string };
-const api = "http://localhost:8000/api";
+const api = `http://${window.location.hostname}:8000/api`;
 const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || "admin@roomsync.test";
 const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || "Admin@1234";
 const DEMO_MATCHES: Match[] = [
