@@ -1,0 +1,10 @@
+{
+  "description": "Connects Indian college students with compatible flatmates and safe rental listings, enhancing their housing search experience with trust and community features.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
