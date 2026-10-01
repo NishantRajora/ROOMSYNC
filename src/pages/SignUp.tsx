@@ -87,8 +87,8 @@ export default function SignUp() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {[
-              { label: "Full Name", key: "name", type: "text", placeholder: "Arjun Mehta" },
-              { label: "Personal Email", key: "email", type: "email", placeholder: "arjun@gmail.com" },
+              { label: "Full Name", key: "name", type: "text", placeholder: "Nishant Rajora" },
+              { label: "Personal Email", key: "email", type: "email", placeholder: "nishantrajora100@gmail.com" },
               { label: "Phone Number", key: "phone", type: "tel", placeholder: "+91 98765 43210" },
               { label: "Password", key: "password", type: "password", placeholder: "Min. 8 characters" },
             ].map((field) => (

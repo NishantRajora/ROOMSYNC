@@ -13,7 +13,7 @@ This Rental Agreement ("Agreement") is made and executed at Gurugram on Septembe
 
 LANDLORD: Suresh Kumar Malhotra, residing at H-204, Green Palms Society, Sector 23, Gurugram.
 
-TENANT: Arjun Mehta, pursuing studies at The NorthCap University, Gurugram.
+TENANT: Nishant Rajora, pursuing studies at The NorthCap University, Gurugram.
 
 1. PROPERTY: The landlord agrees to let and the tenant agrees to take on rent the residential premises at Flat 302, Green Palms Society, Sector 23, Gurugram.
 

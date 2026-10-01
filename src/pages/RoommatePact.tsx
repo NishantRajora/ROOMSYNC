@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const FLATMATES = [
-  { name: "Arjun Mehta (You)", college: "NCU Gurugram" },
+  { name: "Nishant Rajora (You)", college: "NCU Gurugram" },
   { name: "Priya Sharma", college: "NCU Gurugram" },
   { name: "Ananya Verma", college: "NCU Gurugram" },
 ];
