@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Connection test doc
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn();
+      allow delete: if isOwner(userId);
+    }
+
+    // Listings collection
+    match /listings/{listingId} {
+      allow read: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+
+    // Shared flatmate expenses
+    match /expenses/{expenseId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSignedIn();
+    }
+
+    // Roommate Pacts
+    match /pacts/{pactId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSignedIn();
+    }
+
+    // Landlord & Locality reviews
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+
+    // Messages
+    match /messages/{messageId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // Safety Visit Alerts
+    match /visitAlerts/{alertId} {
+      allow read, write: if isSignedIn();
+    }
+  }
+}

@@ -1,0 +1,177 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile, verified college student status, lifestyle habits, and preferences",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "fullName": { "type": "string" },
+        "college": { "type": "string" },
+        "collegeEmail": { "type": "string" },
+        "isStudentVerified": { "type": "boolean" },
+        "profileCompletion": { "type": "number" },
+        "budgetMin": { "type": "number" },
+        "budgetMax": { "type": "number" },
+        "sleepSchedule": { "type": "string" },
+        "cleanliness": { "type": "string" },
+        "socialHabits": { "type": "string" },
+        "foodPreference": { "type": "string" },
+        "studyHabits": { "type": "string" },
+        "preferredLocalities": { "type": "string" },
+        "bio": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "upiId": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "fullName", "email"]
+    },
+    "Listing": {
+      "title": "Listing",
+      "description": "Student housing listing around NCU Gurugram & Delhi-NCR",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "title": { "type": "string" },
+        "locality": { "type": "string" },
+        "rent": { "type": "number" },
+        "deposit": { "type": "number" },
+        "bedrooms": { "type": "number" },
+        "bathrooms": { "type": "number" },
+        "furnishing": { "type": "string" },
+        "amenities": { "type": "string" },
+        "photos": { "type": "string" },
+        "description": { "type": "string" },
+        "trustScore": { "type": "number" },
+        "trustBreakdown": { "type": "string" },
+        "landlordName": { "type": "string" },
+        "landlordVerified": { "type": "boolean" },
+        "localityMedianRent": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "locality", "rent", "trustScore"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Shared flatmate expense and split calculation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "amount": { "type": "number" },
+        "paidByUserId": { "type": "string" },
+        "paidByName": { "type": "string" },
+        "paidByUpi": { "type": "string" },
+        "category": { "type": "string" },
+        "splitWithNames": { "type": "string" },
+        "settled": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "amount", "paidByName"]
+    },
+    "Pact": {
+      "title": "Pact",
+      "description": "Roommate living pact with digital signatures and SHA-256 tamper hash",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "address": { "type": "string" },
+        "flatmates": { "type": "string" },
+        "quietHours": { "type": "string" },
+        "choreSchedule": { "type": "string" },
+        "guestPolicy": { "type": "string" },
+        "depositSplit": { "type": "string" },
+        "documentText": { "type": "string" },
+        "sha256Hash": { "type": "string" },
+        "signatures": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "documentText", "sha256Hash"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Community review of landlord and locality housing conditions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "locality": { "type": "string" },
+        "landlordName": { "type": "string" },
+        "depositReturned": { "type": "boolean" },
+        "maintenanceRating": { "type": "number" },
+        "powerWaterRating": { "type": "number" },
+        "overallRating": { "type": "number" },
+        "reviewText": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorUid": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "locality", "landlordName", "reviewText"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Chat message between flatmates or prospective roommates",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "recipientId": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "senderId", "text", "timestamp"]
+    },
+    "VisitAlert": {
+      "title": "VisitAlert",
+      "description": "Safety SOS property visit check-in and timer",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "destination": { "type": "string" },
+        "durationMinutes": { "type": "number" },
+        "emergencyContactName": { "type": "string" },
+        "emergencyContactPhone": { "type": "string" },
+        "startTime": { "type": "string" },
+        "expectedEndTime": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "destination", "durationMinutes", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles and verification details"
+    },
+    "/listings/{listingId}": {
+      "schema": "Listing",
+      "description": "Student housing listings with trust score metrics"
+    },
+    "/expenses/{expenseId}": {
+      "schema": "Expense",
+      "description": "Roommate shared expenses and settlements"
+    },
+    "/pacts/{pactId}": {
+      "schema": "Pact",
+      "description": "Roommate Pacts with cryptographic SHA-256 hashes"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Landlord and locality housing safety reviews"
+    },
+    "/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Roommate direct chat messages"
+    },
+    "/visitAlerts/{alertId}": {
+      "schema": "VisitAlert",
+      "description": "SOS property visit countdown alerts"
+    }
+  }
+}

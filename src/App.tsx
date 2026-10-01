@@ -1,52 +1,95 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import AppShell from "./components/AppShell";
-import Landing from "./pages/Landing";
-import SignUp from "./pages/SignUp";
-import Verify from "./pages/Verify";
-import Onboarding from "./pages/Onboarding";
-import Dashboard from "./pages/Dashboard";
-import MatchFeed from "./pages/MatchFeed";
-import ListingDiscovery from "./pages/ListingDiscovery";
-import ListingDetail from "./pages/ListingDetail";
-import SafetyMap from "./pages/SafetyMap";
-import BillSplitter from "./pages/BillSplitter";
-import RoommatePact from "./pages/RoommatePact";
-import AgreementAnalyzer from "./pages/AgreementAnalyzer";
-import SOSVisit from "./pages/SOSVisit";
-import Reviews from "./pages/Reviews";
-import Messages from "./pages/Messages";
-import Profile from "./pages/Profile";
-import Admin from "./pages/Admin";
+import React, { useState, useEffect } from 'react';
+import { AppProvider, useApp } from './context/AppContext';
+import { AppShell } from './components/layout/AppShell';
+import { DiscoverPage } from './pages/DiscoverPage';
+import { MatchesPage } from './pages/MatchesPage';
+import { SafetyMapPage } from './pages/SafetyMapPage';
+import { AgreementAnalyzerPage } from './pages/AgreementAnalyzerPage';
+import { RoommatePactPage } from './pages/RoommatePactPage';
+import { BillSplitterPage } from './pages/BillSplitterPage';
+import { ReviewsPage } from './pages/ReviewsPage';
+import { MessagesPage } from './pages/MessagesPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { LandingPage } from './pages/LandingPage';
+import { AuthPage } from './pages/AuthPage';
+
+const AppContent: React.FC = () => {
+  const { activeTab, setActiveTab, isAuthenticated } = useApp();
+
+  // Reactive URL router
+  const [currentPath, setCurrentPath] = useState<string>(() => {
+    return window.location.pathname || '/';
+  });
+
+  const navigate = (path: string) => {
+    window.history.pushState({}, '', path);
+    setCurrentPath(path);
+  };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname || '/');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // When authenticated, visiting public root or auth routes redirects straight to /dashboard
+  useEffect(() => {
+    if (isAuthenticated && (currentPath === '/' || currentPath === '/login' || currentPath === '/signup')) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, currentPath]);
+
+  // If logged out:
+  if (!isAuthenticated) {
+    if (currentPath === '/login') {
+      return <AuthPage initialMode="login" onNavigate={navigate} />;
+    }
+    if (currentPath === '/signup') {
+      return <AuthPage initialMode="signup" onNavigate={navigate} />;
+    }
+    // Default root route "/"
+    return <LandingPage onNavigate={navigate} />;
+  }
+
+  // If logged in: render AppShell with dashboard tabs
+  const renderActiveTab = () => {
+    switch (activeTab) {
+      case 'discover':
+        return <DiscoverPage />;
+      case 'matches':
+        return <MatchesPage />;
+      case 'safetymap':
+        return <SafetyMapPage />;
+      case 'analyzer':
+        return <AgreementAnalyzerPage />;
+      case 'pact':
+        return <RoommatePactPage />;
+      case 'bills':
+        return <BillSplitterPage />;
+      case 'reviews':
+        return <ReviewsPage />;
+      case 'messages':
+        return <MessagesPage />;
+      case 'profile':
+        return <ProfilePage />;
+      default:
+        return <DiscoverPage />;
+    }
+  };
+
+  return (
+    <AppShell onLogout={() => navigate('/')}>
+      {renderActiveTab()}
+    </AppShell>
+  );
+};
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/verify" element={<Verify />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-
-        {/* App shell routes (authenticated) */}
-        <Route element={<AppShell />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/matches" element={<MatchFeed />} />
-          <Route path="/listings" element={<ListingDiscovery />} />
-          <Route path="/listings/:id" element={<ListingDetail />} />
-          <Route path="/safety-map" element={<SafetyMap />} />
-          <Route path="/bills" element={<BillSplitter />} />
-          <Route path="/pact" element={<RoommatePact />} />
-          <Route path="/agreement" element={<AgreementAnalyzer />} />
-          <Route path="/sos" element={<SOSVisit />} />
-          <Route path="/reviews" element={<Reviews />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/admin" element={<Admin />} />
-        </Route>
-
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
   );
 }
