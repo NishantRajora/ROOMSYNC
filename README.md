@@ -59,6 +59,3 @@ ROOMSYNC is a comprehensive roommate finding and co-living management ecosystem 
 - `src/components`: Reusable UI components (Chat, Layout, RadarCharts).
 - `src/types`: Centralized TypeScript interfaces for Users, Listings, and Pacts.
 - `src/context`: Global state management via AppContext.
-
-## 📜 License
-Private Project
