@@ -37,12 +37,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
     activeVisitAlert,
     cancelVisitAlert,
     toastMessage,
-    setIsAuthenticated,
+    logout,
   } = useApp();
 
   const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.setItem('roomsync_auth', 'false');
+    logout();
     if (onLogout) {
       onLogout();
     }
@@ -50,6 +49,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
 
   const [isSosModalOpen, setIsSosModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
   const [globalSearch, setGlobalSearch] = useState('');
 
   const navItems: { tab: NavigationTab; label: string; icon: React.FC<{ className?: string }> }[] = [
@@ -141,7 +141,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
               type="text"
               value={globalSearch}
               onChange={(e) => setGlobalSearch(e.target.value)}
-              placeholder="Search Sector 23, DLF Phase 3, Palam Vihar, flatmates..."
+              placeholder="Search student flats, verified roommates, localities..."
               className="w-full pl-9 pr-4 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] focus:bg-white text-[#17222b] transition-all"
             />
           </div>
@@ -159,61 +159,116 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
             <span>SOS Check-in</span>
           </button>
 
-          {/* NCU Verification Indicator */}
+          {/* Verification Indicator */}
           {currentUser.isStudentVerified ? (
             <div className="hidden sm:block">
-              <VerifiedBadge college="Verified Student" size="sm" />
+              <VerifiedBadge college={currentUser.courseYear || "Verified Student"} size="sm" />
+            </div>
+          ) : currentUser.isProfessionalVerified || currentUser.userType === 'professional' ? (
+            <div className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-[#0369a1] bg-[#f0f9ff] px-2.5 py-1 rounded-full border border-[#bae6fd]">
+              <span>💼 Verified Pro</span>
             </div>
           ) : (
             <button
               onClick={() => setActiveTab('profile')}
               className="hidden sm:inline-flex items-center gap-1 text-xs font-medium text-[#f59e0b] bg-[#fffbeb] px-2.5 py-1 rounded-full border border-[#fde68a] cursor-pointer"
             >
-              Verify College ID
+              Verify Profile ID
             </button>
           )}
 
-          {/* Profile Completion Ring */}
-          <div
-            onClick={() => setActiveTab('profile')}
-            className="flex items-center gap-2 pl-2 cursor-pointer group"
-            title={`Profile ${currentUser.profileCompletion}% complete`}
-          >
-            <div className="relative w-9 h-9">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15"
-                  className="stroke-[#e2ece9]"
-                  strokeWidth="2.5"
-                  fill="none"
+          {/* Profile Completion & User Menu Dropdown */}
+          <div className="relative">
+            <div
+              onClick={() => setIsAccountDropdownOpen((prev) => !prev)}
+              className="flex items-center gap-2 pl-2 cursor-pointer group"
+              title={`Logged in as ${currentUser.fullName} · ${currentUser.profileCompletion}% complete`}
+            >
+              <div className="relative w-9 h-9">
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="15"
+                    className="stroke-[#e2ece9]"
+                    strokeWidth="2.5"
+                    fill="none"
+                  />
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="15"
+                    className="stroke-[#117c74] transition-all duration-500"
+                    strokeWidth="2.5"
+                    strokeDasharray={`${currentUser.profileCompletion}, 100`}
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                </svg>
+                <img
+                  src={currentUser.avatarUrl}
+                  alt={currentUser.fullName}
+                  className="w-7 h-7 rounded-full object-cover absolute top-1 left-1"
                 />
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15"
-                  className="stroke-[#117c74] transition-all duration-500"
-                  strokeWidth="2.5"
-                  strokeDasharray={`${currentUser.profileCompletion}, 100`}
-                  strokeLinecap="round"
-                  fill="none"
-                />
-              </svg>
-              <img
-                src={currentUser.avatarUrl}
-                alt={currentUser.fullName}
-                className="w-7 h-7 rounded-full object-cover absolute top-1 left-1"
-              />
-            </div>
-            <div className="hidden xl:block text-left">
-              <div className="text-xs font-semibold text-[#17222b] group-hover:text-[#117c74] transition-colors">
-                {currentUser.fullName}
               </div>
-              <div className="text-[10px] text-[#5f7572]">
-                {currentUser.profileCompletion}% Complete
+              <div className="hidden xl:block text-left">
+                <div className="text-xs font-semibold text-[#17222b] group-hover:text-[#117c74] transition-colors truncate max-w-[120px]">
+                  {currentUser.fullName}
+                </div>
+                <div className="text-[10px] text-[#5f7572]">
+                  {currentUser.userType === 'student' ? 'Student' : 'Professional'} · {currentUser.profileCompletion}%
+                </div>
               </div>
             </div>
+
+            {/* Clean User Account Menu */}
+            {isAccountDropdownOpen && (
+              <div className="absolute right-0 top-12 z-50 w-64 bg-white rounded-2xl shadow-xl border border-[#e2ece9] p-3 space-y-3 animate-in fade-in zoom-in-95">
+                <div className="flex items-center gap-2.5 p-2 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
+                  <img
+                    src={currentUser.avatarUrl}
+                    alt={currentUser.fullName}
+                    className="w-10 h-10 rounded-full object-cover shrink-0"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs font-bold text-[#17222b] truncate">
+                      {currentUser.fullName}
+                    </div>
+                    <div className="text-[11px] text-[#5f7572] truncate">
+                      {currentUser.email}
+                    </div>
+                    <div className="text-[10px] font-medium text-[#117c74] mt-0.5">
+                      {currentUser.courseYear || (currentUser.userType === 'student' ? 'Verified Student' : 'Working Professional')}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAccountDropdownOpen(false);
+                      setActiveTab('profile');
+                    }}
+                    className="w-full py-2 px-3 text-left hover:bg-[#f6f9f8] rounded-xl text-xs font-semibold text-[#17222b] flex items-center justify-between cursor-pointer transition-colors"
+                  >
+                    <span>My Profile & Verified ID</span>
+                    <span className="text-[10px] text-[#117c74] font-bold">{currentUser.profileCompletion}%</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAccountDropdownOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full py-2 px-3 text-left hover:bg-[#fef2f2] rounded-xl text-xs font-semibold text-[#f43f5e] flex items-center gap-2 cursor-pointer transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Log Out</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -247,16 +302,16 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
           <div className="mt-auto p-3.5 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold text-[#17222b]">
               <ShieldCheck className="w-4 h-4 text-[#117c74]" />
-              <span>Campus Safety Pilot</span>
+              <span>Campus Safety Guide</span>
             </div>
             <p className="text-[11px] text-[#5f7572] leading-relaxed">
-              Curated for The NorthCap University student housing corridor in Sector 23, DLF 3 & Palam Vihar.
+              Curated student housing corridors, night lighting audit, transit access, and police chowki proximity.
             </p>
             <button
               onClick={() => setActiveTab('safetymap')}
               className="text-[11px] font-semibold text-[#117c74] hover:underline flex items-center gap-1 cursor-pointer"
             >
-              Explore Gurugram Risk Map &rarr;
+              Explore Safety & Risk Map &rarr;
             </button>
           </div>
 

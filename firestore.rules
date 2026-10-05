@@ -22,9 +22,14 @@ service cloud.firestore {
 
     // Users collection
     match /users/{userId} {
-      allow read: if isSignedIn();
-      allow create, update: if isSignedIn();
-      allow delete: if isOwner(userId);
+      allow read, create, update: if true;
+      allow delete: if isSignedIn();
+    }
+
+    // User accounts index for email lookup
+    match /user_accounts_index/{email} {
+      allow read, create, update: if true;
+      allow delete: if isSignedIn();
     }
 
     // Listings collection

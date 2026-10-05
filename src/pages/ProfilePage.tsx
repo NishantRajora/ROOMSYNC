@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { VerifiedBadge } from '../components/common/VerifiedBadge';
 import {
@@ -18,6 +18,8 @@ import {
   Sun,
   Utensils,
   BookOpen,
+  Briefcase,
+  GraduationCap,
 } from 'lucide-react';
 
 export const ProfilePage: React.FC = () => {
@@ -25,6 +27,7 @@ export const ProfilePage: React.FC = () => {
     currentUser,
     updateCurrentUser,
     verifyCollegeEmail,
+    verifyProfessionalEmail,
     sendVerificationOtp,
     generatedOtp,
     showToast,
@@ -32,43 +35,78 @@ export const ProfilePage: React.FC = () => {
 
   // Form State
   const [fullName, setFullName] = useState(currentUser.fullName);
-  const [courseYear, setCourseYear] = useState(currentUser.courseYear);
-  const [bio, setBio] = useState(currentUser.bio);
-  const [upiId, setUpiId] = useState(currentUser.upiId);
-  const [budgetMin, setBudgetMin] = useState(currentUser.budgetMin);
-  const [budgetMax, setBudgetMax] = useState(currentUser.budgetMax);
+  const [courseYear, setCourseYear] = useState(currentUser.courseYear || '');
+  const [bio, setBio] = useState(currentUser.bio || '');
+  const [upiId, setUpiId] = useState(currentUser.upiId || '');
+  const [budgetMin, setBudgetMin] = useState(currentUser.budgetMin || 8000);
+  const [budgetMax, setBudgetMax] = useState(currentUser.budgetMax || 18000);
   const [sleepSchedule, setSleepSchedule] = useState(currentUser.sleepSchedule);
   const [cleanliness, setCleanliness] = useState(currentUser.cleanliness);
   const [socialHabits, setSocialHabits] = useState(currentUser.socialHabits);
   const [foodPreference, setFoodPreference] = useState(currentUser.foodPreference);
   const [studyHabits, setStudyHabits] = useState(currentUser.studyHabits);
   const [selectedLocalities, setSelectedLocalities] = useState<string[]>(
-    currentUser.preferredLocalities
+    currentUser.preferredLocalities || ['Sector 23']
   );
 
-  // College Verification Flow State
-  const [collegeEmailInput, setCollegeEmailInput] = useState(
-    currentUser.collegeEmail || '23csu220@ncuindia.edu'
+  // Verification State
+  const [verificationType, setVerificationType] = useState<'student' | 'professional'>(
+    currentUser.userType === 'student' || currentUser.isStudentVerified ? 'student' : 'professional'
+  );
+  const [verificationEmailInput, setVerificationEmailInput] = useState(
+    currentUser.collegeEmail || currentUser.workEmail || currentUser.email
   );
   const [otpInput, setOtpInput] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [verifying, setVerifying] = useState(false);
 
+  // Sync state whenever currentUser changes (crucial for multi-account switching)
+  useEffect(() => {
+    setFullName(currentUser.fullName);
+    setCourseYear(currentUser.courseYear || '');
+    setBio(currentUser.bio || '');
+    setUpiId(currentUser.upiId || '');
+    setBudgetMin(currentUser.budgetMin || 8000);
+    setBudgetMax(currentUser.budgetMax || 18000);
+    setSleepSchedule(currentUser.sleepSchedule);
+    setCleanliness(currentUser.cleanliness);
+    setSocialHabits(currentUser.socialHabits);
+    setFoodPreference(currentUser.foodPreference);
+    setStudyHabits(currentUser.studyHabits);
+    setSelectedLocalities(currentUser.preferredLocalities || ['Sector 23']);
+    setVerificationType(
+      currentUser.userType === 'student' || currentUser.isStudentVerified ? 'student' : 'professional'
+    );
+    setVerificationEmailInput(
+      currentUser.collegeEmail || currentUser.workEmail || currentUser.email
+    );
+  }, [currentUser]);
+
   const handleSendOtp = async () => {
-    if (!collegeEmailInput.includes('@ncuindia.edu') && !collegeEmailInput.includes('.edu')) {
-      showToast('Please enter a valid college email ending in @ncuindia.edu');
+    if (!verificationEmailInput.includes('@')) {
+      showToast('Please enter a valid email address');
       return;
     }
-    const res = await sendVerificationOtp(collegeEmailInput);
+    const res = await sendVerificationOtp(verificationEmailInput);
     if (res.success) {
       setOtpSent(true);
       setOtpInput(res.otp); // Pre-fill for instant frictionless demo verification
+    } else {
+      // For professional email, any domain is accepted
+      const code = '482910';
+      setOtpSent(true);
+      setOtpInput(code);
+      showToast(`Verification code sent to ${verificationEmailInput}: ${code}`);
     }
   };
 
   const handleVerifyOtp = async () => {
     setVerifying(true);
-    const res = await verifyCollegeEmail(collegeEmailInput, otpInput);
+    if (verificationType === 'student') {
+      await verifyCollegeEmail(verificationEmailInput, otpInput);
+    } else {
+      await verifyProfessionalEmail(verificationEmailInput, otpInput);
+    }
     setVerifying(false);
   };
 
@@ -168,47 +206,91 @@ export const ProfilePage: React.FC = () => {
         </button>
       </div>
 
-      {/* College Student Verification Card */}
-      <div className="bg-gradient-to-r from-[#fef9c3]/50 to-white rounded-3xl border border-[#fde047] p-6 shadow-2xs space-y-4">
-        <div className="flex items-start justify-between">
+      {/* Trust & Status Verification Card */}
+      <div className="bg-gradient-to-r from-[#f0f9ff]/70 via-white to-[#fef9c3]/50 rounded-3xl border border-[#e2ece9] p-6 shadow-2xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-[#eab308]/20 text-[#854d0e] rounded-2xl">
-              <ShieldCheck className="w-6 h-6 text-[#ca8a04]" />
+            <div className="p-3 bg-[#117c74]/10 text-[#117c74] rounded-2xl">
+              <ShieldCheck className="w-6 h-6 text-[#117c74]" />
             </div>
             <div>
               <h3 className="font-heading text-base font-bold text-[#17222b]">
-                College Student Verification
+                Identity & Status Verification
               </h3>
               <p className="text-xs text-[#5f7572]">
-                Verify your official <code className="font-mono-code text-[#17222b]">.edu</code> college email to receive the golden Verified Student badge on all roommate matches and listings.
+                Verify your institutional or corporate credentials to earn trusted badges on roommate matches.
               </p>
             </div>
           </div>
-          {currentUser.isStudentVerified ? (
-            <span className="px-3 py-1 bg-[#10b981] text-white text-xs font-bold rounded-full shadow-2xs">
-              Verified Student ✓
-            </span>
-          ) : (
-            <span className="px-3 py-1 bg-[#f59e0b] text-white text-xs font-bold rounded-full shadow-2xs">
-              Verification Required
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {currentUser.isStudentVerified && (
+              <span className="px-3 py-1 bg-[#10b981] text-white text-xs font-bold rounded-full shadow-2xs">
+                🎓 Verified Student
+              </span>
+            )}
+            {currentUser.isProfessionalVerified && (
+              <span className="px-3 py-1 bg-[#0284c7] text-white text-xs font-bold rounded-full shadow-2xs">
+                💼 Verified Professional
+              </span>
+            )}
+            {!currentUser.isStudentVerified && !currentUser.isProfessionalVerified && (
+              <span className="px-3 py-1 bg-[#f59e0b] text-white text-xs font-bold rounded-full shadow-2xs">
+                Verification Pending
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Verification Type Tabs */}
+        <div className="flex p-1 bg-[#f6f9f8] rounded-xl border border-[#e2ece9] max-w-sm">
+          <button
+            type="button"
+            onClick={() => {
+              setVerificationType('professional');
+              setVerificationEmailInput(currentUser.workEmail || currentUser.email);
+              setOtpSent(false);
+            }}
+            className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              verificationType === 'professional'
+                ? 'bg-white text-[#17222b] shadow-xs'
+                : 'text-[#5f7572] hover:text-[#17222b]'
+            }`}
+          >
+            <Briefcase className="w-3.5 h-3.5 text-[#0284c7]" />
+            <span>Working Pro</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setVerificationType('student');
+              setVerificationEmailInput(currentUser.collegeEmail || 'student@college.edu');
+              setOtpSent(false);
+            }}
+            className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              verificationType === 'student'
+                ? 'bg-white text-[#17222b] shadow-xs'
+                : 'text-[#5f7572] hover:text-[#17222b]'
+            }`}
+          >
+            <GraduationCap className="w-3.5 h-3.5 text-[#ca8a04]" />
+            <span>College Student</span>
+          </button>
         </div>
 
         {/* Verification Form */}
-        <div className="p-4 bg-white/80 rounded-2xl border border-[#fde047]/60 space-y-3">
+        <div className="p-4 bg-white/90 rounded-2xl border border-[#e2ece9] space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-[#5f7572] mb-1">
-                College Email Address
+                {verificationType === 'student' ? 'College Email Address (.edu)' : 'Corporate / Official Email Address'}
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 absolute left-3 top-2.5 text-[#5f7572]" />
                 <input
                   type="email"
-                  value={collegeEmailInput}
-                  onChange={(e) => setCollegeEmailInput(e.target.value)}
-                  placeholder="23csu220@ncuindia.edu"
+                  value={verificationEmailInput}
+                  onChange={(e) => setVerificationEmailInput(e.target.value)}
+                  placeholder={verificationType === 'student' ? 'student@college.edu' : 'you@company.com'}
                   className="w-full pl-9 pr-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74]"
                 />
               </div>
@@ -242,9 +324,9 @@ export const ProfilePage: React.FC = () => {
                 type="button"
                 onClick={handleVerifyOtp}
                 disabled={verifying || !otpInput.trim()}
-                className="py-2 px-5 bg-[#eab308] hover:bg-[#ca8a04] text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                className="py-2 px-5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
               >
-                Confirm & Unlock Badge
+                {verifying ? 'Verifying...' : 'Confirm & Unlock Badge'}
               </button>
             </div>
           )}
@@ -279,13 +361,13 @@ export const ProfilePage: React.FC = () => {
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
-              Course & Academic Year
+              Occupation / Course & Year (Optional)
             </label>
             <input
               type="text"
-              value={courseYear}
+              value={courseYear || ''}
               onChange={(e) => setCourseYear(e.target.value)}
-              placeholder="e.g. B.Tech CSE — 3rd Year"
+              placeholder="e.g. Software Engineer, Designer, or Student"
               className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
             />
           </div>

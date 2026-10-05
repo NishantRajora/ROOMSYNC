@@ -107,7 +107,7 @@ export const DiscoverPage: React.FC = () => {
             Trust-Verified Student Listings
           </h1>
           <p className="text-xs text-[#5f7572] mt-1">
-            Curated student flats and rooms near The NorthCap University with transparent scam & price verification.
+            Curated student flats, PGs, and rooms with transparent scam detection & price verification.
           </p>
         </div>
         <button
@@ -429,7 +429,7 @@ export const DiscoverPage: React.FC = () => {
                   />
                 ) : (
                   <div className="bg-[#f6f9f8] flex items-center justify-center text-xs text-[#5f7572] hidden md:flex">
-                    Photo verified by NCU Ambassador
+                    Photo verified by Student Ambassador
                   </div>
                 )}
               </div>
@@ -655,7 +655,7 @@ export const DiscoverPage: React.FC = () => {
                   required
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
-                  placeholder="Detail room features, AC/WiFi, walking distance to NCU, etc."
+                  placeholder="Detail room features, AC/WiFi, walking distance to campus, etc."
                   className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
                 />
               </div>

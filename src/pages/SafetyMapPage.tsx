@@ -51,16 +51,16 @@ export const SafetyMapPage: React.FC = () => {
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    // Add NCU Campus Anchor Marker
-    const ncuIcon = L.divIcon({
-      className: 'custom-ncu-marker',
-      html: `<div style="background-color: #117c74; color: white; border: 2px solid white; border-radius: 9999px; padding: 6px 10px; font-weight: bold; font-size: 11px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); white-space: nowrap; display: flex; align-items: center; gap: 4px;">🎓 NCU Campus</div>`,
+    // Add Main Campus Anchor Marker
+    const campusIcon = L.divIcon({
+      className: 'custom-campus-marker',
+      html: `<div style="background-color: #117c74; color: white; border: 2px solid white; border-radius: 9999px; padding: 6px 10px; font-weight: bold; font-size: 11px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); white-space: nowrap; display: flex; align-items: center; gap: 4px;">🎓 Main Campus</div>`,
       iconSize: [110, 30],
       iconAnchor: [55, 15],
     });
-    const ncuMarker = L.marker([28.5135, 77.0422], { icon: ncuIcon }).addTo(map);
-    ncuMarker.bindPopup(`<b>The NorthCap University (NCU)</b><br>HUDA Sector 23A, Gurugram`);
-    markersRef.current.push(ncuMarker);
+    const campusMarker = L.marker([28.5135, 77.0422], { icon: campusIcon }).addTo(map);
+    campusMarker.bindPopup(`<b>University Main Campus</b><br>Student Housing Corridor`);
+    markersRef.current.push(campusMarker);
 
     // Add locality markers
     localities.forEach((loc) => {
@@ -119,10 +119,10 @@ export const SafetyMapPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl font-bold text-[#17222b] tracking-tight">
-            Gurugram Student Safety & Locality Map
+            Student Safety & Locality Risk Map
           </h1>
           <p className="text-xs text-[#5f7572] mt-1">
-            Real-world locality risk assessments, night street lighting, and NCU campus commute times.
+            Real-world locality risk assessments, night street lighting, and campus commute times.
           </p>
         </div>
 
@@ -205,7 +205,7 @@ export const SafetyMapPage: React.FC = () => {
               </span>
             </div>
             <span className="font-mono-code text-[11px] hidden sm:inline">
-              OpenStreetMap NCU Grid
+              OpenStreetMap Campus Grid
             </span>
           </div>
         </div>
@@ -229,7 +229,7 @@ export const SafetyMapPage: React.FC = () => {
                   </span>
                 </div>
                 <p className="text-xs text-[#5f7572] mt-1 flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-[#117c74]" /> Commute: {active.ncuCommuteTime} ({active.distanceToNCUKm} km to NCU)
+                  <Clock className="w-3.5 h-3.5 text-[#117c74]" /> Commute: {active.ncuCommuteTime} ({active.distanceToNCUKm} km to Campus)
                 </p>
               </div>
 

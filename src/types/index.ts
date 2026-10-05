@@ -8,12 +8,16 @@ export interface UserProfile {
   id: string;
   fullName: string;
   email: string;
-  college: string;
+  userType?: 'student' | 'professional' | 'freelancer' | 'other';
+  college?: string;
   collegeEmail?: string;
   isStudentVerified: boolean;
+  isProfessionalVerified?: boolean;
+  workEmail?: string;
+  company?: string;
   profileCompletion: number;
   gender: 'male' | 'female' | 'non_binary' | 'prefer_not_to_say';
-  courseYear: string;
+  courseYear?: string;
   budgetMin: number;
   budgetMax: number;
   sleepSchedule: SleepSchedule;
@@ -36,6 +40,15 @@ export interface UserProfile {
   phone?: string;
   createdAt: string;
   updatedAt?: string;
+}
+
+export interface UserAccount {
+  id: string;
+  email: string;
+  password?: string;
+  profile: UserProfile;
+  createdAt: string;
+  lastLoginAt?: string;
 }
 
 export interface CompatibilityVector {

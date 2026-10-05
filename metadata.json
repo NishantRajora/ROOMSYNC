@@ -1,6 +1,6 @@
 {
   "name": "RoomSync — Find Your People. Find Your Place",
-  "description": "Trust-based roommate-matching and student housing-safety platform for Indian college students around NCU Gurugram and Delhi-NCR.",
+  "description": "Trust-based roommate-matching and student housing-safety platform for Indian college and university students.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -15,9 +15,9 @@ export const MessagesPage: React.FC = () => {
       id: 'usr_002',
       fullName: 'Rohan Mehra',
       courseYear: 'B.Tech CSE — 3rd Year',
-      college: 'The NorthCap University (NCU)',
+      college: 'Faculty of Engineering & Technology',
       isStudentVerified: true,
-      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+      avatarUrl: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&h=400&q=80',
     };
 
   const partnerMessages = messages.filter(

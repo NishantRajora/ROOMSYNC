@@ -72,7 +72,7 @@ export const MatchesPage: React.FC = () => {
             </span>
           </div>
           <p className="text-xs text-[#5f7572] mt-1">
-            Comparing your lifestyle vectors (Sleep, Cleanliness, Social, Food, Budget) with active NCU flatmates.
+            Comparing your lifestyle vectors (Sleep, Cleanliness, Social, Food, Budget) with active verified flatmates.
           </p>
         </div>
       </div>

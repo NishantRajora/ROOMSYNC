@@ -55,7 +55,7 @@ export const ReviewsPage: React.FC = () => {
       overallRating,
       reviewText: reviewText.trim(),
       authorName: currentUser.fullName,
-      authorCollege: 'The NorthCap University (NCU)',
+      authorCollege: currentUser.college || 'Verified College Student',
       authorVerified: currentUser.isStudentVerified,
       date: new Date().toISOString().split('T')[0],
     };
@@ -90,7 +90,7 @@ export const ReviewsPage: React.FC = () => {
             Landlord & Locality Community Reviews
           </h1>
           <p className="text-xs text-[#5f7572] mt-1">
-            Real student accounts of deposit return integrity, water backup, and maintenance in Gurugram student zones.
+            Real student accounts of deposit return integrity, water backup, and maintenance in student zones.
           </p>
         </div>
         <button
