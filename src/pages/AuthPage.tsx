@@ -340,43 +340,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
-
-              {/* Instant Test Accounts Helper */}
-              <div className="pt-3 border-t border-[#e2ece9] space-y-2">
-                <span className="block text-[11px] font-bold text-[#5f7572] uppercase tracking-wider text-center">
-                  Or Test With Registered Accounts
-                </span>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEmail('aarav.sharma@college.edu');
-                      setPassword('password123');
-                      setLoginError(null);
-                    }}
-                    className="p-2 text-left bg-[#f6f9f8] hover:bg-[#ecfdf5] border border-[#e2ece9] rounded-xl transition-all cursor-pointer text-xs group"
-                  >
-                    <div className="font-semibold text-[#17222b] group-hover:text-[#117c74]">
-                      🎓 Aarav Sharma
-                    </div>
-                    <div className="text-[10px] text-[#5f7572]">Student (NCU)</div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEmail('priya.patel@work.com');
-                      setPassword('password123');
-                      setLoginError(null);
-                    }}
-                    className="p-2 text-left bg-[#f6f9f8] hover:bg-[#ecfdf5] border border-[#e2ece9] rounded-xl transition-all cursor-pointer text-xs group"
-                  >
-                    <div className="font-semibold text-[#17222b] group-hover:text-[#117c74]">
-                      💼 Priya Patel
-                    </div>
-                    <div className="text-[10px] text-[#5f7572]">UX Designer Pro</div>
-                  </button>
-                </div>
-              </div>
             </div>
           ) : (
             /* ==================== SIGN UP INITIAL FORM ==================== */
