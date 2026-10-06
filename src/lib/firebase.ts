@@ -60,3 +60,25 @@ export async function testFirestoreConnection() {
     return false;
   }
 }
+
+/**
+ * Strips all `undefined` fields from an object/array recursively.
+ * Firestore throws a runtime error if any field is `undefined`.
+ */
+export function sanitizeForFirestore<T>(data: T): T {
+  if (data === null || data === undefined) return null as unknown as T;
+  if (Array.isArray(data)) {
+    return data.map((item) => sanitizeForFirestore(item)) as unknown as T;
+  }
+  if (typeof data === 'object' && !(data instanceof Date)) {
+    const cleaned: Record<string, any> = {};
+    for (const [key, value] of Object.entries(data as Record<string, any>)) {
+      if (value !== undefined) {
+        cleaned[key] = sanitizeForFirestore(value);
+      }
+    }
+    return cleaned as T;
+  }
+  return data;
+}
+

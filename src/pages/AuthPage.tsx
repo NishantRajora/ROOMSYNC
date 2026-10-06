@@ -51,6 +51,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
   const [userType, setUserType] = useState<'professional' | 'student' | 'freelancer' | 'other'>('professional');
   const [professionOrCollege, setProfessionOrCollege] = useState('Senior Product Designer');
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [onboardingError, setOnboardingError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Secondary Onboarding Modal State
@@ -110,6 +111,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
   const handleInitialSignupSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !fullName.trim()) return;
+    setOnboardingError(null);
     setIsOnboardingOpen(true);
     setOnboardingStep(1);
   };
@@ -117,6 +119,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
   // Final Complete Sign Up Submit from Onboarding Modal
   const handleCompleteOnboarding = async (e: React.FormEvent) => {
     e.preventDefault();
+    setOnboardingError(null);
 
     let cleanLevel: CleanlinessLevel = 'moderate';
     if (cleanlinessRating >= 4) cleanLevel = 'neat_freak';
@@ -173,6 +176,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
 
         onNavigate('/dashboard');
       } else {
+        setOnboardingError(res.message || 'Registration failed');
         showToast(res.message || 'Registration failed');
       }
     } finally {
@@ -568,6 +572,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
 
             {/* Modal Form Content */}
             <div className="p-6 overflow-y-auto space-y-5 flex-1">
+              {onboardingError && (
+                <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                  <span className="font-medium leading-relaxed">{onboardingError}</span>
+                </div>
+              )}
+
               {/* STEP 1: LIFESTYLE DETAILS */}
               {onboardingStep === 1 && (
                 <div className="space-y-4">

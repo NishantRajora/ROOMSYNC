@@ -19,7 +19,7 @@ import {
   SEED_EXPENSES,
   SEED_PACTS,
 } from '../data/seedData';
-import { testFirestoreConnection, auth, db } from '../lib/firebase';
+import { testFirestoreConnection, auth, db, sanitizeForFirestore } from '../lib/firebase';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -412,7 +412,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const cleanEmail = email.trim().toLowerCase();
     const cleanPassword = password?.trim() || '';
 
-    // 1. First check our persistent registered accounts registry
+    if (!cleanEmail) {
+      return { success: false, message: 'Please enter a valid email address.' };
+    }
+
+    // 1. First check our local registered accounts cache
     const localAcc = registeredAccounts.find(
       (a) => a.email.toLowerCase() === cleanEmail
     );
@@ -453,7 +457,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return { success: true, user: latestProfile };
     }
 
-    // 2. Check Firebase Authentication
+    // 2. Check Firebase Authentication (for accounts registered on other devices/cloud)
+    let authErrorCode: string | null = null;
     if (cleanPassword && cleanPassword.length >= 6) {
       try {
         const userCred = await signInWithEmailAndPassword(auth, cleanEmail, cleanPassword);
@@ -466,7 +471,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             profileToLoad = docSnap.data() as UserProfile;
           }
         } catch (dbErr) {
-          console.warn('Could not load user from Firestore:', dbErr);
+          console.warn('Could not load user from Firestore users collection:', dbErr);
         }
 
         if (!profileToLoad) {
@@ -478,46 +483,90 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           } catch (_) {}
         }
 
-        if (profileToLoad) {
-          setCurrentUser(profileToLoad);
-          setIsAuthenticated(true);
-          localStorage.setItem('roomsync_auth', 'true');
-          localStorage.setItem('roomsync_current_user_id', profileToLoad.id);
-          localStorage.setItem('roomsync_current_user', JSON.stringify(profileToLoad));
+        // If user authenticated in Firebase Auth but has no Firestore doc yet,
+        // construct profile and write to Firestore automatically
+        if (!profileToLoad) {
+          profileToLoad = {
+            id: uid,
+            fullName: userCred.user.displayName || cleanEmail.split('@')[0],
+            email: cleanEmail,
+            userType: 'professional',
+            gender: 'prefer_not_to_say',
+            budgetMin: 8000,
+            budgetMax: 20000,
+            sleepSchedule: 'early_bird',
+            cleanliness: 'moderate',
+            socialHabits: 'ambivert',
+            foodPreference: 'pure_veg',
+            studyHabits: 'ambient_music',
+            preferredLocalities: ['Sector 23', 'DLF Phase 3'],
+            bio: `Hi, I am ${userCred.user.displayName || cleanEmail.split('@')[0]}!`,
+            avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&h=400&q=80',
+            upiId: `${cleanEmail.split('@')[0]}@upi`,
+            phone: '+91 98765 43210',
+            profileCompletion: 80,
+            createdAt: new Date().toISOString(),
+          };
 
-          // Save to registeredAccounts
-          setRegisteredAccounts((prev) => {
-            const filtered = prev.filter((a) => a.email.toLowerCase() !== cleanEmail);
-            const updated = [
-              {
-                id: profileToLoad!.id,
-                email: cleanEmail,
-                password: cleanPassword,
-                profile: profileToLoad!,
-                createdAt: profileToLoad!.createdAt || new Date().toISOString(),
-                lastLoginAt: new Date().toISOString(),
-              },
-              ...filtered,
-            ];
-            localStorage.setItem('roomsync_registered_accounts', JSON.stringify(updated));
-            return updated;
-          });
-
-          showToast(`Welcome back, ${profileToLoad.fullName}!`);
-          return { success: true, user: profileToLoad };
+          try {
+            await setDoc(doc(db, 'users', uid), sanitizeForFirestore(profileToLoad), { merge: true });
+            await setDoc(doc(db, 'user_accounts_index', cleanEmail), sanitizeForFirestore({
+              id: uid,
+              email: cleanEmail,
+              password: cleanPassword,
+              profile: profileToLoad,
+              createdAt: new Date().toISOString(),
+            }), { merge: true });
+          } catch (syncErr) {
+            console.warn('Could not backfill recovered profile to Firestore:', syncErr);
+          }
         }
+
+        setCurrentUser(profileToLoad);
+        setIsAuthenticated(true);
+        localStorage.setItem('roomsync_auth', 'true');
+        localStorage.setItem('roomsync_current_user_id', profileToLoad.id);
+        localStorage.setItem('roomsync_current_user', JSON.stringify(profileToLoad));
+
+        // Save to registeredAccounts
+        setRegisteredAccounts((prev) => {
+          const filtered = prev.filter((a) => a.email.toLowerCase() !== cleanEmail);
+          const updated = [
+            {
+              id: profileToLoad!.id,
+              email: cleanEmail,
+              password: cleanPassword,
+              profile: profileToLoad!,
+              createdAt: profileToLoad!.createdAt || new Date().toISOString(),
+              lastLoginAt: new Date().toISOString(),
+            },
+            ...filtered,
+          ];
+          localStorage.setItem('roomsync_registered_accounts', JSON.stringify(updated));
+          return updated;
+        });
+
+        showToast(`Welcome back, ${profileToLoad.fullName}!`);
+        return { success: true, user: profileToLoad };
       } catch (authErr: any) {
-        console.warn('Firebase signIn attempt:', authErr?.code);
-        if (authErr?.code === 'auth/wrong-password') {
+        console.warn('Firebase signIn attempt:', authErr?.code, authErr?.message);
+        authErrorCode = authErr?.code;
+        if (authErr?.code === 'auth/unauthorized-domain') {
           return {
             success: false,
-            message: 'Incorrect password. Please verify and try again.',
+            message: `Firebase Domain Error: "${window.location.hostname}" is not authorized. Please add "${window.location.hostname}" to Firebase Console -> Authentication -> Settings -> Authorized domains.`,
+          };
+        }
+        if (authErr?.code === 'auth/too-many-requests') {
+          return {
+            success: false,
+            message: 'Too many failed login attempts. Please wait a few moments and try again.',
           };
         }
       }
     }
 
-    // 3. Check Firestore user_accounts_index
+    // 3. Check Firestore user_accounts_index (fallback if Firebase Auth check was skipped or index doc exists)
     try {
       const indexSnap = await getDoc(doc(db, 'user_accounts_index', cleanEmail));
       if (indexSnap.exists()) {
@@ -562,6 +611,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       console.warn('Firestore index lookup:', err);
     }
 
+    if (authErrorCode === 'auth/wrong-password') {
+      return {
+        success: false,
+        message: 'Incorrect password. Please verify and try again.',
+      };
+    }
+
     return {
       success: false,
       message: `No account registered with "${email}". Please verify your email address or click Sign Up to create an account.`,
@@ -577,7 +633,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const cleanEmail = accountData.email.trim().toLowerCase();
     const cleanPassword = accountData.password?.trim() || 'password123';
 
-    // Verify account does not already exist
+    // Verify account does not already exist locally
     const existing = registeredAccounts.find(
       (a) => a.email.toLowerCase() === cleanEmail
     );
@@ -599,11 +655,37 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           displayName: accountData.fullName.trim(),
         });
       } catch (authErr: any) {
-        console.warn('Firebase createUser warning:', authErr?.code);
+        console.warn('Firebase createUser warning:', authErr?.code, authErr?.message);
         if (authErr?.code === 'auth/email-already-in-use') {
+          // If already in Auth, try sign in to recover UID
+          try {
+            const userCred = await signInWithEmailAndPassword(auth, cleanEmail, cleanPassword);
+            uid = userCred.user.uid;
+          } catch {
+            return {
+              success: false,
+              message: 'An account with this email already exists in the system. Please log in with your password.',
+            };
+          }
+        } else if (authErr?.code === 'auth/operation-not-allowed') {
           return {
             success: false,
-            message: 'An account with this email already exists in the system. Please log in with your password.',
+            message: 'Firebase Error: Email/Password sign-in provider is disabled in Firebase Console. Please enable Email/Password under Authentication > Sign-in method.',
+          };
+        } else if (authErr?.code === 'auth/unauthorized-domain') {
+          return {
+            success: false,
+            message: `Firebase Domain Error: "${window.location.hostname}" is not authorized. Please add "${window.location.hostname}" to Firebase Console -> Authentication -> Settings -> Authorized domains.`,
+          };
+        } else if (authErr?.code === 'auth/weak-password') {
+          return {
+            success: false,
+            message: 'Password is too weak. Please use at least 6 characters.',
+          };
+        } else {
+          return {
+            success: false,
+            message: `Registration failed: ${authErr?.message || authErr?.code || 'Authentication error'}.`,
           };
         }
       }
@@ -635,17 +717,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     // 2. Persist to Firestore database!
+    // Sanitize to remove any undefined fields before writing to Firestore
+    const sanitizedProfile = sanitizeForFirestore(newProfile);
+    const sanitizedIndex = sanitizeForFirestore({
+      id: uid,
+      email: cleanEmail,
+      password: cleanPassword,
+      profile: sanitizedProfile,
+      createdAt: new Date().toISOString(),
+    });
+
     try {
-      await setDoc(doc(db, 'users', uid), newProfile, { merge: true });
-      await setDoc(doc(db, 'user_accounts_index', cleanEmail), {
-        id: uid,
-        email: cleanEmail,
-        password: cleanPassword,
-        profile: newProfile,
-        createdAt: new Date().toISOString(),
-      }, { merge: true });
-    } catch (dbErr) {
-      console.warn('Firestore write error for user profile:', dbErr);
+      await setDoc(doc(db, 'users', uid), sanitizedProfile, { merge: true });
+      await setDoc(doc(db, 'user_accounts_index', cleanEmail), sanitizedIndex, { merge: true });
+    } catch (dbErr: any) {
+      console.error('Firestore write error for user profile:', dbErr);
+      return {
+        success: false,
+        message: `Database sync error: ${dbErr?.message || 'Failed to save to Firestore'}. Please check security rules or internet connection.`,
+      };
     }
 
     const newAccount: UserAccount = {
@@ -749,16 +839,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     // Save to Firestore database
     try {
+      const sanitizedUpdated = sanitizeForFirestore(updated);
       if (updated.id) {
-        await setDoc(doc(db, 'users', updated.id), updated, { merge: true });
+        await setDoc(doc(db, 'users', updated.id), sanitizedUpdated, { merge: true });
       }
       if (updated.email) {
-        await setDoc(doc(db, 'user_accounts_index', updated.email.toLowerCase()), {
+        await setDoc(doc(db, 'user_accounts_index', updated.email.toLowerCase()), sanitizeForFirestore({
           id: updated.id,
           email: updated.email.toLowerCase(),
-          profile: updated,
+          profile: sanitizedUpdated,
           updatedAt: new Date().toISOString(),
-        }, { merge: true });
+        }), { merge: true });
       }
     } catch (err) {
       console.warn('Firestore update error:', err);
