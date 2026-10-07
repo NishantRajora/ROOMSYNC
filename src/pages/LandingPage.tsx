@@ -287,6 +287,70 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
+      {/* 6. MEET THE TEAM SECTION */}
+      <section className="py-20 lg:py-28 px-6 lg:px-12 bg-[#f6f9f8]">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-[#17222b] tracking-tight">
+              Meet the Team
+            </h2>
+            <p className="text-sm sm:text-base text-[#5f7572]">
+              The students building safer housing for students.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-12 sm:gap-20">
+            {[
+              {
+                name: 'Nishant Rajora',
+                role: 'Co-founder',
+                image: 'https://media.licdn.com/dms/image/v2/D4D03AQHMQWoRTPyreg/profile-displayphoto-scale_200_200/B4DZ4meXu4K4Ac-/0/1778761962723?e=1793232000&v=beta&t=hqSp9mP4gww0x78UE2wyJt9DvNfcHtU6zkK94Enl0Zc',
+                initials: 'NR',
+              },
+              {
+                name: 'Palak Kanasal',
+                role: 'Co-founder',
+                image: 'https://media.licdn.com/dms/image/v2/D4D35AQHKXqPfpa-tLA/profile-framedphoto-shrink_400_400/B4DZvmugB.JoAk-/0/1769102508509?e=1791993600&v=beta&t=RT7K2xJ2g5v5vZsU7Z7Q0ca0ppMQAYYG6ftAy_WFU00',
+                initials: 'PK',
+              },
+              {
+                name: 'Monika Nahadiya',
+                role: 'Co-founder',
+                image: 'https://media.licdn.com/dms/image/v2/D5603AQGG3Q_8GZnpJQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1725642208347?e=1793232000&v=beta&t=p-JQWL0FcoJFyxEC5Kkfnrz65w28S1V5HkhH7knc-uw',
+                initials: 'MN',
+              },
+            ].map((member) => (
+              <div
+                key={member.name}
+                className="group flex flex-col items-center text-center space-y-4 transition-all duration-300 hover:-translate-y-2"
+              >
+                <div className="relative">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      (e.currentTarget.parentElement?.querySelector('.fallback-initials') as HTMLElement).style.display = 'flex';
+                    }}
+                    className="w-[130px] h-[130px] rounded-full object-cover border-2 border-[#e2ece9] group-hover:border-[#117c74] shadow-sm group-hover:shadow-md transition-all duration-300"
+                  />
+                  <div
+                    className="fallback-initials hidden absolute inset-0 w-[130px] h-[130px] rounded-full bg-[#117c74] text-white items-center justify-center text-2xl font-bold border-2 border-[#117c74] shadow-sm"
+                  >
+                    {member.initials}
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-heading font-bold text-[#17222b]">{member.name}</h3>
+                  <p className="text-xs text-[#5f7572]">{member.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
       {/* 6. FOOTER */}
       <footer className="border-t border-[#e2ece9] bg-[#f6f9f8] py-8 px-6 lg:px-12">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#5f7572]">
