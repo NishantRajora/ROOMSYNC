@@ -64,3 +64,4 @@ create policy "Allow all on pacts" on public.pacts for all using (true) with che
 create policy "Allow all on expenses" on public.expenses for all using (true) with check (true);
 create policy "Allow all on reviews" on public.reviews for all using (true) with check (true);
 create policy "Allow all on messages" on public.messages for all using (true) with check (true);
+
