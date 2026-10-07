@@ -19,15 +19,7 @@ import {
   SEED_EXPENSES,
   SEED_PACTS,
 } from '../data/seedData';
-import { testFirestoreConnection, auth, db, sanitizeForFirestore } from '../lib/firebase';
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  updateProfile,
-} from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import confetti from 'canvas-confetti';
 
 export type NavigationTab =
@@ -329,37 +321,62 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [onboardingStep, setOnboardingStep] = useState<number | null>(null);
 
-  // Firestore initial check
+  // Listen to Supabase Auth state
   useEffect(() => {
-    testFirestoreConnection();
-  }, []);
+    if (!isSupabaseConfigured) return;
 
-  // Listen to Firebase Auth state
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
+    // Check active session on load
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .maybeSingle()
+          .then(({ data: row }) => {
+            if (row && row.profile) {
+              const loaded = row.profile as UserProfile;
+              setCurrentUser(loaded);
+              localStorage.setItem('roomsync_current_user', JSON.stringify(loaded));
+              localStorage.setItem('roomsync_current_user_id', loaded.id);
+              setIsAuthenticated(true);
+              localStorage.setItem('roomsync_auth', 'true');
+            }
+          });
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
         try {
-          const userDocRef = doc(db, 'users', firebaseUser.uid);
-          const snap = await getDoc(userDocRef);
-          if (snap.exists()) {
-            const data = snap.data() as UserProfile;
-            setCurrentUser(data);
-            localStorage.setItem('roomsync_current_user', JSON.stringify(data));
-            localStorage.setItem('roomsync_current_user_id', data.id);
+          const { data: row } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .maybeSingle();
+
+          if (row && row.profile) {
+            const loaded = row.profile as UserProfile;
+            setCurrentUser(loaded);
+            localStorage.setItem('roomsync_current_user', JSON.stringify(loaded));
+            localStorage.setItem('roomsync_current_user_id', loaded.id);
             setIsAuthenticated(true);
             localStorage.setItem('roomsync_auth', 'true');
           }
         } catch (err) {
-          console.warn('Could not read user from Firestore on auth change:', err);
+          console.warn('Could not read user profile from Supabase:', err);
         }
-      } else {
-        const authFlag = localStorage.getItem('roomsync_auth');
-        if (authFlag === 'false') {
-          setIsAuthenticated(false);
-        }
+      } else if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false);
+        localStorage.setItem('roomsync_auth', 'false');
       }
     });
-    return () => unsubscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Save registered accounts locally for fast cache
@@ -429,22 +446,31 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         };
       }
 
-      // Check if Firestore has a newer profile
+      // Check if Supabase has a newer profile
       let latestProfile = localAcc.profile;
-      try {
-        const snap = await getDoc(doc(db, 'users', localAcc.id));
-        if (snap.exists()) {
-          latestProfile = snap.data() as UserProfile;
-        }
-      } catch (e) {
-        console.warn('Firestore fetch on login:', e);
-      }
-
-      // Also sign in to Firebase Auth in background if applicable
-      if (cleanPassword && cleanPassword.length >= 6) {
+      if (isSupabaseConfigured) {
         try {
-          await signInWithEmailAndPassword(auth, cleanEmail, cleanPassword);
-        } catch (_) {}
+          const { data: row } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', localAcc.id)
+            .maybeSingle();
+          if (row?.profile) {
+            latestProfile = row.profile as UserProfile;
+          }
+        } catch (e) {
+          console.warn('Supabase fetch on login:', e);
+        }
+
+        // Also sign in to Supabase Auth in background if applicable
+        if (cleanPassword && cleanPassword.length >= 6) {
+          try {
+            await supabase.auth.signInWithPassword({
+              email: cleanEmail,
+              password: cleanPassword,
+            });
+          } catch (_) {}
+        }
       }
 
       setCurrentUser(latestProfile);
@@ -457,144 +483,119 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return { success: true, user: latestProfile };
     }
 
-    // 2. Check Firebase Authentication (for accounts registered on other devices/cloud)
-    let authErrorCode: string | null = null;
-    if (cleanPassword && cleanPassword.length >= 6) {
+    // 2. Check Supabase Authentication (for cross-device cloud logins)
+    if (isSupabaseConfigured && cleanPassword && cleanPassword.length >= 6) {
       try {
-        const userCred = await signInWithEmailAndPassword(auth, cleanEmail, cleanPassword);
-        const uid = userCred.user.uid;
-        let profileToLoad: UserProfile | null = null;
-
-        try {
-          const docSnap = await getDoc(doc(db, 'users', uid));
-          if (docSnap.exists()) {
-            profileToLoad = docSnap.data() as UserProfile;
-          }
-        } catch (dbErr) {
-          console.warn('Could not load user from Firestore users collection:', dbErr);
-        }
-
-        if (!profileToLoad) {
-          try {
-            const indexSnap = await getDoc(doc(db, 'user_accounts_index', cleanEmail));
-            if (indexSnap.exists()) {
-              profileToLoad = indexSnap.data()?.profile as UserProfile;
-            }
-          } catch (_) {}
-        }
-
-        // If user authenticated in Firebase Auth but has no Firestore doc yet,
-        // construct profile and write to Firestore automatically
-        if (!profileToLoad) {
-          profileToLoad = {
-            id: uid,
-            fullName: userCred.user.displayName || cleanEmail.split('@')[0],
-            email: cleanEmail,
-            userType: 'professional',
-            gender: 'prefer_not_to_say',
-            budgetMin: 8000,
-            budgetMax: 20000,
-            sleepSchedule: 'early_bird',
-            cleanliness: 'moderate',
-            socialHabits: 'ambivert',
-            foodPreference: 'pure_veg',
-            studyHabits: 'ambient_music',
-            preferredLocalities: ['Sector 23', 'DLF Phase 3'],
-            bio: `Hi, I am ${userCred.user.displayName || cleanEmail.split('@')[0]}!`,
-            avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&h=400&q=80',
-            upiId: `${cleanEmail.split('@')[0]}@upi`,
-            phone: '+91 98765 43210',
-            profileCompletion: 80,
-            createdAt: new Date().toISOString(),
-          };
-
-          try {
-            await setDoc(doc(db, 'users', uid), sanitizeForFirestore(profileToLoad), { merge: true });
-            await setDoc(doc(db, 'user_accounts_index', cleanEmail), sanitizeForFirestore({
-              id: uid,
-              email: cleanEmail,
-              password: cleanPassword,
-              profile: profileToLoad,
-              createdAt: new Date().toISOString(),
-            }), { merge: true });
-          } catch (syncErr) {
-            console.warn('Could not backfill recovered profile to Firestore:', syncErr);
-          }
-        }
-
-        setCurrentUser(profileToLoad);
-        setIsAuthenticated(true);
-        localStorage.setItem('roomsync_auth', 'true');
-        localStorage.setItem('roomsync_current_user_id', profileToLoad.id);
-        localStorage.setItem('roomsync_current_user', JSON.stringify(profileToLoad));
-
-        // Save to registeredAccounts
-        setRegisteredAccounts((prev) => {
-          const filtered = prev.filter((a) => a.email.toLowerCase() !== cleanEmail);
-          const updated = [
-            {
-              id: profileToLoad!.id,
-              email: cleanEmail,
-              password: cleanPassword,
-              profile: profileToLoad!,
-              createdAt: profileToLoad!.createdAt || new Date().toISOString(),
-              lastLoginAt: new Date().toISOString(),
-            },
-            ...filtered,
-          ];
-          localStorage.setItem('roomsync_registered_accounts', JSON.stringify(updated));
-          return updated;
+        const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password: cleanPassword,
         });
 
-        showToast(`Welcome back, ${profileToLoad.fullName}!`);
-        return { success: true, user: profileToLoad };
-      } catch (authErr: any) {
-        console.warn('Firebase signIn attempt:', authErr?.code, authErr?.message);
-        authErrorCode = authErr?.code;
-        if (authErr?.code === 'auth/unauthorized-domain') {
-          return {
-            success: false,
-            message: `Firebase Domain Error: "${window.location.hostname}" is not authorized. Please add "${window.location.hostname}" to Firebase Console -> Authentication -> Settings -> Authorized domains.`,
-          };
-        }
-        if (authErr?.code === 'auth/too-many-requests') {
-          return {
-            success: false,
-            message: 'Too many failed login attempts. Please wait a few moments and try again.',
-          };
-        }
-      }
-    }
-
-    // 3. Check Firestore user_accounts_index (fallback if Firebase Auth check was skipped or index doc exists)
-    try {
-      const indexSnap = await getDoc(doc(db, 'user_accounts_index', cleanEmail));
-      if (indexSnap.exists()) {
-        const data = indexSnap.data();
-        if (data && data.profile) {
-          if (data.password && cleanPassword && data.password !== cleanPassword) {
+        if (authErr) {
+          console.warn('Supabase signIn error:', authErr.message);
+          if (authErr.message.toLowerCase().includes('email not confirmed')) {
             return {
               success: false,
-              message: 'Incorrect password for this account. Please verify and try again.',
+              message: 'Please check your inbox and confirm your email address, or disable email confirmation in your Supabase Auth dashboard.',
             };
           }
+          if (authErr.message.toLowerCase().includes('invalid login credentials')) {
+            return {
+              success: false,
+              message: 'Incorrect email or password. Please verify and try again.',
+            };
+          }
+          return {
+            success: false,
+            message: authErr.message,
+          };
+        }
 
-          const loadedProfile = data.profile as UserProfile;
-          setCurrentUser(loadedProfile);
+        if (authData.user) {
+          const uid = authData.user.id;
+          let profileToLoad: UserProfile | null = null;
+
+          try {
+            const { data: profileRow } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', uid)
+              .maybeSingle();
+
+            if (profileRow?.profile) {
+              profileToLoad = profileRow.profile as UserProfile;
+            }
+          } catch (dbErr) {
+            console.warn('Could not load user from Supabase profiles table:', dbErr);
+          }
+
+          if (!profileToLoad) {
+            try {
+              const { data: emailRow } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('email', cleanEmail)
+                .maybeSingle();
+
+              if (emailRow?.profile) {
+                profileToLoad = emailRow.profile as UserProfile;
+              }
+            } catch (_) {}
+          }
+
+          // If user authenticated in Supabase but profile row was missing, construct and save
+          if (!profileToLoad) {
+            profileToLoad = {
+              id: uid,
+              fullName: authData.user.user_metadata?.full_name || cleanEmail.split('@')[0],
+              email: cleanEmail,
+              userType: 'professional',
+              gender: 'prefer_not_to_say',
+              budgetMin: 8000,
+              budgetMax: 20000,
+              sleepSchedule: 'early_bird',
+              cleanliness: 'moderate',
+              socialHabits: 'ambivert',
+              foodPreference: 'pure_veg',
+              studyHabits: 'ambient_music',
+              preferredLocalities: ['Sector 23', 'DLF Phase 3'],
+              bio: `Hi, I am ${authData.user.user_metadata?.full_name || cleanEmail.split('@')[0]}!`,
+              avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&h=400&q=80',
+              upiId: `${cleanEmail.split('@')[0]}@upi`,
+              phone: '+91 98765 43210',
+              profileCompletion: 80,
+              createdAt: new Date().toISOString(),
+            };
+
+            try {
+              await supabase.from('profiles').upsert({
+                id: uid,
+                email: cleanEmail,
+                full_name: profileToLoad.fullName,
+                profile: profileToLoad,
+                updated_at: new Date().toISOString(),
+              });
+            } catch (syncErr) {
+              console.warn('Auto backfill profile to Supabase failed:', syncErr);
+            }
+          }
+
+          setCurrentUser(profileToLoad);
           setIsAuthenticated(true);
           localStorage.setItem('roomsync_auth', 'true');
-          localStorage.setItem('roomsync_current_user_id', loadedProfile.id);
-          localStorage.setItem('roomsync_current_user', JSON.stringify(loadedProfile));
+          localStorage.setItem('roomsync_current_user_id', profileToLoad.id);
+          localStorage.setItem('roomsync_current_user', JSON.stringify(profileToLoad));
 
+          // Save to registeredAccounts
           setRegisteredAccounts((prev) => {
             const filtered = prev.filter((a) => a.email.toLowerCase() !== cleanEmail);
             const updated = [
               {
-                id: loadedProfile.id,
+                id: profileToLoad!.id,
                 email: cleanEmail,
-                password: cleanPassword || data.password || 'password123',
-                profile: loadedProfile,
-                createdAt: loadedProfile.createdAt || new Date().toISOString(),
+                password: cleanPassword,
+                profile: profileToLoad!,
+                createdAt: profileToLoad!.createdAt || new Date().toISOString(),
                 lastLoginAt: new Date().toISOString(),
               },
               ...filtered,
@@ -603,19 +604,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             return updated;
           });
 
-          showToast(`Welcome back, ${loadedProfile.fullName}!`);
-          return { success: true, user: loadedProfile };
+          showToast(`Welcome back, ${profileToLoad.fullName}!`);
+          return { success: true, user: profileToLoad };
         }
+      } catch (authErr: any) {
+        console.warn('Supabase auth error:', authErr);
       }
-    } catch (err) {
-      console.warn('Firestore index lookup:', err);
-    }
-
-    if (authErrorCode === 'auth/wrong-password') {
-      return {
-        success: false,
-        message: 'Incorrect password. Please verify and try again.',
-      };
     }
 
     return {
@@ -646,48 +640,50 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     let uid = `usr_${Date.now()}`;
 
-    // 1. Create in Firebase Auth
-    if (cleanPassword && cleanPassword.length >= 6) {
+    // 1. Create in Supabase Auth if configured
+    if (isSupabaseConfigured && cleanPassword && cleanPassword.length >= 6) {
       try {
-        const userCred = await createUserWithEmailAndPassword(auth, cleanEmail, cleanPassword);
-        uid = userCred.user.uid;
-        await updateProfile(userCred.user, {
-          displayName: accountData.fullName.trim(),
+        const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+          email: cleanEmail,
+          password: cleanPassword,
+          options: {
+            data: {
+              full_name: accountData.fullName.trim(),
+            },
+          },
         });
-      } catch (authErr: any) {
-        console.warn('Firebase createUser warning:', authErr?.code, authErr?.message);
-        if (authErr?.code === 'auth/email-already-in-use') {
-          // If already in Auth, try sign in to recover UID
-          try {
-            const userCred = await signInWithEmailAndPassword(auth, cleanEmail, cleanPassword);
-            uid = userCred.user.uid;
-          } catch {
+
+        if (signUpErr) {
+          console.warn('Supabase signUp error:', signUpErr.message);
+          if (signUpErr.message.toLowerCase().includes('already registered')) {
+            // Try sign in
+            const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+              email: cleanEmail,
+              password: cleanPassword,
+            });
+            if (signInData.user) {
+              uid = signInData.user.id;
+            } else {
+              return {
+                success: false,
+                message: 'An account with this email already exists in Supabase. Please log in with your password.',
+              };
+            }
+          } else {
             return {
               success: false,
-              message: 'An account with this email already exists in the system. Please log in with your password.',
+              message: signUpErr.message,
             };
           }
-        } else if (authErr?.code === 'auth/operation-not-allowed') {
-          return {
-            success: false,
-            message: 'Firebase Error: Email/Password sign-in provider is disabled in Firebase Console. Please enable Email/Password under Authentication > Sign-in method.',
-          };
-        } else if (authErr?.code === 'auth/unauthorized-domain') {
-          return {
-            success: false,
-            message: `Firebase Domain Error: "${window.location.hostname}" is not authorized. Please add "${window.location.hostname}" to Firebase Console -> Authentication -> Settings -> Authorized domains.`,
-          };
-        } else if (authErr?.code === 'auth/weak-password') {
-          return {
-            success: false,
-            message: 'Password is too weak. Please use at least 6 characters.',
-          };
-        } else {
-          return {
-            success: false,
-            message: `Registration failed: ${authErr?.message || authErr?.code || 'Authentication error'}.`,
-          };
+        } else if (signUpData.user) {
+          uid = signUpData.user.id;
         }
+      } catch (err: any) {
+        console.error('Supabase registration error:', err);
+        return {
+          success: false,
+          message: err?.message || 'Error connecting to Supabase Auth.',
+        };
       }
     }
 
@@ -716,26 +712,31 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ...accountData.profileUpdates,
     };
 
-    // 2. Persist to Firestore database!
-    // Sanitize to remove any undefined fields before writing to Firestore
-    const sanitizedProfile = sanitizeForFirestore(newProfile);
-    const sanitizedIndex = sanitizeForFirestore({
-      id: uid,
-      email: cleanEmail,
-      password: cleanPassword,
-      profile: sanitizedProfile,
-      createdAt: new Date().toISOString(),
-    });
+    // 2. Persist to Supabase Database
+    if (isSupabaseConfigured) {
+      try {
+        const { error: upsertErr } = await supabase.from('profiles').upsert({
+          id: uid,
+          email: cleanEmail,
+          full_name: accountData.fullName.trim(),
+          profile: newProfile,
+          updated_at: new Date().toISOString(),
+        });
 
-    try {
-      await setDoc(doc(db, 'users', uid), sanitizedProfile, { merge: true });
-      await setDoc(doc(db, 'user_accounts_index', cleanEmail), sanitizedIndex, { merge: true });
-    } catch (dbErr: any) {
-      console.error('Firestore write error for user profile:', dbErr);
-      return {
-        success: false,
-        message: `Database sync error: ${dbErr?.message || 'Failed to save to Firestore'}. Please check security rules or internet connection.`,
-      };
+        if (upsertErr) {
+          console.error('Supabase profile table write error:', upsertErr.message);
+          return {
+            success: false,
+            message: `Supabase database error: ${upsertErr.message}. Make sure the 'profiles' table exists in your Supabase project.`,
+          };
+        }
+      } catch (dbErr: any) {
+        console.error('Supabase database error:', dbErr);
+        return {
+          success: false,
+          message: `Database sync error: ${dbErr?.message || 'Failed to save to Supabase'}.`,
+        };
+      }
     }
 
     const newAccount: UserAccount = {
@@ -765,10 +766,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const logout = async () => {
-    try {
-      await signOut(auth);
-    } catch (err) {
-      console.warn('Firebase signOut error:', err);
+    if (isSupabaseConfigured) {
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.warn('Supabase signOut error:', err);
+      }
     }
     setIsAuthenticated(false);
     localStorage.setItem('roomsync_auth', 'false');
@@ -837,22 +840,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return updatedList;
     });
 
-    // Save to Firestore database
-    try {
-      const sanitizedUpdated = sanitizeForFirestore(updated);
-      if (updated.id) {
-        await setDoc(doc(db, 'users', updated.id), sanitizedUpdated, { merge: true });
-      }
-      if (updated.email) {
-        await setDoc(doc(db, 'user_accounts_index', updated.email.toLowerCase()), sanitizeForFirestore({
+    // Save to Supabase database
+    if (isSupabaseConfigured && updated.id) {
+      try {
+        await supabase.from('profiles').upsert({
           id: updated.id,
-          email: updated.email.toLowerCase(),
-          profile: sanitizedUpdated,
-          updatedAt: new Date().toISOString(),
-        }), { merge: true });
+          email: updated.email,
+          full_name: updated.fullName,
+          profile: updated,
+          updated_at: new Date().toISOString(),
+        });
+      } catch (err) {
+        console.warn('Supabase profile update error:', err);
       }
-    } catch (err) {
-      console.warn('Firestore update error:', err);
     }
 
     showToast('Profile updated successfully');
