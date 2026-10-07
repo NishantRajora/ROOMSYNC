@@ -289,25 +289,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return saved
       ? JSON.parse(saved)
       : [
-          {
-            id: 'msg_1',
-            conversationId: 'usr_002',
-            senderId: 'usr_002',
-            senderName: 'Rohan Mehra',
-            text: 'Hey! Saw your RoomSync profile. We match well on Sector 23 flats. Are you free to check Plot 412 this Saturday?',
-            timestamp: '10:45 AM',
-            isSelf: false,
-          },
-          {
-            id: 'msg_2',
-            conversationId: 'usr_002',
-            senderId: 'usr_me_001',
-            senderName: currentUser.fullName,
-            text: 'Hey Rohan! Yes absolutely. I ran the agreement through RoomSync Analyzer and the terms are clean. Let us connect at 4 PM.',
-            timestamp: '11:02 AM',
-            isSelf: true,
-          },
-        ];
+        {
+          id: 'msg_1',
+          conversationId: 'usr_002',
+          senderId: 'usr_002',
+          senderName: 'Rohan Mehra',
+          text: 'Hey! Saw your RoomSync profile. We match well on Sector 23 flats. Are you free to check Plot 412 this Saturday?',
+          timestamp: '10:45 AM',
+          isSelf: false,
+        },
+        {
+          id: 'msg_2',
+          conversationId: 'usr_002',
+          senderId: 'usr_me_001',
+          senderName: currentUser.fullName,
+          text: 'Hey Rohan! Yes absolutely. I ran the agreement through RoomSync Analyzer and the terms are clean. Let us connect at 4 PM.',
+          timestamp: '11:02 AM',
+          isSelf: true,
+        },
+      ];
   });
 
   const [isFloatingChatOpen, setIsFloatingChatOpen] = useState(false);
@@ -530,7 +530,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
               email: cleanEmail,
               password: cleanPassword,
             });
-          } catch (_) {}
+          } catch (_) { }
         }
       }
 
@@ -601,7 +601,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
               if (emailRow?.profile) {
                 profileToLoad = emailRow.profile as UserProfile;
               }
-            } catch (_) {}
+            } catch (_) { }
           }
 
           if (!profileToLoad && authData.user.user_metadata?.profile) {
@@ -620,6 +620,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
               email: cleanEmail,
               userType: 'professional',
               gender: 'prefer_not_to_say',
+              isStudentVerified: false,
               budgetMin: 8000,
               budgetMax: 20000,
               sleepSchedule: 'early_bird',
@@ -695,6 +696,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }): Promise<{ success: boolean; message?: string; user?: UserProfile }> => {
     const cleanEmail = accountData.email.trim().toLowerCase();
     const cleanPassword = accountData.password?.trim() || 'password123';
+    let uid: string = crypto.randomUUID();
 
     // Verify account does not already exist locally
     const existing = registeredAccounts.find(
@@ -993,7 +995,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       supabase
         .from('listings')
         .upsert({ id: listing.id, owner_id: listing.ownerId, data: listing })
-        .then(() => {})
+        .then(() => { })
         .catch((err) => console.warn('Supabase listing sync note:', err));
     }
     showToast('New housing listing published with Trust Score analysis!');
@@ -1005,7 +1007,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       supabase
         .from('pacts')
         .upsert({ id: pact.id, data: pact })
-        .then(() => {})
+        .then(() => { })
         .catch((err) => console.warn('Supabase pact sync note:', err));
     }
     confetti({
@@ -1036,7 +1038,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           supabase
             .from('pacts')
             .upsert({ id: pactId, data: updatedPact })
-            .then(() => {})
+            .then(() => { })
             .catch((err) => console.warn('Supabase pact sign sync note:', err));
         }
         return updatedPact;
@@ -1055,7 +1057,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       supabase
         .from('expenses')
         .upsert({ id: expense.id, data: expense })
-        .then(() => {})
+        .then(() => { })
         .catch((err) => console.warn('Supabase expense sync note:', err));
     }
     showToast(`Expense of ₹${expense.amount.toLocaleString('en-IN')} recorded.`);
@@ -1070,7 +1072,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           supabase
             .from('expenses')
             .upsert({ id, data: updated })
-            .then(() => {})
+            .then(() => { })
             .catch((err) => console.warn('Supabase expense settle note:', err));
         }
         return updated;
@@ -1085,7 +1087,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       supabase
         .from('reviews')
         .upsert({ id: review.id, data: review })
-        .then(() => {})
+        .then(() => { })
         .catch((err) => console.warn('Supabase review sync note:', err));
     }
     showToast('Housing review shared with the student community!');
@@ -1109,7 +1111,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       supabase
         .from('messages')
         .upsert({ id: newMsg.id, data: newMsg })
-        .then(() => {})
+        .then(() => { })
         .catch((err) => console.warn('Supabase message sync note:', err));
     }
 
@@ -1134,7 +1136,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         supabase
           .from('messages')
           .upsert({ id: replyMsg.id, data: replyMsg })
-          .then(() => {})
+          .then(() => { })
           .catch((err) => console.warn('Supabase message sync note:', err));
       }
     }, 1500);
