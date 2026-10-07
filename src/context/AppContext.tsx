@@ -543,6 +543,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             } catch (_) {}
           }
 
+          if (!profileToLoad && authData.user.user_metadata?.profile) {
+            profileToLoad = {
+              ...(authData.user.user_metadata.profile as UserProfile),
+              id: uid,
+              email: cleanEmail,
+            };
+          }
+
           // If user authenticated in Supabase but profile row was missing, construct and save
           if (!profileToLoad) {
             profileToLoad = {
@@ -638,55 +646,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       };
     }
 
-    let uid = `usr_${Date.now()}`;
-
-    // 1. Create in Supabase Auth if configured
-    if (isSupabaseConfigured && cleanPassword && cleanPassword.length >= 6) {
-      try {
-        const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
-          email: cleanEmail,
-          password: cleanPassword,
-          options: {
-            data: {
-              full_name: accountData.fullName.trim(),
-            },
-          },
-        });
-
-        if (signUpErr) {
-          console.warn('Supabase signUp error:', signUpErr.message);
-          if (signUpErr.message.toLowerCase().includes('already registered')) {
-            // Try sign in
-            const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
-              email: cleanEmail,
-              password: cleanPassword,
-            });
-            if (signInData.user) {
-              uid = signInData.user.id;
-            } else {
-              return {
-                success: false,
-                message: 'An account with this email already exists in Supabase. Please log in with your password.',
-              };
-            }
-          } else {
-            return {
-              success: false,
-              message: signUpErr.message,
-            };
-          }
-        } else if (signUpData.user) {
-          uid = signUpData.user.id;
-        }
-      } catch (err: any) {
-        console.error('Supabase registration error:', err);
-        return {
-          success: false,
-          message: err?.message || 'Error connecting to Supabase Auth.',
-        };
-      }
-    }
-
     const newProfile: UserProfile = {
       id: uid,
       fullName: accountData.fullName.trim(),
@@ -712,7 +671,63 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ...accountData.profileUpdates,
     };
 
-    // 2. Persist to Supabase Database
+    // 1. Create in Supabase Auth with complete profile in user metadata
+    if (isSupabaseConfigured && cleanPassword && cleanPassword.length >= 6) {
+      try {
+        const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+          email: cleanEmail,
+          password: cleanPassword,
+          options: {
+            data: {
+              full_name: accountData.fullName.trim(),
+              profile: newProfile,
+            },
+          },
+        });
+
+        if (signUpErr) {
+          console.warn('Supabase signUp note:', signUpErr.message);
+          if (signUpErr.message.toLowerCase().includes('already registered')) {
+            // Try sign in to recover existing user
+            const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+              email: cleanEmail,
+              password: cleanPassword,
+            });
+            if (signInData.user) {
+              uid = signInData.user.id;
+              newProfile.id = uid;
+              await supabase.auth.updateUser({
+                data: {
+                  full_name: accountData.fullName.trim(),
+                  profile: newProfile,
+                },
+              });
+            } else {
+              return {
+                success: false,
+                message: 'An account with this email already exists in Supabase. Please switch to the Log In tab.',
+              };
+            }
+          } else {
+            return {
+              success: false,
+              message: signUpErr.message,
+            };
+          }
+        } else if (signUpData.user) {
+          uid = signUpData.user.id;
+          newProfile.id = uid;
+        }
+      } catch (err: any) {
+        console.error('Supabase registration error:', err);
+        return {
+          success: false,
+          message: err?.message || 'Error connecting to Supabase Auth.',
+        };
+      }
+    }
+
+    // 2. Persist to Supabase profiles table if available
     if (isSupabaseConfigured) {
       try {
         const { error: upsertErr } = await supabase.from('profiles').upsert({
@@ -724,18 +739,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         });
 
         if (upsertErr) {
-          console.error('Supabase profile table write error:', upsertErr.message);
-          return {
-            success: false,
-            message: `Supabase database error: ${upsertErr.message}. Make sure the 'profiles' table exists in your Supabase project.`,
-          };
+          console.warn('Note: profiles table write skipped/pending:', upsertErr.message);
+          // Don't block registration since profile is safely saved in Supabase Auth user_metadata and local storage
         }
       } catch (dbErr: any) {
-        console.error('Supabase database error:', dbErr);
-        return {
-          success: false,
-          message: `Database sync error: ${dbErr?.message || 'Failed to save to Supabase'}.`,
-        };
+        console.warn('Supabase database table note:', dbErr);
       }
     }
 

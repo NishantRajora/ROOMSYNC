@@ -174,6 +174,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
           showToast('Account created & roommate profile configured in database!');
         }
 
+        setIsOnboardingOpen(false);
         onNavigate('/dashboard');
       } else {
         setOnboardingError(res.message || 'Registration failed');
@@ -1027,6 +1028,14 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
               )}
             </div>
 
+            {/* Onboarding Error Display */}
+            {onboardingError && (
+              <div className="mx-6 mb-3 p-3 bg-[#fef2f2] border border-[#fecdd3] rounded-xl text-xs text-[#991b1b] flex items-start gap-2.5 animate-in fade-in">
+                <AlertCircle className="w-4 h-4 text-[#f43f5e] shrink-0 mt-0.5" />
+                <span className="font-medium leading-relaxed">{onboardingError}</span>
+              </div>
+            )}
+
             {/* Modal Footer Controls */}
             <div className="px-6 py-4 border-t border-[#e2ece9] bg-white flex items-center justify-between">
               {onboardingStep === 1 ? (
@@ -1059,11 +1068,21 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
               ) : (
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={handleCompleteOnboarding}
-                  className="px-6 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2"
+                  className="px-6 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
                 >
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Complete Onboarding & Find Matches 🚀</span>
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Creating Profile...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      <span>Complete Onboarding & Find Matches 🚀</span>
+                    </>
+                  )}
                 </button>
               )}
             </div>
