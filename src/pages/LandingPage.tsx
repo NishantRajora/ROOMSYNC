@@ -273,7 +273,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             Ready to find your people?
           </h2>
           <p className="text-sm sm:text-base text-[#5f7572] max-w-xl mx-auto leading-relaxed">
-            Join 1,200+ students who've found their perfect flatmate through RoomSync. Open for all university and college students.
+            Join students who've found their perfect flatmate through RoomSync. Open for all university and college students.
           </p>
           <div className="pt-2">
             <button
