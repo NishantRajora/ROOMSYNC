@@ -107,7 +107,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
           {/* Trust-Stats Row */}
           <div className="pt-6 text-xs text-[#5f7572] font-medium tracking-wide">
-            1,200+ students matched <span className="mx-1.5 opacity-60">·</span> 98% scam-free listings <span className="mx-1.5 opacity-60">·</span> ⭐ 4.8 avg. rating
+            Safety first <span className="mx-1.5 opacity-60">·</span> Transparency <span className="mx-1.5 opacity-60">·</span> Student-built
           </div>
         </div>
       </section>
