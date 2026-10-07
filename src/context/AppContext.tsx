@@ -379,6 +379,67 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
   }, []);
 
+  // Fetch cloud data from Supabase on mount
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    const loadCloudData = async () => {
+      try {
+        const [listingsRes, pactsRes, expensesRes, reviewsRes, messagesRes] = await Promise.allSettled([
+          supabase.from('listings').select('data'),
+          supabase.from('pacts').select('data'),
+          supabase.from('expenses').select('data'),
+          supabase.from('reviews').select('data'),
+          supabase.from('messages').select('data'),
+        ]);
+
+        if (listingsRes.status === 'fulfilled' && listingsRes.value.data && listingsRes.value.data.length > 0) {
+          const cloudListings = listingsRes.value.data.map((r: any) => r.data as Listing);
+          setListings((prev) => {
+            const ids = new Set(cloudListings.map((l) => l.id));
+            return [...cloudListings, ...prev.filter((l) => !ids.has(l.id))];
+          });
+        }
+
+        if (pactsRes.status === 'fulfilled' && pactsRes.value.data && pactsRes.value.data.length > 0) {
+          const cloudPacts = pactsRes.value.data.map((r: any) => r.data as RoommatePact);
+          setPacts((prev) => {
+            const ids = new Set(cloudPacts.map((p) => p.id));
+            return [...cloudPacts, ...prev.filter((p) => !ids.has(p.id))];
+          });
+        }
+
+        if (expensesRes.status === 'fulfilled' && expensesRes.value.data && expensesRes.value.data.length > 0) {
+          const cloudExpenses = expensesRes.value.data.map((r: any) => r.data as Expense);
+          setExpenses((prev) => {
+            const ids = new Set(cloudExpenses.map((e) => e.id));
+            return [...cloudExpenses, ...prev.filter((e) => !ids.has(e.id))];
+          });
+        }
+
+        if (reviewsRes.status === 'fulfilled' && reviewsRes.value.data && reviewsRes.value.data.length > 0) {
+          const cloudReviews = reviewsRes.value.data.map((r: any) => r.data as Review);
+          setReviews((prev) => {
+            const ids = new Set(cloudReviews.map((r) => r.id));
+            return [...cloudReviews, ...prev.filter((r) => !ids.has(r.id))];
+          });
+        }
+
+        if (messagesRes.status === 'fulfilled' && messagesRes.value.data && messagesRes.value.data.length > 0) {
+          const cloudMessages = messagesRes.value.data.map((r: any) => r.data as ChatMessage);
+          setMessages((prev) => {
+            const ids = new Set(cloudMessages.map((m) => m.id));
+            return [...cloudMessages, ...prev.filter((m) => !ids.has(m.id))];
+          });
+        }
+      } catch (err) {
+        console.warn('Supabase cloud data sync note:', err);
+      }
+    };
+
+    loadCloudData();
+  }, []);
+
   // Save registered accounts locally for fast cache
   useEffect(() => {
     localStorage.setItem('roomsync_registered_accounts', JSON.stringify(registeredAccounts));
@@ -928,11 +989,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addListing = (listing: Listing) => {
     setListings((prev) => [listing, ...prev]);
+    if (isSupabaseConfigured) {
+      supabase
+        .from('listings')
+        .upsert({ id: listing.id, owner_id: listing.ownerId, data: listing })
+        .then(() => {})
+        .catch((err) => console.warn('Supabase listing sync note:', err));
+    }
     showToast('New housing listing published with Trust Score analysis!');
   };
 
   const addPact = (pact: RoommatePact) => {
     setPacts((prev) => [pact, ...prev]);
+    if (isSupabaseConfigured) {
+      supabase
+        .from('pacts')
+        .upsert({ id: pact.id, data: pact })
+        .then(() => {})
+        .catch((err) => console.warn('Supabase pact sync note:', err));
+    }
     confetti({
       particleCount: 90,
       spread: 80,
@@ -952,11 +1027,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             : f
         );
         const allSigned = updatedFlatmates.every((f) => f.signed);
-        return {
+        const updatedPact: RoommatePact = {
           ...p,
           flatmates: updatedFlatmates,
           status: allSigned ? 'fully_signed' : 'partially_signed',
         };
+        if (isSupabaseConfigured) {
+          supabase
+            .from('pacts')
+            .upsert({ id: pactId, data: updatedPact })
+            .then(() => {})
+            .catch((err) => console.warn('Supabase pact sign sync note:', err));
+        }
+        return updatedPact;
       })
     );
     confetti({
@@ -968,18 +1051,43 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addExpense = (expense: Expense) => {
     setExpenses((prev) => [expense, ...prev]);
+    if (isSupabaseConfigured) {
+      supabase
+        .from('expenses')
+        .upsert({ id: expense.id, data: expense })
+        .then(() => {})
+        .catch((err) => console.warn('Supabase expense sync note:', err));
+    }
     showToast(`Expense of ₹${expense.amount.toLocaleString('en-IN')} recorded.`);
   };
 
   const toggleSettleExpense = (id: string) => {
     setExpenses((prev) =>
-      prev.map((e) => (e.id === id ? { ...e, settled: !e.settled } : e))
+      prev.map((e) => {
+        if (e.id !== id) return e;
+        const updated = { ...e, settled: !e.settled };
+        if (isSupabaseConfigured) {
+          supabase
+            .from('expenses')
+            .upsert({ id, data: updated })
+            .then(() => {})
+            .catch((err) => console.warn('Supabase expense settle note:', err));
+        }
+        return updated;
+      })
     );
     showToast('Expense status updated');
   };
 
   const addReview = (review: Review) => {
     setReviews((prev) => [review, ...prev]);
+    if (isSupabaseConfigured) {
+      supabase
+        .from('reviews')
+        .upsert({ id: review.id, data: review })
+        .then(() => {})
+        .catch((err) => console.warn('Supabase review sync note:', err));
+    }
     showToast('Housing review shared with the student community!');
   };
 
@@ -997,6 +1105,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     setMessages((prev) => [...prev, newMsg]);
+    if (isSupabaseConfigured) {
+      supabase
+        .from('messages')
+        .upsert({ id: newMsg.id, data: newMsg })
+        .then(() => {})
+        .catch((err) => console.warn('Supabase message sync note:', err));
+    }
 
     // Simulated reply after 1.5 seconds if talking to seed users
     setTimeout(() => {
@@ -1015,6 +1130,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         isSelf: false,
       };
       setMessages((prev) => [...prev, replyMsg]);
+      if (isSupabaseConfigured) {
+        supabase
+          .from('messages')
+          .upsert({ id: replyMsg.id, data: replyMsg })
+          .then(() => {})
+          .catch((err) => console.warn('Supabase message sync note:', err));
+      }
     }, 1500);
   };
 
