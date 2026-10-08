@@ -202,24 +202,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </h2>
         </div>
 
-        {/* 4 Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Card 1: College Verified */}
-          <div className="bg-white rounded-2xl border border-[#e2ece9] p-6 shadow-2xs hover:shadow-md transition-all space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-[#fef9c3] border border-[#fde047] flex items-center justify-center text-xl">
-              <GraduationCap className="w-6 h-6 text-[#ca8a04]" />
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="font-heading font-bold text-base text-[#17222b]">
-                College Verified
-              </h3>
-              <p className="text-xs text-[#5f7572] leading-relaxed">
-                Only real students get the gold badge — verified via your college email
-              </p>
-            </div>
-          </div>
-
-          {/* Card 2: Trust Scored Listings */}
+        {/* 3 Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Card 1: Trust Scored Listings */}
           <div className="bg-white rounded-2xl border border-[#e2ece9] p-6 shadow-2xs hover:shadow-md transition-all space-y-4">
             <div className="w-12 h-12 rounded-xl bg-[#ecfdf5] border border-[#a7f3d0] flex items-center justify-center text-xl">
               <ShieldCheck className="w-6 h-6 text-[#10b981]" />
