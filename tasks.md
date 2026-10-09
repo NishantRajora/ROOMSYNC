@@ -2,54 +2,81 @@
 
 ## Feature Status Matrix
 
-| Feature | Status | Evidence |
+| Feature | Status | Implementation Evidence |
 | :--- | :--- | :--- |
-| **Landing Page** | Done | `LandingPage.tsx` |
-| **Authentication (UI)** | Done | `AuthPage.tsx` |
-| **Auth (Supabase)** | Partial | `AppContext.tsx` (Auth integrated, but OTP simulated) |
-| **Onboarding Wizard** | Done | `AuthPage.tsx` (Lifestyle & Preference steps) |
-| **Compatibility Scoring** | Done | `lib/scoring.ts`, `MatchesPage.tsx` |
-| **Match Feed / Radar** | Done | `MatchesPage.tsx`, `RadarChartModal.tsx` |
-| **Listing Discovery** | Done | `DiscoverPage.tsx` |
-| **Trust Scoring Engine** | Done | `lib/trust.ts` |
-| **Agreement Analyzer** | Done | `lib/nlp.ts`, `AgreementAnalyzerPage.tsx` |
-| **Roommate Pact (Hashing)**| Done | `lib/crypto.ts`, `RoommatePactPage.tsx` |
-| **Safety Map UI** | Partial | `SafetyMapPage.tsx` (Static data, simulation) |
-| **SOS Visit Check-in** | Done | `AppContext.tsx` (Logic), `SosCheckinModal.tsx` |
-| **Bill Splitter / UPI** | Done | `BillSplitterPage.tsx` |
-| **Landlord Reviews** | Done | `ReviewsPage.tsx` |
-| **Messaging (UI)** | Done | `MessagesPage.tsx`, `FloatingChat.tsx` |
-| **Messaging (Realtime)** | Mocked | `AppContext.tsx` (Simulated replies) |
-| **Admin Dashboard** | Not Started | N/A |
+| **Landing Page** | **Done** | `LandingPage.tsx` |
+| **Authentication (UI & Flows)** | **Done** | `AuthPage.tsx` (Sign up, Log in, Password toggle) |
+| **Supabase Authentication** | **Done** | `AppContext.tsx` (Auth sign up/in with profile metadata sync & fallback OTP `482910`) |
+| **Onboarding Wizard** | **Done** | `AuthPage.tsx` (3-step lifestyle, hygiene, and budget preference collection) |
+| **Compatibility Scoring** | **Done** | `lib/scoring.ts`, `MatchesPage.tsx` |
+| **Match Feed / Radar Chart** | **Done** | `MatchesPage.tsx`, `RadarChartModal.tsx` |
+| **Listing Discovery** | **Done** | `DiscoverPage.tsx` |
+| **Trust Scoring Engine** | **Done** | `lib/trust.ts` (0–100 heuristic scoring with breakdown) |
+| **Agreement Analyzer** | **Done** | `lib/nlp.ts`, `AgreementAnalyzerPage.tsx` |
+| **Roommate Pact (SHA-256 Hashing)**| **Done** | `lib/crypto.ts`, `RoommatePactPage.tsx` |
+| **Safety Map & Locality Ratings** | **Done** | `SafetyMapPage.tsx` (Seeded Gurugram localities, campus distance) |
+| **SOS Visit Check-in** | **Done** | `AppContext.tsx`, `SosCheckinModal.tsx`, `AppShell.tsx` |
+| **Bill Splitter / UPI Payments** | **Done** | `lib/settlement.ts`, `BillSplitterPage.tsx` |
+| **Landlord Reviews** | **Done** | `ReviewsPage.tsx` |
+| **Messaging Center (UI & Layout)**| **Done** | `MessagesPage.tsx` (Split-view dashboard, New Chat modal, empty state) |
+| **Floating Chat Widget** | **Done** | `FloatingChat.tsx` (Minimizable floating pill, candidate quick-picker) |
+| **Realtime Messaging Sync** | **Done** | `AppContext.tsx` (Supabase Realtime channel, multi-tab sync, symmetric IDs) |
+| **Admin Dashboard** | **Planned** | Roadmap Phase 2 |
 
-## Objective Alignment
+---
 
-| Objective | Status | Evidence |
+## Objective Alignment Matrix
+
+| Objective | Status | Implementation Evidence |
 | :--- | :--- | :--- |
-| 1. Structured Profiling | **Done** | `AuthPage.tsx` (3-step wizard), `types/index.ts` |
-| 2. Compatibility Scoring | **Done** | `lib/scoring.ts`, `MatchesPage.tsx` |
-| 3. Fake Listing Detection | **Done** | `lib/trust.ts`, `DiscoverPage.tsx` |
-| 4. Agreement NLP Analysis | **Done** | `lib/nlp.ts`, `AgreementAnalyzerPage.tsx` |
-| 5. GIS Safety Map | **Partial** | `SafetyMapPage.tsx` (UI built, data seeded) |
-| 6. Blockchain Hashing | **Mocked** | `lib/crypto.ts` (SHA-256 used, no actual chain) |
-| 7. Integrated Web Platform | **Done** | `App.tsx` (All modules linked via Navigation) |
+| **1. Structured Profiling** | **Done** | `AuthPage.tsx` (3-step onboarding wizard), `types/index.ts` |
+| **2. Compatibility Scoring** | **Done** | `lib/scoring.ts`, `MatchesPage.tsx`, `RadarChartModal.tsx` |
+| **3. Fake Listing Detection** | **Done** | `lib/trust.ts`, `DiscoverPage.tsx` |
+| **4. Agreement NLP Analysis** | **Done** | `lib/nlp.ts`, `AgreementAnalyzerPage.tsx` |
+| **5. GIS Safety Map & Visit SOS** | **Done** | `SafetyMapPage.tsx`, `SosCheckinModal.tsx` |
+| **6. Cryptographic Tamper-Evidence**| **Done** | `lib/crypto.ts` (Deterministic SHA-256 digital fingerprinting) |
+| **7. Integrated Web Platform** | **Done** | `App.tsx`, `AppShell.tsx` (All 9 core modules integrated into single shell) |
 
-## Known Bugs & Gaps
-- **Security:** RLS policies are currently "Allow All" (`using (true)`). This is a critical security gap.
-- **Auth:** College email verification doesn't send real emails; it's a UI simulation.
-- **Messaging:** No real-time Supabase Realtime subscription; responses are simulated.
-- **Blockchain:** Hashing is done, but there is no "on-chain" anchor.
+---
+
+## Completed in Recent Sprint
+- [x] **Real-Time Bidirectional Messaging:** Subscribed to Supabase Realtime WebSocket changes on `public.messages`.
+- [x] **Multi-Tab Synchronization:** Added `window.addEventListener('storage')` for instant communication across browser windows.
+- [x] **Removal of Mock Auto-Replies:** Eliminated `setTimeout` automated responses for authentic peer-to-peer conversations.
+- [x] **Clean New Account Inboxes:** Purged hardcoded legacy seed messages (`msg_1`, `msg_2`) on initial load and account creation.
+- [x] **Dynamic Active Chats Derivation:** Updated conversation lists to display only initiated conversations, with zero-state action triggers.
+- [x] **Unified Contact Discovery:** Integrated newly registered accounts into the flatmate directory so real users can discover and message each other.
+- [x] **Symmetric Conversation Matching:** Implemented `isMsgBetween` with deterministic IDs (`[uid1, uid2].sort().join('_')`).
+- [x] **Message Store Preservation:** Fixed state wiping on logout/register so received messages persist safely.
+
+---
+
+## Known Bugs & Gaps to Address
+
+1. **Row Level Security (RLS) Hardening:**
+   - Database tables currently use open development policies (`using (true) with check (true)`).
+   - Needs restrictive policies: `auth.uid() = id` for `profiles`, and `auth.uid() = owner_id` for `listings`.
+
+2. **Production Email OTP:**
+   - Educational `.edu` email verification currently uses a client-side verification fallback (`482910`).
+   - Needs transactional SMTP (Resend, SendGrid, or Supabase SMTP) for real email delivery.
+
+3. **On-Chain Blockchain Anchoring:**
+   - Roommate Pact fingerprint is hashed using SHA-256 and stored in PostgreSQL.
+   - True decentralized anchoring requires broadcasting the hash to an L2 blockchain (e.g., Polygon or Base).
+
+---
 
 ## Next Actions (Prioritized)
-### P0: Critical (Objective Requirements)
-1. **Fix RLS Policies:** Restrict `profiles` and `listings` so only authenticated users can write to their own data.
-2. **Implement Real Email OTP:** Replace simulated OTP with Supabase Auth email confirmation.
-3. **Actual On-Chain Anchor:** Implement a simple blockchain write (e.g., via a third-party API or L2) for Pact hashes.
 
-### P1: Demo Polish
-4. **Realtime Chat:** Implement `supabase.channel()` for actual real-time messaging.
-5. **Interactive Safety Map:** Connect map markers to real-time filterable data.
+### P0: Production Security & Compliance
+1. **Hardened RLS Migration:** Update `supabase-schema.sql` with authenticated user constraints.
+2. **Transactional Email OTP:** Replace the simulated fallback code with live email delivery.
 
-### P2: Extra Features
-6. **Admin Dashboard:** Build a view for managing verified badges and flagged listings.
-7. **Export Data:** Add a "Download My Profile" feature.
+### P1: Data & Feature Enhancements
+3. **On-Chain Hash Anchoring:** Implement smart contract transaction or API call to record Pact hashes on Polygon/Base.
+4. **GIS Safety Map Live Data:** Integrate real municipal or NCRB crime statistics into the safety scoring algorithm.
+
+### P2: Administration & Operations
+5. **Admin Management Console:** Build an administrative dashboard for verifying student ID cards and managing reported listings.
+6. **Data Export:** Add user data download functionality (GDPR / Indian DPDP Act compliance).
