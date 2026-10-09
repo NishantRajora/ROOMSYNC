@@ -288,19 +288,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             {[
               {
                 name: 'Nishant Rajora',
-                role: 'Co-founder',
+                role: '',
                 image: 'https://media.licdn.com/dms/image/v2/D4D03AQHMQWoRTPyreg/profile-displayphoto-scale_200_200/B4DZ4meXu4K4Ac-/0/1778761962723?e=1793232000&v=beta&t=hqSp9mP4gww0x78UE2wyJt9DvNfcHtU6zkK94Enl0Zc',
                 initials: 'NR',
               },
               {
                 name: 'Palak Kanasal',
-                role: 'Co-founder',
+                role: '',
                 image: 'https://media.licdn.com/dms/image/v2/D4D35AQHKXqPfpa-tLA/profile-framedphoto-shrink_400_400/B4DZvmugB.JoAk-/0/1769102508509?e=1791993600&v=beta&t=RT7K2xJ2g5v5vZsU7Z7Q0ca0ppMQAYYG6ftAy_WFU00',
                 initials: 'PK',
               },
               {
                 name: 'Monika Nahadiya',
-                role: 'Co-founder',
+                role: '',
                 image: 'https://media.licdn.com/dms/image/v2/D5603AQGG3Q_8GZnpJQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1725642208347?e=1793232000&v=beta&t=p-JQWL0FcoJFyxEC5Kkfnrz65w28S1V5HkhH7knc-uw',
                 initials: 'MN',
               },
