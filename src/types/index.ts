@@ -229,6 +229,9 @@ export interface ChatMessage {
   conversationId: string;
   senderId: string;
   senderName: string;
+  recipientId?: string;
+  recipientName?: string;
+  recipientAvatar?: string;
   text: string;
   timestamp: string;
   isSelf: boolean;

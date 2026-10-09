@@ -188,6 +188,7 @@ interface AppContextType {
   isFloatingChatOpen: boolean;
   setIsFloatingChatOpen: (open: boolean) => void;
   activeChatRecipient: { id: string; name: string; avatarUrl?: string } | null;
+  setActiveChatRecipient: (recipient: { id: string; name: string; avatarUrl?: string } | null) => void;
   openChatWith: (user: { id: string; name: string; avatarUrl?: string }) => void;
   closeFloatingChat: () => void;
 
@@ -259,7 +260,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [activeTab, setActiveTab] = useState<NavigationTab>('discover');
   const [generatedOtp, setGeneratedOtp] = useState<string | null>('482910');
 
-  const [candidates, setCandidates] = useState<UserProfile[]>(CANDIDATE_PROFILES);
+  const [candidates, setCandidates] = useState<UserProfile[]>(() => {
+    const base = [...CANDIDATE_PROFILES];
+    try {
+      const savedAccountsStr = localStorage.getItem('roomsync_registered_accounts');
+      if (savedAccountsStr) {
+        const accs: UserAccount[] = JSON.parse(savedAccountsStr);
+        const existingIds = new Set(base.map((c) => c.id));
+        accs.forEach((a) => {
+          if (a.profile && a.profile.id && !existingIds.has(a.profile.id)) {
+            base.push(a.profile);
+            existingIds.add(a.profile.id);
+          }
+        });
+      }
+    } catch (_) { }
+    return base;
+  });
   const [listings, setListings] = useState<Listing[]>(() => {
     const saved = localStorage.getItem('roomsync_listings');
     return saved ? JSON.parse(saved) : SEED_LISTINGS;
@@ -285,37 +302,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
 
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    const saved = localStorage.getItem('roomsync_messages');
-    return saved
-      ? JSON.parse(saved)
-      : [
-        {
-          id: 'msg_1',
-          conversationId: 'usr_002',
-          senderId: 'usr_002',
-          senderName: 'Rohan Mehra',
-          text: 'Hey! Saw your RoomSync profile. We match well on Sector 23 flats. Are you free to check Plot 412 this Saturday?',
-          timestamp: '10:45 AM',
-          isSelf: false,
-        },
-        {
-          id: 'msg_2',
-          conversationId: 'usr_002',
-          senderId: 'usr_me_001',
-          senderName: currentUser.fullName,
-          text: 'Hey Rohan! Yes absolutely. I ran the agreement through RoomSync Analyzer and the terms are clean. Let us connect at 4 PM.',
-          timestamp: '11:02 AM',
-          isSelf: true,
-        },
-      ];
+    try {
+      const saved = localStorage.getItem('roomsync_messages');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          // Remove pre-existing mock messages (msg_1, msg_2)
+          return parsed.filter((m: any) => m && m.id !== 'msg_1' && m.id !== 'msg_2');
+        }
+      }
+    } catch (e) {
+      console.warn('Error parsing cached messages:', e);
+    }
+    return [];
   });
 
   const [isFloatingChatOpen, setIsFloatingChatOpen] = useState(false);
-  const [activeChatRecipient, setActiveChatRecipient] = useState<{ id: string; name: string; avatarUrl?: string } | null>({
-    id: 'usr_002',
-    name: 'Rohan Mehra',
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
-  });
+  const [activeChatRecipient, setActiveChatRecipient] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
 
   const [activeVisitAlert, setActiveVisitAlert] = useState<VisitAlert | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -385,13 +388,39 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const loadCloudData = async () => {
       try {
-        const [listingsRes, pactsRes, expensesRes, reviewsRes, messagesRes] = await Promise.allSettled([
+        const [profilesRes, listingsRes, pactsRes, expensesRes, reviewsRes, messagesRes] = await Promise.allSettled([
+          supabase.from('profiles').select('*'),
           supabase.from('listings').select('data'),
           supabase.from('pacts').select('data'),
           supabase.from('expenses').select('data'),
           supabase.from('reviews').select('data'),
           supabase.from('messages').select('data'),
         ]);
+
+        if (profilesRes.status === 'fulfilled' && profilesRes.value.data && profilesRes.value.data.length > 0) {
+          const cloudAccounts = profilesRes.value.data
+            .map((row: any): UserAccount | null => {
+              if (!row?.profile || !row.id) return null;
+              const profile = { ...row.profile, id: row.id } as UserProfile;
+              return {
+                id: row.id,
+                email: row.email || profile.email,
+                profile,
+                createdAt: profile.createdAt || row.updated_at || new Date().toISOString(),
+              };
+            })
+            .filter((account): account is UserAccount => Boolean(account));
+
+          setRegisteredAccounts((prev) => {
+            const accounts = new Map(prev.map((account) => [account.id, account]));
+            cloudAccounts.forEach((account) => {
+              accounts.set(account.id, { ...accounts.get(account.id), ...account });
+            });
+            const merged = Array.from(accounts.values());
+            localStorage.setItem('roomsync_registered_accounts', JSON.stringify(merged));
+            return merged;
+          });
+        }
 
         if (listingsRes.status === 'fulfilled' && listingsRes.value.data && listingsRes.value.data.length > 0) {
           const cloudListings = listingsRes.value.data.map((r: any) => r.data as Listing);
@@ -426,11 +455,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         }
 
         if (messagesRes.status === 'fulfilled' && messagesRes.value.data && messagesRes.value.data.length > 0) {
-          const cloudMessages = messagesRes.value.data.map((r: any) => r.data as ChatMessage);
+          const cloudMessages = messagesRes.value.data
+            .map((r: any) => r.data as ChatMessage)
+            .filter((m: any) => m && m.id !== 'msg_1' && m.id !== 'msg_2');
           setMessages((prev) => {
             const ids = new Set(cloudMessages.map((m) => m.id));
-            return [...cloudMessages, ...prev.filter((m) => !ids.has(m.id))];
+            return [...cloudMessages, ...prev.filter((m) => !ids.has(m.id))].filter(
+              (m) => m && m.id !== 'msg_1' && m.id !== 'msg_2'
+            );
           });
+        }
+        if (isSupabaseConfigured) {
+          Promise.resolve(supabase.from('messages').delete().in('id', ['msg_1', 'msg_2'])).catch(() => { });
         }
       } catch (err) {
         console.warn('Supabase cloud data sync note:', err);
@@ -438,6 +474,81 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     loadCloudData();
+  }, []);
+
+  // Supabase Realtime synchronization for messages
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    const channel = supabase
+      .channel('roomsync_messages_live')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'messages' },
+        (payload: any) => {
+          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+            const rowData = payload.new?.data as ChatMessage;
+            if (rowData && rowData.id && rowData.id !== 'msg_1' && rowData.id !== 'msg_2') {
+              setMessages((prev) => {
+                const existingIndex = prev.findIndex((m) => m.id === rowData.id);
+                const updated = existingIndex === -1
+                  ? [...prev, rowData]
+                  : prev.map((message, index) => index === existingIndex ? rowData : message);
+                localStorage.setItem('roomsync_messages', JSON.stringify(updated));
+                return updated;
+              });
+            }
+          } else if (payload.eventType === 'DELETE') {
+            const delId = payload.old?.id;
+            if (delId) {
+              setMessages((prev) => {
+                const updated = prev.filter((m) => m.id !== delId);
+                localStorage.setItem('roomsync_messages', JSON.stringify(updated));
+                return updated;
+              });
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Cross-tab storage listener to sync messages in real time between tabs on same device
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'roomsync_messages' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) {
+            const clean = parsed.filter((m: any) => m && m.id !== 'msg_1' && m.id !== 'msg_2');
+            setMessages(clean);
+          }
+        } catch (_) { }
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // Realtime is optional in Supabase projects, so keep a small polling fallback
+  // to deliver messages even when the messages table is not in the realtime publication.
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    const refreshMessages = () => syncLatestMessages();
+    const interval = window.setInterval(refreshMessages, 3000);
+    window.addEventListener('focus', refreshMessages);
+    document.addEventListener('visibilitychange', refreshMessages);
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', refreshMessages);
+      document.removeEventListener('visibilitychange', refreshMessages);
+    };
   }, []);
 
   // Save registered accounts locally for fast cache
@@ -479,8 +590,74 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, [reviews]);
 
   useEffect(() => {
-    localStorage.setItem('roomsync_messages', JSON.stringify(messages));
-  }, [messages]);
+    // Removed global messages sync to localStorage to avoid performance bottlenecks.
+    // Sync is now handled within setMessages functional updates.
+  }, []);
+
+  const syncLatestMessages = () => {
+    try {
+      const saved = localStorage.getItem('roomsync_messages');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          const clean = parsed.filter((m: any) => m && m.id !== 'msg_1' && m.id !== 'msg_2');
+          setMessages((prev) => {
+            const map = new Map<string, ChatMessage>();
+            prev.forEach((m) => map.set(m.id, m));
+            clean.forEach((m) => map.set(m.id, m));
+            return Array.from(map.values());
+          });
+        }
+      }
+      if (isSupabaseConfigured) {
+        Promise.resolve(supabase.from('profiles').select('*'))
+          .then(({ data }) => {
+            if (!data || data.length === 0) return;
+            const cloudAccounts = data
+              .map((row: any): UserAccount | null => {
+                if (!row?.profile || !row.id) return null;
+                const profile = { ...row.profile, id: row.id } as UserProfile;
+                return {
+                  id: row.id,
+                  email: row.email || profile.email,
+                  profile,
+                  createdAt: profile.createdAt || row.updated_at || new Date().toISOString(),
+                };
+              })
+              .filter((account): account is UserAccount => Boolean(account));
+
+            setRegisteredAccounts((prev) => {
+              const accounts = new Map(prev.map((account) => [account.id, account]));
+              cloudAccounts.forEach((account) => {
+                accounts.set(account.id, { ...accounts.get(account.id), ...account });
+              });
+              const merged = Array.from(accounts.values());
+              localStorage.setItem('roomsync_registered_accounts', JSON.stringify(merged));
+              return merged;
+            });
+          })
+          .catch(() => { });
+
+        Promise.resolve(supabase.from('messages').select('data'))
+          .then(({ data }) => {
+            if (data && data.length > 0) {
+              const cloud = data
+                .map((r: any) => r.data as ChatMessage)
+                .filter((m: any) => m && m.id !== 'msg_1' && m.id !== 'msg_2');
+              setMessages((prev) => {
+                const map = new Map<string, ChatMessage>();
+                prev.forEach((m) => map.set(m.id, m));
+                cloud.forEach((m) => map.set(m.id, m));
+                const res = Array.from(map.values());
+                localStorage.setItem('roomsync_messages', JSON.stringify(res));
+                return res;
+              });
+            }
+          })
+          .catch(() => { });
+      }
+    } catch (_) { }
+  };
 
   // Real Database & Authorization implementations
   const login = async (
@@ -507,6 +684,34 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         };
       }
 
+      let authenticatedUserId = localAcc.id;
+      if (isSupabaseConfigured) {
+        if (!cleanPassword) {
+          return { success: false, message: 'Password is required when Supabase Auth is enabled.' };
+        }
+
+        const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password: cleanPassword,
+        });
+
+        if (authErr || !authData.user) {
+          const message = authErr?.message.toLowerCase() || '';
+          if (message.includes('email not confirmed')) {
+            return {
+              success: false,
+              message: 'Please confirm this email address in Supabase Auth before logging in.',
+            };
+          }
+          return {
+            success: false,
+            message: 'This account is not registered in Supabase Auth, or the password is incorrect.',
+          };
+        }
+
+        authenticatedUserId = authData.user.id;
+      }
+
       // Check if Supabase has a newer profile
       let latestProfile = localAcc.profile;
       if (isSupabaseConfigured) {
@@ -514,7 +719,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           const { data: row } = await supabase
             .from('profiles')
             .select('*')
-            .eq('id', localAcc.id)
+            .eq('id', authenticatedUserId)
             .maybeSingle();
           if (row?.profile) {
             latestProfile = row.profile as UserProfile;
@@ -522,23 +727,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         } catch (e) {
           console.warn('Supabase fetch on login:', e);
         }
-
-        // Also sign in to Supabase Auth in background if applicable
-        if (cleanPassword && cleanPassword.length >= 6) {
-          try {
-            await supabase.auth.signInWithPassword({
-              email: cleanEmail,
-              password: cleanPassword,
-            });
-          } catch (_) { }
-        }
+        latestProfile = { ...latestProfile, id: authenticatedUserId, email: cleanEmail };
       }
 
       setCurrentUser(latestProfile);
       setIsAuthenticated(true);
       localStorage.setItem('roomsync_auth', 'true');
-      localStorage.setItem('roomsync_current_user_id', localAcc.id);
+      localStorage.setItem('roomsync_current_user_id', authenticatedUserId);
       localStorage.setItem('roomsync_current_user', JSON.stringify(latestProfile));
+      syncLatestMessages();
 
       showToast(`Welcome back, ${latestProfile.fullName}!`);
       return { success: true, user: latestProfile };
@@ -673,6 +870,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             localStorage.setItem('roomsync_registered_accounts', JSON.stringify(updated));
             return updated;
           });
+          syncLatestMessages();
 
           showToast(`Welcome back, ${profileToLoad.fullName}!`);
           return { success: true, user: profileToLoad };
@@ -833,6 +1031,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.setItem('roomsync_current_user_id', uid);
     localStorage.setItem('roomsync_current_user', JSON.stringify(newProfile));
 
+    // Add newly registered user to candidates so they appear for other flatmates
+    setCandidates((prev) => {
+      if (prev.some((c) => c.id === newProfile.id)) return prev;
+      return [newProfile, ...prev];
+    });
+    setActiveChatRecipient(null);
+
     return { success: true, user: newProfile };
   };
 
@@ -849,6 +1054,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.removeItem('roomsync_current_user_id');
     localStorage.removeItem('roomsync_current_user');
     setCurrentUser(INITIAL_REGISTERED_ACCOUNTS[0].profile);
+    setActiveChatRecipient(null);
     showToast('Logged out successfully');
   };
 
@@ -992,11 +1198,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const addListing = (listing: Listing) => {
     setListings((prev) => [listing, ...prev]);
     if (isSupabaseConfigured) {
-      supabase
-        .from('listings')
-        .upsert({ id: listing.id, owner_id: listing.ownerId, data: listing })
-        .then(() => { })
-        .catch((err) => console.warn('Supabase listing sync note:', err));
+      Promise.resolve(
+        supabase.from('listings').upsert({ id: listing.id, owner_id: listing.ownerId, data: listing })
+      ).catch((err) => console.warn('Supabase listing sync note:', err));
     }
     showToast('New housing listing published with Trust Score analysis!');
   };
@@ -1004,11 +1208,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const addPact = (pact: RoommatePact) => {
     setPacts((prev) => [pact, ...prev]);
     if (isSupabaseConfigured) {
-      supabase
-        .from('pacts')
-        .upsert({ id: pact.id, data: pact })
-        .then(() => { })
-        .catch((err) => console.warn('Supabase pact sync note:', err));
+      Promise.resolve(
+        supabase.from('pacts').upsert({ id: pact.id, data: pact })
+      ).catch((err) => console.warn('Supabase pact sync note:', err));
     }
     confetti({
       particleCount: 90,
@@ -1035,11 +1237,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           status: allSigned ? 'fully_signed' : 'partially_signed',
         };
         if (isSupabaseConfigured) {
-          supabase
-            .from('pacts')
-            .upsert({ id: pactId, data: updatedPact })
-            .then(() => { })
-            .catch((err) => console.warn('Supabase pact sign sync note:', err));
+          Promise.resolve(
+            supabase.from('pacts').upsert({ id: pactId, data: updatedPact })
+          ).catch((err) => console.warn('Supabase pact sign sync note:', err));
         }
         return updatedPact;
       })
@@ -1054,11 +1254,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const addExpense = (expense: Expense) => {
     setExpenses((prev) => [expense, ...prev]);
     if (isSupabaseConfigured) {
-      supabase
-        .from('expenses')
-        .upsert({ id: expense.id, data: expense })
-        .then(() => { })
-        .catch((err) => console.warn('Supabase expense sync note:', err));
+      Promise.resolve(
+        supabase.from('expenses').upsert({ id: expense.id, data: expense })
+      ).catch((err) => console.warn('Supabase expense sync note:', err));
     }
     showToast(`Expense of ₹${expense.amount.toLocaleString('en-IN')} recorded.`);
   };
@@ -1069,11 +1267,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         if (e.id !== id) return e;
         const updated = { ...e, settled: !e.settled };
         if (isSupabaseConfigured) {
-          supabase
-            .from('expenses')
-            .upsert({ id, data: updated })
-            .then(() => { })
-            .catch((err) => console.warn('Supabase expense settle note:', err));
+          Promise.resolve(
+            supabase.from('expenses').upsert({ id, data: updated })
+          ).catch((err) => console.warn('Supabase expense settle note:', err));
         }
         return updated;
       })
@@ -1084,62 +1280,44 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const addReview = (review: Review) => {
     setReviews((prev) => [review, ...prev]);
     if (isSupabaseConfigured) {
-      supabase
-        .from('reviews')
-        .upsert({ id: review.id, data: review })
-        .then(() => { })
-        .catch((err) => console.warn('Supabase review sync note:', err));
+      Promise.resolve(
+        supabase.from('reviews').upsert({ id: review.id, data: review })
+      ).catch((err) => console.warn('Supabase review sync note:', err));
     }
     showToast('Housing review shared with the student community!');
   };
 
-  const sendMessage = (recipientId: string, recipientName: string, text: string) => {
+  const sendMessage = async (recipientId: string, recipientName: string, text: string) => {
     if (!text.trim()) return;
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const convId = [currentUser.id, recipientId].sort().join('_');
     const newMsg: ChatMessage = {
-      id: `msg_${Date.now()}`,
-      conversationId: recipientId,
+      id: crypto.randomUUID(),
+      conversationId: convId,
       senderId: currentUser.id,
       senderName: currentUser.fullName,
+      recipientId: recipientId,
+      recipientName: recipientName,
       text: text.trim(),
       timestamp: now,
       isSelf: true,
     };
 
-    setMessages((prev) => [...prev, newMsg]);
-    if (isSupabaseConfigured) {
-      supabase
-        .from('messages')
-        .upsert({ id: newMsg.id, data: newMsg })
-        .then(() => { })
-        .catch((err) => console.warn('Supabase message sync note:', err));
-    }
+    setMessages((prev) => {
+      const updated = [...prev, newMsg];
+      localStorage.setItem('roomsync_messages', JSON.stringify(updated));
+      return updated;
+    });
 
-    // Simulated reply after 1.5 seconds if talking to seed users
-    setTimeout(() => {
-      const replies = [
-        'Thanks for reaching out! Yes, let us definitely meet and discuss the flat details.',
-        'Sounds good! I am available right after 4 PM lecture.',
-        'Great, I appreciate clear communication. See you soon!',
-      ];
-      const replyMsg: ChatMessage = {
-        id: `msg_reply_${Date.now()}`,
-        conversationId: recipientId,
-        senderId: recipientId,
-        senderName: recipientName,
-        text: replies[Math.floor(Math.random() * replies.length)],
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        isSelf: false,
-      };
-      setMessages((prev) => [...prev, replyMsg]);
-      if (isSupabaseConfigured) {
-        supabase
-          .from('messages')
-          .upsert({ id: replyMsg.id, data: replyMsg })
-          .then(() => { })
-          .catch((err) => console.warn('Supabase message sync note:', err));
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabase.from('messages').upsert({ id: newMsg.id, data: newMsg });
+        if (error) throw error;
+      } catch (err) {
+        console.warn('Supabase message sync failed:', err);
+        showToast('Message saved locally, but cloud sync failed.');
       }
-    }, 1500);
+    }
   };
 
   const openChatWith = (user: { id: string; name: string; avatarUrl?: string }) => {
@@ -1225,6 +1403,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         isFloatingChatOpen,
         setIsFloatingChatOpen,
         activeChatRecipient,
+        setActiveChatRecipient,
         openChatWith,
         closeFloatingChat,
         activeVisitAlert,

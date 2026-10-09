@@ -1,4 +1,4 @@
-# Project Memory - RoomSync
+/# Project Memory - RoomSync
 
 ## Core Context
 RoomSync is a student-first flatmate-matching and safe-renting web platform ("Find Your People. Find Your Place.") targeting Indian college students in the Delhi NCR / Gurugram pilot area.
@@ -21,7 +21,7 @@ RoomSync is a student-first flatmate-matching and safe-renting web platform ("Fi
 ## Honesty Commitments
 - **Mocked Features:** 
   - Email OTPs are simulated (fallback code `482910`).
-  - Chat responses are simulated via `setTimeout`.
+  - Chat responses: simulated auto-reply removed per user requirement.
   - Blockchain "anchoring" is currently a local SHA-256 hash stored in the database.
   - Agreement analysis uses a robust Regex rule-set, not a trained ML model.
 - **Security State:** RLS is enabled on all tables but currently set to `Allow All` for the pilot phase. This is a known gap.
