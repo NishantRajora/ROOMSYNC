@@ -4,26 +4,23 @@
 
 | Feature | Status | Implementation Evidence |
 | :--- | :--- | :--- |
-| **Landing Page** | **Done** | `LandingPage.tsx` |
-| **Authentication (UI & Flows)** | **Done** | `AuthPage.tsx` (Sign up, Log in, Password toggle) |
-| **Supabase Authentication** | **Done** | `AppContext.tsx` (Auth sign up/in with profile metadata sync & fallback OTP `482910`) |
-| **Onboarding Wizard** | **Done** | `AuthPage.tsx` (3-step lifestyle, hygiene, and budget preference collection) |
-| **Compatibility Scoring** | **Done** | `lib/scoring.ts`, `MatchesPage.tsx` |
-| **Match Feed / Radar Chart** | **Done** | `MatchesPage.tsx`, `RadarChartModal.tsx` |
-| **Listing Discovery** | **Done** | `DiscoverPage.tsx` |
-| **Trust Scoring Engine** | **Done** | `lib/trust.ts` (0–100 heuristic scoring with breakdown) |
-| **Agreement Analyzer** | **Done** | `lib/nlp.ts`, `AgreementAnalyzerPage.tsx` |
-| **Roommate Pact (SHA-256 Hashing)**| **Done** | `lib/crypto.ts`, `RoommatePactPage.tsx` |
-| **Safety Map & Locality Ratings** | **Done** | `SafetyMapPage.tsx` (Seeded Gurugram localities, campus distance) |
-| **SOS Visit Check-in** | **Done** | `AppContext.tsx`, `SosCheckinModal.tsx`, `AppShell.tsx` |
-| **Bill Splitter / UPI Payments** | **Done** | `lib/settlement.ts`, `BillSplitterPage.tsx` |
-| **Landlord Reviews** | **Done** | `ReviewsPage.tsx` |
-| **Messaging Center (UI & Layout)**| **Done** | `MessagesPage.tsx` (Split-view dashboard, New Chat modal, empty state) |
-| **Floating Chat Widget** | **Done** | `FloatingChat.tsx` (Minimizable floating pill, candidate quick-picker) |
-| **Realtime Messaging Sync** | **Done** | `AppContext.tsx` (Supabase Realtime channel, multi-tab sync, symmetric IDs) |
-| **Admin Dashboard** | **Planned** | Roadmap Phase 2 |
-
----
+| **Landing Page** | Done | `LandingPage.tsx` |
+| **Authentication (UI)** | Done | `AuthPage.tsx` |
+| **Auth (Supabase)** | Partial | `AppContext.tsx` (Auth integrated, but OTP simulated) |
+| **Onboarding Wizard** | Done | `AuthPage.tsx` (Lifestyle & Preference steps) |
+| **Compatibility Scoring** | Done | `lib/scoring.ts`, `MatchesPage.tsx` |
+| **Match Feed / Radar** | Done | `MatchesPage.tsx`, `RadarChartModal.tsx` |
+| **Listing Discovery** | Done | `DiscoverPage.tsx` |
+| **Trust Scoring Engine** | Done | `lib/trust.ts` |
+| **Agreement Analyzer** | Done | `lib/nlp.ts`, `AgreementAnalyzerPage.tsx` |
+| **Roommate Pact (Hashing)**| Done | `lib/crypto.ts`, `RoommatePactPage.tsx` |
+| **Safety Map UI** | Partial | `SafetyMapPage.tsx` (Static data, simulation) |
+| **SOS Visit Check-in** | Done | `AppContext.tsx` (Logic), `SosCheckinModal.tsx` |
+| **Bill Splitter / UPI** | Done | `BillSplitterPage.tsx` |
+| **Landlord Reviews** | Done | `ReviewsPage.tsx` |
+| **Messaging (UI)** | Done | `MessagesPage.tsx`, `FloatingChat.tsx` |
+| **Messaging (Realtime)** | Mocked | `AppContext.tsx` (Simulated replies) |
+| **Admin Dashboard** | Not Started | N/A |
 
 ## Objective Alignment Matrix
 
