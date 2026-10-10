@@ -42,11 +42,25 @@ export const BillSplitterPage: React.FC = () => {
     'Kabir Singhania',
   ]);
 
-  const flatmateOptions = [
-    { name: currentUser.fullName, upi: currentUser.upiId },
+
+
+
+  const staticFlatmates = [
     { name: 'Rohan Mehra', upi: 'rohan.mehra@okaxis' },
     { name: 'Kabir Singhania', upi: 'kabir.singh@icici' },
   ];
+
+  const flatmateOptions = [
+    { name: currentUser.fullName, upi: currentUser.upiId },
+    ...staticFlatmates.filter((f) => f.name !== currentUser.fullName),
+  ];
+
+  React.useEffect(() => {
+    setPaidByName(currentUser.fullName);
+    setPaidByUpi(currentUser.upiId);
+    const newSplit = [currentUser.fullName, ...staticFlatmates.filter((f) => f.name !== currentUser.fullName).map((f) => f.name)];
+    setSplitWith(newSplit);
+  }, [currentUser]);
 
   const upiDirectory = flatmateOptions.reduce((acc, f) => {
     acc[f.name] = f.upi;
@@ -54,6 +68,7 @@ export const BillSplitterPage: React.FC = () => {
   }, {} as Record<string, string>);
 
   const { balances, settlements } = computeSettlements(expenses, upiDirectory);
+
 
   const handleOpenSettleModal = async (s: { from: string; to: string; toUpi: string; amount: number }) => {
     const upiLink = generateUpiUrl(

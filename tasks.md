@@ -10,7 +10,8 @@
 | **Onboarding Wizard** | Done | `AuthPage.tsx` (Lifestyle & Preference steps) |
 | **Compatibility Scoring** | Done | `lib/scoring.ts`, `MatchesPage.tsx` |
 | **Match Feed / Radar** | Done | `MatchesPage.tsx`, `RadarChartModal.tsx` |
-| **Listing Discovery** | Done | `DiscoverPage.tsx` |
+| **Listing Discovery** | Done | `DiscoverPage.tsx` (Extended property specs, house rules & GPS pin coordinates) |
+| **Listing Creation (5-Stage)** | Done | `DiscoverPage.tsx` (Property details, vacancies, house rules, GPS pin, KYC) |
 | **Trust Scoring Engine** | Done | `lib/trust.ts` |
 | **Agreement Analyzer** | Done | `lib/nlp.ts`, `AgreementAnalyzerPage.tsx` |
 | **Roommate Pact (Hashing)**| Done | `lib/crypto.ts`, `RoommatePactPage.tsx` |
@@ -19,7 +20,7 @@
 | **Bill Splitter / UPI** | Done | `BillSplitterPage.tsx` |
 | **Landlord Reviews** | Done | `ReviewsPage.tsx` |
 | **Messaging (UI)** | Done | `MessagesPage.tsx`, `FloatingChat.tsx` |
-| **Messaging (Realtime)** | Mocked | `AppContext.tsx` (Simulated replies) |
+| **Messaging (Realtime)** | Done | Supabase Realtime channel `roomsync_messages_live` with multi-tab sync |
 | **Admin Dashboard** | Not Started | N/A |
 
 ## Objective Alignment

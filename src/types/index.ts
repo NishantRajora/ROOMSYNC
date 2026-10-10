@@ -108,6 +108,29 @@ export interface Listing {
   availableFrom: string;
   genderPreference: 'Boys' | 'Girls' | 'Any';
   createdAt: string;
+  // Additional fields for extended listing details
+  propertyType?: 'Flat' | 'PG' | 'Independent Floor' | 'Shared Room';
+  bhkOrRoomType?: string; // e.g. '1RK', '1BHK', '2BHK', '3BHK', 'Single', 'Double'
+  totalVacancies?: number;
+  floorNumber?: number;
+  totalFloors?: number;
+  hasLift?: boolean;
+  areaSqFt?: number;
+  // House rules & policies
+  genderAllowed?: 'Boys' | 'Girls' | 'Any';
+  foodRules?: 'Veg Only' | 'Non-Veg Allowed' | 'Jain';
+  occupantsCount?: number;
+  occupantsDetails?: string; // e.g. '2 boys, B.Tech CSE 3rd year'
+  guestPolicy?: string;
+  smokingPolicy?: string;
+  drinkingPolicy?: string;
+  petsPolicy?: string;
+  curfewTime?: string;
+  cookingAllowed?: boolean;
+  quietHours?: string;
+  // Map location coordinates
+  locationLat?: number;
+  locationLng?: number;
 }
 
 export interface AgreementClauseAnalysis {
