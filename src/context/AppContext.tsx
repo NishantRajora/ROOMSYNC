@@ -160,6 +160,7 @@ interface AppContextType {
   // Listings
   listings: Listing[];
   addListing: (listing: Listing) => void;
+  deleteListing: (listingId: string) => void;
   selectedListing: Listing | null;
   setSelectedListing: (listing: Listing | null) => void;
 
@@ -278,8 +279,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return base;
   });
   const [listings, setListings] = useState<Listing[]>(() => {
-    const saved = localStorage.getItem('roomsync_listings');
-    return saved ? JSON.parse(saved) : SEED_LISTINGS;
+    try {
+      const saved = localStorage.getItem('roomsync_listings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          const dummyIds = new Set(['list_001', 'list_002', 'list_003', 'list_004']);
+          const clean = parsed.filter((l: any) => l && l.id && !dummyIds.has(l.id));
+          localStorage.setItem('roomsync_listings', JSON.stringify(clean));
+          return clean;
+        }
+      }
+    } catch (_) { }
+    return [];
   });
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
 
@@ -423,7 +435,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         }
 
         if (listingsRes.status === 'fulfilled' && listingsRes.value.data && listingsRes.value.data.length > 0) {
-          const cloudListings = listingsRes.value.data.map((r: any) => r.data as Listing);
+          const dummyIds = new Set(['list_001', 'list_002', 'list_003', 'list_004']);
+          const cloudListings = listingsRes.value.data
+            .map((r: any) => r.data as Listing)
+            .filter((l: Listing) => l && l.id && !dummyIds.has(l.id));
           setListings((prev) => {
             const ids = new Set(cloudListings.map((l) => l.id));
             return [...cloudListings, ...prev.filter((l) => !ids.has(l.id))];
@@ -1205,6 +1220,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     showToast('New housing listing published with Trust Score analysis!');
   };
 
+  const deleteListing = (listingId: string) => {
+    setListings((prev) => {
+      const updated = prev.filter((l) => l.id !== listingId);
+      localStorage.setItem('roomsync_listings', JSON.stringify(updated));
+      return updated;
+    });
+    if (isSupabaseConfigured) {
+      Promise.resolve(
+        supabase.from('listings').delete().eq('id', listingId)
+      ).catch((err) => console.warn('Supabase listing delete note:', err));
+    }
+    showToast('Listing removed successfully.');
+  };
+
   const addPact = (pact: RoommatePact) => {
     setPacts((prev) => [pact, ...prev]);
     if (isSupabaseConfigured) {
@@ -1385,6 +1414,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addCandidate,
         listings,
         addListing,
+        deleteListing,
         selectedListing,
         setSelectedListing,
         localities,
