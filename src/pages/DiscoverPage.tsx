@@ -24,6 +24,7 @@ import {
   Sparkles,
   Layers,
   Building,
+  Trash2,
 } from 'lucide-react';
 import { VerifiedBadge } from '../components/common/VerifiedBadge';
 
@@ -36,7 +37,7 @@ const LOCALITY_COORDINATES: Record<string, { lat: number; lng: number }> = {
 };
 
 export const DiscoverPage: React.FC = () => {
-  const { listings, addListing, openChatWith, showToast } = useApp();
+  const { listings, addListing, deleteListing, openChatWith, showToast } = useApp();
 
   const [localityFilter, setLocalityFilter] = useState<string>('All');
   const [propertyTypeFilter, setPropertyTypeFilter] = useState<string>('All');
@@ -462,12 +463,26 @@ export const DiscoverPage: React.FC = () => {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => setSelectedListingDetail(listing)}
-                  className="px-3 py-1.5 bg-[#f6f9f8] hover:bg-[#117c74] hover:text-white text-[#17222b] rounded-xl font-medium transition-colors cursor-pointer"
-                >
-                  View Details
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setSelectedListingDetail(listing)}
+                    className="px-3 py-1.5 bg-[#f6f9f8] hover:bg-[#117c74] hover:text-white text-[#17222b] rounded-xl font-medium transition-colors cursor-pointer"
+                  >
+                    View Details
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (window.confirm(`Are you sure you want to remove "${listing.title}"?`)) {
+                        deleteListing(listing.id);
+                      }
+                    }}
+                    className="p-1.5 text-[#5f7572] hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+                    title="Remove listing"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -475,14 +490,29 @@ export const DiscoverPage: React.FC = () => {
       </div>
 
       {filteredListings.length === 0 && (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#e2ece9] p-6 space-y-3">
-          <Home className="w-10 h-10 text-[#5f7572] mx-auto opacity-40" />
-          <h3 className="font-heading font-bold text-base text-[#17222b]">
-            No listings match your filter criteria
-          </h3>
-          <p className="text-xs text-[#5f7572] max-w-sm mx-auto">
-            Try adjusting your maximum rent slider or select 'All' localities to view available options around NCU.
-          </p>
+        <div className="text-center py-16 bg-white rounded-2xl border border-[#e2ece9] p-8 space-y-4 max-w-lg mx-auto">
+          <div className="w-14 h-14 bg-[#117c74]/10 rounded-2xl flex items-center justify-center mx-auto text-[#117c74]">
+            <Home className="w-7 h-7" />
+          </div>
+          <div>
+            <h3 className="font-heading font-bold text-base text-[#17222b]">
+              {listings.length === 0 ? 'No Housing Listings Yet' : 'No listings match your filter criteria'}
+            </h3>
+            <p className="text-xs text-[#5f7572] mt-1.5 leading-relaxed">
+              {listings.length === 0
+                ? 'All dummy mock listings have been removed. Post a verified room, flat, or PG near the NCU campus to get started!'
+                : 'Try adjusting your filters, property type, or maximum rent slider to view available housing options.'}
+            </p>
+          </div>
+          {listings.length === 0 && (
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl shadow-xs transition-all cursor-pointer"
+            >
+              <PlusCircle className="w-4 h-4" />
+              Post a Room / Flat
+            </button>
+          )}
         </div>
       )}
 
@@ -869,6 +899,19 @@ export const DiscoverPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      if (window.confirm(`Are you sure you want to remove "${selectedListingDetail.title}"?`)) {
+                        deleteListing(selectedListingDetail.id);
+                        setSelectedListingDetail(null);
+                      }
+                    }}
+                    className="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+                    title="Remove this listing"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Remove</span>
+                  </button>
                   <button
                     onClick={() => {
                       openChatWith({
