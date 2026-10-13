@@ -140,19 +140,19 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-[#e2ece9] overflow-hidden max-h-[92vh] flex flex-col">
+      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-[#ebebeb] overflow-hidden max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#e2ece9] bg-gradient-to-r from-[#117c74]/10 via-transparent to-[#10b981]/10 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-[#ebebeb] bg-gradient-to-r from-[#ff385c]/5 via-transparent to-[#10b981]/10 flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-heading text-lg font-bold text-[#17222b]">
+              <h3 className="font-heading text-lg font-bold text-[#222222]">
                 {step === 1 ? 'Step 1 — Lifestyle Details' : 'Step 2 — Roommate Preferences'}
               </h3>
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#117c74] text-white">
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#ff385c] text-white">
                 Step {step} of 2
               </span>
             </div>
-            <p className="text-xs text-[#5f7572] mt-0.5">
+            <p className="text-xs text-[#6a6a6a] mt-0.5">
               {step === 1
                 ? 'Your sleep routine, cleanliness standards, and social energy'
                 : 'Dietary habits, study intensity, room type, and non-negotiables'}
@@ -161,7 +161,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 text-[#5f7572] hover:text-[#17222b] rounded-full cursor-pointer"
+            className="p-1.5 text-[#6a6a6a] hover:text-[#222222] rounded-full cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -181,8 +181,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
           {step === 1 && (
             <div className="space-y-5">
               {/* Indian Student Avatar Selector */}
-              <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2.5">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b]">
+              <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#222222]">
                   Choose Your Student Profile Avatar
                 </label>
                 <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
@@ -217,14 +217,14 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               </div>
 
               {/* Sleep schedule (bedtime/wake time) */}
-              <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-3">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                  <Moon className="w-4 h-4 text-[#117c74]" /> Sleep Schedule & Daily Rhythm
+              <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-3">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                  <Moon className="w-4 h-4 text-[#ff385c]" /> Sleep Schedule & Daily Rhythm
                 </label>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <span className="text-[11px] text-[#5f7572] block mb-1">
+                    <span className="text-[11px] text-[#6a6a6a] block mb-1">
                       Typical Bedtime
                     </span>
                     <select
@@ -239,7 +239,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                           setSleepSchedule('flexible');
                         }
                       }}
-                      className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="10:00 PM">10:00 PM (Early to bed)</option>
                       <option value="11:00 PM">11:00 PM (Balanced)</option>
@@ -250,13 +250,13 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                   </div>
 
                   <div>
-                    <span className="text-[11px] text-[#5f7572] block mb-1">
+                    <span className="text-[11px] text-[#6a6a6a] block mb-1">
                       Typical Wake Time
                     </span>
                     <select
                       value={wakeTime}
                       onChange={(e) => setWakeTime(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="06:00 AM">06:00 AM (Early workout/focus)</option>
                       <option value="07:30 AM">07:30 AM (College morning prep)</option>
@@ -278,8 +278,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                       onClick={() => setSleepSchedule(s.key as SleepSchedule)}
                       className={`flex-1 p-2 rounded-xl border text-center transition-all cursor-pointer ${
                         sleepSchedule === s.key
-                          ? 'bg-[#117c74] text-white border-[#117c74] shadow-xs'
-                          : 'bg-white text-[#5f7572] border-[#e2ece9] hover:bg-[#f6f9f8]'
+                          ? 'bg-[#ff385c] text-white border-[#117c74] shadow-xs'
+                          : 'bg-white text-[#6a6a6a] border-[#ebebeb] hover:bg-[#f7f7f7]'
                       }`}
                     >
                       <div className="text-xs font-bold">{s.label}</div>
@@ -290,12 +290,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               </div>
 
               {/* Cleanliness (1-5 scale) */}
-              <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2.5">
+              <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-[#117c74]" /> Cleanliness Level (1–5 Scale)
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-[#ff385c]" /> Cleanliness Level (1–5 Scale)
                   </label>
-                  <span className="text-xs font-bold text-[#117c74]">
+                  <span className="text-xs font-bold text-[#ff385c]">
                     {cleanlinessRating === 1 && '1/5 — Very Casual / Laidback'}
                     {cleanlinessRating === 2 && '2/5 — Easygoing'}
                     {cleanlinessRating === 3 && '3/5 — Moderately Tidy'}
@@ -312,35 +312,35 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                       onClick={() => setCleanlinessRating(lvl)}
                       className={`flex-1 py-2.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
                         cleanlinessRating === lvl
-                          ? 'bg-[#117c74] text-white border-[#117c74] shadow-xs'
-                          : 'bg-white text-[#17222b] border-[#e2ece9] hover:bg-[#f6f9f8]'
+                          ? 'bg-[#ff385c] text-white border-[#117c74] shadow-xs'
+                          : 'bg-white text-[#222222] border-[#ebebeb] hover:bg-[#f7f7f7]'
                       }`}
                     >
                       {lvl}
                     </button>
                   ))}
                 </div>
-                <div className="flex justify-between text-[10px] text-[#5f7572]">
+                <div className="flex justify-between text-[10px] text-[#6a6a6a]">
                   <span>Relaxed about clutter</span>
                   <span>Daily sweep & sterilized sink</span>
                 </div>
               </div>
 
               {/* Noise tolerance / social behavior */}
-              <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-3">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                  <Volume2 className="w-4 h-4 text-[#117c74]" /> Noise Tolerance & Social Behavior
+              <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-3">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                  <Volume2 className="w-4 h-4 text-[#ff385c]" /> Noise Tolerance & Social Behavior
                 </label>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <span className="text-[11px] text-[#5f7572] block mb-1">
+                    <span className="text-[11px] text-[#6a6a6a] block mb-1">
                       Guest Hosting Frequency
                     </span>
                     <select
                       value={guestFrequency}
                       onChange={(e) => setGuestFrequency(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="Never or rarely">Never or rarely</option>
                       <option value="Weekends only with notice">Weekends only with notice</option>
@@ -350,13 +350,13 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                   </div>
 
                   <div>
-                    <span className="text-[11px] text-[#5f7572] block mb-1">
+                    <span className="text-[11px] text-[#6a6a6a] block mb-1">
                       Parties & Gathering Policy
                     </span>
                     <select
                       value={partyFrequency}
                       onChange={(e) => setPartyFrequency(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="Zero parties / quiet flat">Zero parties / strict quiet flat</option>
                       <option value="Occasional chill chai/study gatherings">Occasional chill chai/study gatherings</option>
@@ -377,8 +377,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                       onClick={() => setSocialHabit(s.key as SocialHabit)}
                       className={`flex-1 p-2 text-xs font-semibold rounded-xl border text-center transition-all cursor-pointer ${
                         socialHabit === s.key
-                          ? 'bg-[#117c74] text-white border-[#117c74] shadow-xs'
-                          : 'bg-white text-[#5f7572] border-[#e2ece9]'
+                          ? 'bg-[#ff385c] text-white border-[#117c74] shadow-xs'
+                          : 'bg-white text-[#6a6a6a] border-[#ebebeb]'
                       }`}
                     >
                       <div className="font-bold">{s.label}</div>
@@ -389,14 +389,14 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               </div>
 
               {/* Smoking / drinking tolerance */}
-              <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                  <Cigarette className="w-4 h-4 text-[#117c74]" /> Smoking & Drinking Tolerance
+              <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                  <Cigarette className="w-4 h-4 text-[#ff385c]" /> Smoking & Drinking Tolerance
                 </label>
                 <select
                   value={substanceTolerance}
                   onChange={(e) => setSubstanceTolerance(e.target.value)}
-                  className="w-full px-3 py-2.5 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                  className="w-full px-3 py-2.5 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                 >
                   <option value="Strictly non-smoking & alcohol-free">Strictly non-smoking & alcohol-free flat</option>
                   <option value="Balcony / outdoor smoking only">Balcony / outdoor smoking only</option>
@@ -411,9 +411,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
           {step === 2 && (
             <div className="space-y-5">
               {/* Food preference (veg / non-veg / eggetarian / Jain / vegan) */}
-              <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-3">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                  <Utensils className="w-4 h-4 text-[#117c74]" /> Food & Kitchen Preferences
+              <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-3">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                  <Utensils className="w-4 h-4 text-[#ff385c]" /> Food & Kitchen Preferences
                 </label>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -430,8 +430,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                       onClick={() => setFoodPreference(f.key as FoodPreference)}
                       className={`p-2.5 text-xs font-semibold rounded-xl border text-center transition-all cursor-pointer ${
                         foodPreference === f.key
-                          ? 'bg-[#117c74] text-white border-[#117c74] shadow-xs'
-                          : 'bg-white text-[#17222b] border-[#e2ece9]'
+                          ? 'bg-[#ff385c] text-white border-[#117c74] shadow-xs'
+                          : 'bg-white text-[#222222] border-[#ebebeb]'
                       }`}
                     >
                       <div className="font-bold">{f.label}</div>
@@ -441,13 +441,13 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                 </div>
 
                 <div className="pt-1">
-                  <span className="text-[11px] text-[#5f7572] block mb-1">
+                  <span className="text-[11px] text-[#6a6a6a] block mb-1">
                     Meal / Tiffin Plan
                   </span>
                   <select
                     value={cookPreference}
                     onChange={(e) => setCookPreference(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                    className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                   >
                     <option value="Cook sharing (ghar ka khana)">Hire common cook (ghar ka khana split 50:50)</option>
                     <option value="Tiffin service delivery">Daily tiffin delivery</option>
@@ -458,20 +458,20 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               </div>
 
               {/* Study habits (early/night owl, intensity, hours/day) */}
-              <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-3">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                  <BookOpen className="w-4 h-4 text-[#117c74]" /> Study Habits & Intensity
+              <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-3">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                  <BookOpen className="w-4 h-4 text-[#ff385c]" /> Study Habits & Intensity
                 </label>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <span className="text-[11px] text-[#5f7572] block mb-1">
+                    <span className="text-[11px] text-[#6a6a6a] block mb-1">
                       Study Schedule Preference
                     </span>
                     <select
                       value={studySchedule}
                       onChange={(e) => setStudySchedule(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="Early riser studier (morning focus)">Early riser studier (06:00 AM focus)</option>
                       <option value="Night owl studier (midnight crunch)">Night owl studier (11 PM – 03 AM)</option>
@@ -480,13 +480,13 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                   </div>
 
                   <div>
-                    <span className="text-[11px] text-[#5f7572] block mb-1">
+                    <span className="text-[11px] text-[#6a6a6a] block mb-1">
                       Daily Study Intensity
                     </span>
                     <select
                       value={studyHours}
                       onChange={(e) => setStudyHours(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="1–2 hours/day (Casual)">1–2 hours/day (Casual)</option>
                       <option value="3–4 hours/day (Standard)">3–4 hours/day (Standard)</option>
@@ -507,8 +507,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                       onClick={() => setStudyHabit(st.key as StudyHabit)}
                       className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border text-center transition-colors cursor-pointer ${
                         studyHabit === st.key
-                          ? 'bg-[#117c74] text-white border-[#117c74]'
-                          : 'bg-white text-[#5f7572] border-[#e2ece9]'
+                          ? 'bg-[#ff385c] text-white border-[#117c74]'
+                          : 'bg-white text-[#6a6a6a] border-[#ebebeb]'
                       }`}
                     >
                       {st.label}
@@ -518,9 +518,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               </div>
 
               {/* Room sharing preference (private room vs shared) */}
-              <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                  <Home className="w-4 h-4 text-[#117c74]" /> Room Sharing Preference
+              <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                  <Home className="w-4 h-4 text-[#ff385c]" /> Room Sharing Preference
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
@@ -534,8 +534,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                       onClick={() => setRoomSharing(r.key as any)}
                       className={`p-2.5 text-xs font-semibold rounded-xl border text-center transition-all cursor-pointer ${
                         roomSharing === r.key
-                          ? 'bg-[#117c74] text-white border-[#117c74] shadow-xs'
-                          : 'bg-white text-[#17222b] border-[#e2ece9]'
+                          ? 'bg-[#ff385c] text-white border-[#117c74] shadow-xs'
+                          : 'bg-white text-[#222222] border-[#ebebeb]'
                       }`}
                     >
                       <div className="font-bold">{r.label}</div>
@@ -546,12 +546,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               </div>
 
               {/* Checklist for Dealbreakers */}
-              <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2.5">
+              <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#17222b]">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#222222]">
                     Checklist for Strict Dealbreakers
                   </label>
-                  <span className="text-[10px] text-[#5f7572]">
+                  <span className="text-[10px] text-[#6a6a6a]">
                     {dealbreakers.length} selected
                   </span>
                 </div>
@@ -566,7 +566,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                         className={`p-2.5 rounded-xl border text-xs flex items-center justify-between cursor-pointer transition-colors ${
                           checked
                             ? 'bg-[#fef2f2] border-[#fecdd3] text-[#991b1b] font-medium'
-                            : 'bg-white border-[#e2ece9] text-[#5f7572]'
+                            : 'bg-white border-[#ebebeb] text-[#6a6a6a]'
                         }`}
                       >
                         <span className="truncate pr-2">{item}</span>
@@ -586,16 +586,16 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               </div>
 
               {/* Monthly Budget Range in INR */}
-              <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2">
-                <div className="flex justify-between text-xs font-bold text-[#17222b]">
+              <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2">
+                <div className="flex justify-between text-xs font-bold text-[#222222]">
                   <span>Target Rent Budget Range</span>
-                  <span className="text-[#117c74]">
+                  <span className="text-[#ff385c]">
                     ₹{budgetMin.toLocaleString('en-IN')} – ₹{budgetMax.toLocaleString('en-IN')} / mo
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <span className="text-[10px] text-[#5f7572]">Min (₹{budgetMin})</span>
+                    <span className="text-[10px] text-[#6a6a6a]">Min (₹{budgetMin})</span>
                     <input
                       type="range"
                       min={5000}
@@ -603,11 +603,11 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                       step={500}
                       value={budgetMin}
                       onChange={(e) => setBudgetMin(Number(e.target.value))}
-                      className="w-full accent-[#117c74]"
+                      className="w-full accent-[#ff385c]"
                     />
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#5f7572]">Max (₹{budgetMax})</span>
+                    <span className="text-[10px] text-[#6a6a6a]">Max (₹{budgetMax})</span>
                     <input
                       type="range"
                       min={10000}
@@ -615,7 +615,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                       step={500}
                       value={budgetMax}
                       onChange={(e) => setBudgetMax(Number(e.target.value))}
-                      className="w-full accent-[#117c74]"
+                      className="w-full accent-[#ff385c]"
                     />
                   </div>
                 </div>
@@ -625,12 +625,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
         </div>
 
         {/* Modal Footer Controls */}
-        <div className="px-6 py-4 border-t border-[#e2ece9] bg-white flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-[#ebebeb] bg-white flex items-center justify-between">
           {step === 1 ? (
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold text-[#5f7572] hover:bg-[#f6f9f8] rounded-xl cursor-pointer"
+              className="px-4 py-2 text-xs font-semibold text-[#6a6a6a] hover:bg-[#f7f7f7] rounded-xl cursor-pointer"
             >
               Skip for Now
             </button>
@@ -638,7 +638,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="px-4 py-2 text-xs font-semibold text-[#5f7572] hover:bg-[#f6f9f8] rounded-xl cursor-pointer flex items-center gap-1.5"
+              className="px-4 py-2 text-xs font-semibold text-[#6a6a6a] hover:bg-[#f7f7f7] rounded-xl cursor-pointer flex items-center gap-1.5"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Lifestyle
             </button>
@@ -648,7 +648,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
             <button
               type="button"
               onClick={() => setStep(2)}
-              className="px-5 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white font-semibold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+              className="px-5 py-2.5 bg-[#ff385c] hover:bg-[#e00b41] text-white shadow-xs font-semibold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
             >
               <span>Continue to Preferences</span>
               <ArrowRight className="w-4 h-4" />
@@ -657,7 +657,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
             <button
               type="button"
               onClick={handleFinish}
-              className="px-6 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2"
+              className="px-6 py-2.5 bg-[#ff385c] hover:bg-[#e00b41] text-white shadow-xs font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2"
             >
               <CheckCircle className="w-4 h-4" />
               <span>Save & Compute Flatmate Matches</span>

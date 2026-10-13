@@ -73,9 +73,9 @@ export const RadarChartModal: React.FC<RadarChartModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-[#e2ece9] overflow-hidden max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-[#ebebeb] overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2ece9] bg-gradient-to-r from-[#117c74]/10 via-transparent to-[#f43f5e]/10">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#ebebeb] bg-gradient-to-r from-[#ff385c]/5 via-transparent to-[#f43f5e]/10">
           <div className="flex items-center gap-3">
             <img
               src={candidate.avatarUrl}
@@ -84,19 +84,19 @@ export const RadarChartModal: React.FC<RadarChartModalProps> = ({
             />
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-heading text-lg font-bold text-[#17222b]">
+                <h3 className="font-heading text-lg font-bold text-[#222222]">
                   {candidate.fullName}
                 </h3>
                 {candidate.isStudentVerified && <VerifiedBadge size="sm" />}
               </div>
-              <p className="text-xs text-[#5f7572]">
+              <p className="text-xs text-[#6a6a6a]">
                 {candidate.courseYear} • {candidate.college}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-[#5f7572] hover:text-[#17222b] hover:bg-black/5 rounded-full transition-colors cursor-pointer"
+            className="p-1.5 text-[#6a6a6a] hover:text-[#222222] hover:bg-black/5 rounded-full transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -105,27 +105,27 @@ export const RadarChartModal: React.FC<RadarChartModalProps> = ({
         {/* Scrollable Body */}
         <div className="p-6 overflow-y-auto space-y-6">
           {/* Top Score Banner */}
-          <div className="flex items-center justify-between p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9]">
+          <div className="flex items-center justify-between p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb]">
             <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#5f7572]">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#6a6a6a]">
                 Overall Compatibility Index
               </span>
-              <p className="text-xs text-[#5f7572] mt-0.5">
+              <p className="text-xs text-[#6a6a6a] mt-0.5">
                 Calculated across 5 lifestyle & financial dimensions
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-12 h-12 rounded-2xl bg-[#117c74] text-white flex items-center justify-center font-heading text-xl font-bold shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-[#ff385c] text-white flex items-center justify-center font-heading text-xl font-bold shadow-xs">
                 {compatibility.overallScore}%
               </div>
             </div>
           </div>
 
           {/* Dual Overlay Radar Chart */}
-          <div className="bg-white rounded-2xl p-4 border border-[#e2ece9]">
+          <div className="bg-white rounded-2xl p-4 border border-[#ebebeb]">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-[#5f7572] flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#117c74]" />
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#ff385c]" />
                 5-Dimension Compatibility Radar
               </h4>
               <div className="flex items-center gap-4 text-xs font-medium">
@@ -219,22 +219,22 @@ export const RadarChartModal: React.FC<RadarChartModalProps> = ({
           </div>
 
           {/* Bio & Details */}
-          <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] text-xs text-[#17222b] space-y-2">
-            <span className="font-semibold text-[#5f7572] uppercase tracking-wider block">
+          <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] text-xs text-[#222222] space-y-2">
+            <span className="font-semibold text-[#6a6a6a] uppercase tracking-wider block">
               Candidate Bio & Habits
             </span>
-            <p className="leading-relaxed text-[#17222b]">{candidate.bio}</p>
+            <p className="leading-relaxed text-[#222222]">{candidate.bio}</p>
             <div className="pt-2 flex flex-wrap gap-2">
-              <span className="px-2.5 py-1 bg-white border border-[#e2ece9] rounded-lg">
+              <span className="px-2.5 py-1 bg-white border border-[#ebebeb] rounded-lg">
                 Budget: ₹{candidate.budgetMin.toLocaleString('en-IN')} - ₹{candidate.budgetMax.toLocaleString('en-IN')}/mo
               </span>
-              <span className="px-2.5 py-1 bg-white border border-[#e2ece9] rounded-lg">
+              <span className="px-2.5 py-1 bg-white border border-[#ebebeb] rounded-lg">
                 Sleep: {candidate.sleepSchedule.replace('_', ' ')}
               </span>
-              <span className="px-2.5 py-1 bg-white border border-[#e2ece9] rounded-lg">
+              <span className="px-2.5 py-1 bg-white border border-[#ebebeb] rounded-lg">
                 Diet: {candidate.foodPreference.replace('_', ' ')}
               </span>
-              <span className="px-2.5 py-1 bg-white border border-[#e2ece9] rounded-lg">
+              <span className="px-2.5 py-1 bg-white border border-[#ebebeb] rounded-lg">
                 Hygiene: {candidate.cleanliness.replace('_', ' ')}
               </span>
             </div>
@@ -242,21 +242,21 @@ export const RadarChartModal: React.FC<RadarChartModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e2ece9] bg-white">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#ebebeb] bg-white">
           <button
             onClick={() => {
               showToast(`Saved ${candidate.fullName} to your priority shortlist!`);
               onClose();
             }}
-            className="px-4 py-2.5 text-xs font-semibold text-[#5f7572] hover:text-[#17222b] hover:bg-[#f6f9f8] rounded-xl border border-[#e2ece9] transition-colors cursor-pointer"
+            className="px-4 py-2.5 text-xs font-semibold text-[#6a6a6a] hover:text-[#222222] hover:bg-[#f7f7f7] rounded-full border border-[#ebebeb] transition-colors cursor-pointer"
           >
             Save to Shortlist
           </button>
           <button
             onClick={handleStartChat}
-            className="px-5 py-2.5 text-xs font-semibold text-white bg-[#117c74] hover:bg-[#0d635c] rounded-xl shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+            className="px-5 py-2.5 text-xs font-semibold text-white bg-[#222222] hover:bg-black rounded-full shadow-xs transition-all flex items-center gap-2 cursor-pointer"
           >
-            <MessageSquare className="w-4 h-4" />
+            <MessageSquare className="w-4 h-4 text-[#ff385c]" />
             Connect & Message
           </button>
         </div>

@@ -152,7 +152,7 @@ export const ProfilePage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Header with Avatar & Completion Ring */}
-      <div className="bg-white rounded-3xl border border-[#e2ece9] p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div className="bg-white rounded-3xl border border-[#ebebeb] p-6 shadow-subtle flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="relative w-20 h-20">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
@@ -160,7 +160,7 @@ export const ProfilePage: React.FC = () => {
                 cx="18"
                 cy="18"
                 r="15"
-                className="stroke-[#e2ece9]"
+                className="stroke-[#ebebeb]"
                 strokeWidth="2.5"
                 fill="none"
               />
@@ -168,7 +168,7 @@ export const ProfilePage: React.FC = () => {
                 cx="18"
                 cy="18"
                 r="15"
-                className="stroke-[#117c74]"
+                className="stroke-[#ff385c]"
                 strokeWidth="2.5"
                 strokeDasharray={`${currentUser.profileCompletion}, 100`}
                 strokeLinecap="round"
@@ -184,15 +184,15 @@ export const ProfilePage: React.FC = () => {
 
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-heading text-xl font-bold text-[#17222b]">
+              <h1 className="font-heading text-xl font-bold text-[#222222]">
                 {currentUser.fullName}
               </h1>
               {currentUser.isStudentVerified && <VerifiedBadge size="md" />}
             </div>
-            <p className="text-xs text-[#5f7572] mt-0.5">
+            <p className="text-xs text-[#6a6a6a] mt-0.5">
               {currentUser.courseYear} • {currentUser.college}
             </p>
-            <div className="text-xs font-semibold text-[#117c74] mt-1 flex items-center gap-1">
+            <div className="text-xs font-semibold text-[#ff385c] mt-1 flex items-center gap-1">
               <span>Profile {currentUser.profileCompletion}% Complete</span>
             </div>
           </div>
@@ -200,41 +200,41 @@ export const ProfilePage: React.FC = () => {
 
         <button
           onClick={handleExportData}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#f6f9f8] hover:bg-[#e2ece9] text-[#17222b] text-xs font-semibold rounded-xl border border-[#e2ece9] transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#f7f7f7] hover:bg-[#ebebeb] text-[#222222] text-xs font-semibold rounded-xl border border-[#ebebeb] transition-colors cursor-pointer"
         >
-          <Download className="w-4 h-4 text-[#117c74]" /> Export Data (JSON)
+          <Download className="w-4 h-4 text-[#ff385c]" /> Export Data (JSON)
         </button>
       </div>
 
       {/* Trust & Status Verification Card */}
-      <div className="bg-gradient-to-r from-[#f0f9ff]/70 via-white to-[#fef9c3]/50 rounded-3xl border border-[#e2ece9] p-6 shadow-2xs space-y-4">
+      <div className="bg-gradient-to-r from-[#f0f9ff]/70 via-white to-[#fef9c3]/50 rounded-3xl border border-[#ebebeb] p-6 shadow-subtle space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-[#117c74]/10 text-[#117c74] rounded-2xl">
-              <ShieldCheck className="w-6 h-6 text-[#117c74]" />
+            <div className="p-3 bg-[#ff385c]/10 text-[#ff385c] rounded-2xl">
+              <ShieldCheck className="w-6 h-6 text-[#ff385c]" />
             </div>
             <div>
-              <h3 className="font-heading text-base font-bold text-[#17222b]">
+              <h3 className="font-heading text-base font-bold text-[#222222]">
                 Identity & Status Verification
               </h3>
-              <p className="text-xs text-[#5f7572]">
+              <p className="text-xs text-[#6a6a6a]">
                 Verify your institutional or corporate credentials to earn trusted badges on roommate matches.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {currentUser.isStudentVerified && (
-              <span className="px-3 py-1 bg-[#10b981] text-white text-xs font-bold rounded-full shadow-2xs">
+              <span className="px-3 py-1 bg-[#10b981] text-white text-xs font-bold rounded-full shadow-subtle">
                 🎓 Verified Student
               </span>
             )}
             {currentUser.isProfessionalVerified && (
-              <span className="px-3 py-1 bg-[#0284c7] text-white text-xs font-bold rounded-full shadow-2xs">
+              <span className="px-3 py-1 bg-[#0284c7] text-white text-xs font-bold rounded-full shadow-subtle">
                 💼 Verified Professional
               </span>
             )}
             {!currentUser.isStudentVerified && !currentUser.isProfessionalVerified && (
-              <span className="px-3 py-1 bg-[#f59e0b] text-white text-xs font-bold rounded-full shadow-2xs">
+              <span className="px-3 py-1 bg-[#f59e0b] text-white text-xs font-bold rounded-full shadow-subtle">
                 Verification Pending
               </span>
             )}
@@ -242,7 +242,7 @@ export const ProfilePage: React.FC = () => {
         </div>
 
         {/* Verification Type Tabs */}
-        <div className="flex p-1 bg-[#f6f9f8] rounded-xl border border-[#e2ece9] max-w-sm">
+        <div className="flex p-1 bg-[#f7f7f7] rounded-xl border border-[#ebebeb] max-w-sm">
           <button
             type="button"
             onClick={() => {
@@ -252,8 +252,8 @@ export const ProfilePage: React.FC = () => {
             }}
             className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               verificationType === 'professional'
-                ? 'bg-white text-[#17222b] shadow-xs'
-                : 'text-[#5f7572] hover:text-[#17222b]'
+                ? 'bg-white text-[#222222] shadow-xs'
+                : 'text-[#6a6a6a] hover:text-[#222222]'
             }`}
           >
             <Briefcase className="w-3.5 h-3.5 text-[#0284c7]" />
@@ -268,8 +268,8 @@ export const ProfilePage: React.FC = () => {
             }}
             className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               verificationType === 'student'
-                ? 'bg-white text-[#17222b] shadow-xs'
-                : 'text-[#5f7572] hover:text-[#17222b]'
+                ? 'bg-white text-[#222222] shadow-xs'
+                : 'text-[#6a6a6a] hover:text-[#222222]'
             }`}
           >
             <GraduationCap className="w-3.5 h-3.5 text-[#ca8a04]" />
@@ -278,20 +278,20 @@ export const ProfilePage: React.FC = () => {
         </div>
 
         {/* Verification Form */}
-        <div className="p-4 bg-white/90 rounded-2xl border border-[#e2ece9] space-y-3">
+        <div className="p-4 bg-white/90 rounded-2xl border border-[#ebebeb] space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+              <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                 {verificationType === 'student' ? 'College Email Address (.edu)' : 'Corporate / Official Email Address'}
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 absolute left-3 top-2.5 text-[#5f7572]" />
+                <Mail className="w-4 h-4 absolute left-3 top-2.5 text-[#6a6a6a]" />
                 <input
                   type="email"
                   value={verificationEmailInput}
                   onChange={(e) => setVerificationEmailInput(e.target.value)}
                   placeholder={verificationType === 'student' ? 'student@college.edu' : 'you@company.com'}
-                  className="w-full pl-9 pr-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74]"
+                  className="w-full pl-9 pr-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222]"
                 />
               </div>
             </div>
@@ -300,7 +300,7 @@ export const ProfilePage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleSendOtp}
-                className="w-full py-2 px-4 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer"
+                className="w-full py-2 px-4 bg-[#ff385c] hover:bg-[#e00b41] text-white shadow-xs text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer"
               >
                 {otpSent ? 'Resend 6-Digit Code' : 'Send Verification OTP'}
               </button>
@@ -308,23 +308,23 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           {otpSent && (
-            <div className="pt-2 border-t border-[#e2ece9] flex items-center gap-3">
+            <div className="pt-2 border-t border-[#ebebeb] flex items-center gap-3">
               <div className="relative flex-1">
-                <Key className="w-4 h-4 absolute left-3 top-2.5 text-[#5f7572]" />
+                <Key className="w-4 h-4 absolute left-3 top-2.5 text-[#6a6a6a]" />
                 <input
                   type="text"
                   maxLength={6}
                   value={otpInput}
                   onChange={(e) => setOtpInput(e.target.value)}
                   placeholder="Enter 6-digit OTP"
-                  className="w-full pl-9 pr-3 py-2 text-xs font-mono-code bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                  className="w-full pl-9 pr-3 py-2 text-xs font-mono-code bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                 />
               </div>
               <button
                 type="button"
                 onClick={handleVerifyOtp}
                 disabled={verifying || !otpInput.trim()}
-                className="py-2 px-5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                className="py-2 px-5 bg-[#ff385c] hover:bg-[#e00b41] text-white shadow-xs text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
               >
                 {verifying ? 'Verifying...' : 'Confirm & Unlock Badge'}
               </button>
@@ -334,12 +334,12 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       {/* Main Profile & Lifestyle Vector Editor */}
-      <form onSubmit={handleSaveProfile} className="bg-white rounded-3xl border border-[#e2ece9] p-6 shadow-2xs space-y-6">
+      <form onSubmit={handleSaveProfile} className="bg-white rounded-3xl border border-[#ebebeb] p-6 shadow-subtle space-y-6">
         <div>
-          <h3 className="font-heading text-base font-bold text-[#17222b]">
+          <h3 className="font-heading text-base font-bold text-[#222222]">
             Lifestyle & Compatibility Vector Attributes
           </h3>
-          <p className="text-xs text-[#5f7572]">
+          <p className="text-xs text-[#6a6a6a]">
             These dimensions determine your match score with other flatmates.
           </p>
         </div>
@@ -347,7 +347,7 @@ export const ProfilePage: React.FC = () => {
         {/* Basic Info */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
               Full Name
             </label>
             <input
@@ -355,12 +355,12 @@ export const ProfilePage: React.FC = () => {
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+              className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
               Occupation / Course & Year (Optional)
             </label>
             <input
@@ -368,32 +368,32 @@ export const ProfilePage: React.FC = () => {
               value={courseYear || ''}
               onChange={(e) => setCourseYear(e.target.value)}
               placeholder="e.g. Software Engineer, Designer, or Student"
-              className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+              className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
             />
           </div>
         </div>
 
         {/* Bio */}
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
             Bio & Flatmate Intro
           </label>
           <textarea
             rows={2}
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+            className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
           />
         </div>
 
         {/* Budget Range (INR) */}
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
             Target Monthly Rent Budget: ₹{budgetMin.toLocaleString('en-IN')} - ₹{budgetMax.toLocaleString('en-IN')}
           </label>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <span className="text-[10px] text-[#5f7572]">Min (₹{budgetMin.toLocaleString('en-IN')})</span>
+              <span className="text-[10px] text-[#6a6a6a]">Min (₹{budgetMin.toLocaleString('en-IN')})</span>
               <input
                 type="range"
                 min={5000}
@@ -401,11 +401,11 @@ export const ProfilePage: React.FC = () => {
                 step={500}
                 value={budgetMin}
                 onChange={(e) => setBudgetMin(Number(e.target.value))}
-                className="w-full accent-[#117c74]"
+                className="w-full accent-[#ff385c]"
               />
             </div>
             <div>
-              <span className="text-[10px] text-[#5f7572]">Max (₹{budgetMax.toLocaleString('en-IN')})</span>
+              <span className="text-[10px] text-[#6a6a6a]">Max (₹{budgetMax.toLocaleString('en-IN')})</span>
               <input
                 type="range"
                 min={8000}
@@ -413,7 +413,7 @@ export const ProfilePage: React.FC = () => {
                 step={500}
                 value={budgetMax}
                 onChange={(e) => setBudgetMax(Number(e.target.value))}
-                className="w-full accent-[#117c74]"
+                className="w-full accent-[#ff385c]"
               />
             </div>
           </div>
@@ -423,13 +423,13 @@ export const ProfilePage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
           {/* Sleep */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1.5 flex items-center gap-1">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1.5 flex items-center gap-1">
               <Sun className="w-3.5 h-3.5 text-[#f59e0b]" /> Sleep Schedule
             </label>
             <select
               value={sleepSchedule}
               onChange={(e) => setSleepSchedule(e.target.value as any)}
-              className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+              className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
             >
               <option value="early_bird">Early Bird (Before 11 PM)</option>
               <option value="night_owl">Night Owl (Past 1 AM)</option>
@@ -439,13 +439,13 @@ export const ProfilePage: React.FC = () => {
 
           {/* Cleanliness */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1.5 flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-[#117c74]" /> Cleanliness
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1.5 flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5 text-[#ff385c]" /> Cleanliness
             </label>
             <select
               value={cleanliness}
               onChange={(e) => setCleanliness(e.target.value as any)}
-              className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+              className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
             >
               <option value="neat_freak">Neat Freak (Spotless, no clutter)</option>
               <option value="moderate">Moderate (Reasonably organized)</option>
@@ -455,13 +455,13 @@ export const ProfilePage: React.FC = () => {
 
           {/* Social */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1.5 flex items-center gap-1">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1.5 flex items-center gap-1">
               <User className="w-3.5 h-3.5 text-[#6366f1]" /> Social Energy
             </label>
             <select
               value={socialHabits}
               onChange={(e) => setSocialHabits(e.target.value as any)}
-              className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+              className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
             >
               <option value="introvert">Introvert (Quiet sanctuary)</option>
               <option value="ambivert">Ambivert (Balanced vibe)</option>
@@ -471,13 +471,13 @@ export const ProfilePage: React.FC = () => {
 
           {/* Food */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1.5 flex items-center gap-1">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1.5 flex items-center gap-1">
               <Utensils className="w-3.5 h-3.5 text-[#10b981]" /> Dietary Preference
             </label>
             <select
               value={foodPreference}
               onChange={(e) => setFoodPreference(e.target.value as any)}
-              className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+              className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
             >
               <option value="pure_veg">Strict Vegetarian</option>
               <option value="jain">Jain Diet</option>
@@ -489,13 +489,13 @@ export const ProfilePage: React.FC = () => {
 
           {/* Study */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1.5 flex items-center gap-1">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1.5 flex items-center gap-1">
               <BookOpen className="w-3.5 h-3.5 text-[#0284c7]" /> Study Habits
             </label>
             <select
               value={studyHabits}
               onChange={(e) => setStudyHabits(e.target.value as any)}
-              className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+              className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
             >
               <option value="ambient_music">Ambient Music / Podcasts</option>
               <option value="deep_silence">Deep Library Silence</option>
@@ -505,22 +505,22 @@ export const ProfilePage: React.FC = () => {
 
           {/* UPI ID */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1.5 flex items-center gap-1">
-              <CreditCard className="w-3.5 h-3.5 text-[#117c74]" /> UPI ID for Settlements
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1.5 flex items-center gap-1">
+              <CreditCard className="w-3.5 h-3.5 text-[#ff385c]" /> UPI ID for Settlements
             </label>
             <input
               type="text"
               value={upiId}
               onChange={(e) => setUpiId(e.target.value)}
               placeholder="e.g. yourname@okhdfcbank"
-              className="w-full px-3 py-2 text-xs font-mono-code bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+              className="w-full px-3 py-2 text-xs font-mono-code bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
             />
           </div>
         </div>
 
         {/* Preferred Localities */}
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-2">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-2">
             Target Gurugram Localities
           </label>
           <div className="flex flex-wrap gap-2">
@@ -531,10 +531,10 @@ export const ProfilePage: React.FC = () => {
                   key={loc}
                   type="button"
                   onClick={() => toggleLocality(loc)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
                     active
-                      ? 'bg-[#117c74] text-white border-[#117c74]'
-                      : 'bg-[#f6f9f8] text-[#5f7572] border-[#e2ece9] hover:bg-white'
+                      ? 'bg-[#222222] text-white border-[#222222] shadow-xs'
+                      : 'bg-white text-[#222222] border-[#ebebeb] hover:border-[#222222]'
                   }`}
                 >
                   {loc} {active && '✓'}
@@ -545,12 +545,12 @@ export const ProfilePage: React.FC = () => {
         </div>
 
         {/* Save CTA */}
-        <div className="pt-4 border-t border-[#e2ece9] flex justify-end">
+        <div className="pt-4 border-t border-[#ebebeb] flex justify-end">
           <button
             type="submit"
-            className="px-6 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+            className="px-6 py-2.5 bg-[#222222] hover:bg-black text-white text-xs font-bold rounded-full shadow-xs transition-all flex items-center gap-2 cursor-pointer"
           >
-            <Save className="w-4 h-4" /> Save Profile & Recalculate Matches
+            <Save className="w-4 h-4 text-[#ff385c]" /> Save Profile & Recalculate Matches
           </button>
         </div>
       </form>

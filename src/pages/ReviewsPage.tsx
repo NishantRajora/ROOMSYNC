@@ -73,7 +73,7 @@ export const ReviewsPage: React.FC = () => {
           <Star
             key={star}
             className={`w-3.5 h-3.5 ${
-              star <= rating ? 'text-[#f59e0b] fill-[#f59e0b]' : 'text-[#e2ece9]'
+              star <= rating ? 'text-[#f59e0b] fill-[#f59e0b]' : 'text-[#ebebeb]'
             }`}
           />
         ))}
@@ -86,35 +86,35 @@ export const ReviewsPage: React.FC = () => {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-[#17222b] tracking-tight">
+          <h1 className="font-heading text-2xl font-bold text-[#222222] tracking-tight">
             Landlord & Locality Community Reviews
           </h1>
-          <p className="text-xs text-[#5f7572] mt-1">
+          <p className="text-xs text-[#6a6a6a] mt-1">
             Real student accounts of deposit return integrity, water backup, and maintenance in student zones.
           </p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full transition-all shadow-xs cursor-pointer"
         >
-          <PlusCircle className="w-4 h-4" />
-          Write a Landlord Review
+          <PlusCircle className="w-4 h-4 text-[#ff385c]" />
+          <span>Write a Landlord Review</span>
         </button>
       </div>
 
       {/* Filter Tabs */}
-      <div className="bg-white p-3 rounded-2xl border border-[#e2ece9] shadow-2xs flex flex-wrap items-center gap-2">
-        <span className="text-xs font-bold text-[#5f7572] px-2 flex items-center gap-1">
-          <Filter className="w-3.5 h-3.5" /> Locality:
+      <div className="bg-white p-3 rounded-2xl border border-[#ebebeb] shadow-subtle flex flex-wrap items-center gap-2">
+        <span className="text-xs font-bold text-[#6a6a6a] px-2 flex items-center gap-1">
+          <Filter className="w-3.5 h-3.5 text-[#ff385c]" /> Locality:
         </span>
         {['All', 'Sector 23', 'DLF Phase 3', 'Palam Vihar', 'Sushant Lok'].map((loc) => (
           <button
             key={loc}
             onClick={() => setLocalityFilter(loc)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
               localityFilter === loc
-                ? 'bg-[#117c74] text-white shadow-2xs'
-                : 'bg-[#f6f9f8] text-[#5f7572] hover:text-[#17222b]'
+                ? 'bg-[#222222] text-white shadow-xs'
+                : 'bg-white text-[#222222] border border-[#ebebeb] hover:border-[#222222]'
             }`}
           >
             {loc}
@@ -127,21 +127,21 @@ export const ReviewsPage: React.FC = () => {
         {filteredReviews.map((rev) => (
           <div
             key={rev.id}
-            className="bg-white rounded-3xl border border-[#e2ece9] p-6 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+            className="bg-white rounded-3xl border border-[#ebebeb] p-6 shadow-subtle hover:shadow-md transition-all flex flex-col justify-between space-y-4"
           >
             <div>
               {/* Header: Landlord name & Locality */}
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-heading font-bold text-base text-[#17222b]">
+                    <h3 className="font-heading font-bold text-base text-[#222222]">
                       {rev.landlordName}
                     </h3>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[#f6f9f8] text-[#117c74] border border-[#e2ece9]">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[#f7f7f7] text-[#ff385c] border border-[#ebebeb]">
                       {rev.locality}
                     </span>
                   </div>
-                  <p className="text-xs text-[#5f7572] mt-0.5">
+                  <p className="text-xs text-[#6a6a6a] mt-0.5">
                     {rev.propertyAddress}
                   </p>
                 </div>
@@ -174,27 +174,27 @@ export const ReviewsPage: React.FC = () => {
               </div>
 
               {/* Sub-ratings */}
-              <div className="grid grid-cols-2 gap-2 text-xs text-[#5f7572] my-2">
-                <div className="p-2 bg-[#f6f9f8] rounded-xl border border-[#e2ece9] flex items-center justify-between">
+              <div className="grid grid-cols-2 gap-2 text-xs text-[#6a6a6a] my-2">
+                <div className="p-2 bg-[#f7f7f7] rounded-xl border border-[#ebebeb] flex items-center justify-between">
                   <span>Maintenance Fixes</span>
                   {renderStars(rev.maintenanceRating)}
                 </div>
-                <div className="p-2 bg-[#f6f9f8] rounded-xl border border-[#e2ece9] flex items-center justify-between">
+                <div className="p-2 bg-[#f7f7f7] rounded-xl border border-[#ebebeb] flex items-center justify-between">
                   <span>Power / Water Backup</span>
                   {renderStars(rev.powerWaterRating)}
                 </div>
               </div>
 
               {/* Review Text */}
-              <p className="text-xs text-[#17222b] leading-relaxed pt-2">
+              <p className="text-xs text-[#222222] leading-relaxed pt-2">
                 "{rev.reviewText}"
               </p>
             </div>
 
             {/* Author Footer */}
-            <div className="pt-3 border-t border-[#e2ece9] flex items-center justify-between text-xs text-[#5f7572]">
+            <div className="pt-3 border-t border-[#ebebeb] flex items-center justify-between text-xs text-[#6a6a6a]">
               <div className="flex items-center gap-1.5">
-                <span className="font-medium text-[#17222b]">{rev.authorName}</span>
+                <span className="font-medium text-[#222222]">{rev.authorName}</span>
                 {rev.authorVerified && <VerifiedBadge size="sm" />}
               </div>
               <span className="text-[11px]">{rev.date}</span>
@@ -206,14 +206,14 @@ export const ReviewsPage: React.FC = () => {
       {/* Add Review Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-[#e2ece9] overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2ece9]">
-              <h3 className="font-heading text-lg font-bold text-[#17222b]">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-[#ebebeb] overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#ebebeb]">
+              <h3 className="font-heading text-lg font-bold text-[#222222]">
                 Add Community Landlord Review
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 text-[#5f7572] hover:text-[#17222b] rounded-full cursor-pointer"
+                className="p-1.5 text-[#6a6a6a] hover:text-[#222222] rounded-full cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -221,7 +221,7 @@ export const ReviewsPage: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                   Landlord / Building Name
                 </label>
                 <input
@@ -230,19 +230,19 @@ export const ReviewsPage: React.FC = () => {
                   value={landlordName}
                   onChange={(e) => setLandlordName(e.target.value)}
                   placeholder="e.g. Ramesh Chandra (Sector 23 Flat 310)"
-                  className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                  className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                     Locality
                   </label>
                   <select
                     value={locality}
                     onChange={(e) => setLocality(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                    className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                   >
                     <option value="Sector 23">Sector 23 (NCU)</option>
                     <option value="DLF Phase 3">DLF Phase 3</option>
@@ -252,7 +252,7 @@ export const ReviewsPage: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                     Property Address / Plot
                   </label>
                   <input
@@ -260,14 +260,14 @@ export const ReviewsPage: React.FC = () => {
                     value={propertyAddress}
                     onChange={(e) => setPropertyAddress(e.target.value)}
                     placeholder="e.g. Block C, Plot 412"
-                    className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                    className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                   />
                 </div>
               </div>
 
               {/* Deposit Return Yes/No */}
-              <div className="p-3.5 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2">
-                <label className="block text-xs font-bold text-[#17222b]">
+              <div className="p-3.5 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2">
+                <label className="block text-xs font-bold text-[#222222]">
                   Did the landlord return your security deposit fairly?
                 </label>
                 <div className="flex gap-4">
@@ -297,20 +297,20 @@ export const ReviewsPage: React.FC = () => {
                   value={depositComment}
                   onChange={(e) => setDepositComment(e.target.value)}
                   placeholder="Detail deposit refund timeline or deductions..."
-                  className="w-full px-3 py-1.5 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                  className="w-full px-3 py-1.5 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                 />
               </div>
 
               {/* Star Ratings */}
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-[10px] font-semibold text-[#5f7572] uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#6a6a6a] uppercase mb-1">
                     Overall
                   </label>
                   <select
                     value={overallRating}
                     onChange={(e) => setOverallRating(Number(e.target.value))}
-                    className="w-full px-2 py-1.5 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl"
+                    className="w-full px-2 py-1.5 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl"
                   >
                     {[5, 4, 3, 2, 1].map((n) => (
                       <option key={n} value={n}>{n} Stars</option>
@@ -318,13 +318,13 @@ export const ReviewsPage: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-[#5f7572] uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#6a6a6a] uppercase mb-1">
                     Maintenance
                   </label>
                   <select
                     value={maintenanceRating}
                     onChange={(e) => setMaintenanceRating(Number(e.target.value))}
-                    className="w-full px-2 py-1.5 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl"
+                    className="w-full px-2 py-1.5 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl"
                   >
                     {[5, 4, 3, 2, 1].map((n) => (
                       <option key={n} value={n}>{n} Stars</option>
@@ -332,13 +332,13 @@ export const ReviewsPage: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-[#5f7572] uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#6a6a6a] uppercase mb-1">
                     Power & Water
                   </label>
                   <select
                     value={powerWaterRating}
                     onChange={(e) => setPowerWaterRating(Number(e.target.value))}
-                    className="w-full px-2 py-1.5 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl"
+                    className="w-full px-2 py-1.5 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl"
                   >
                     {[5, 4, 3, 2, 1].map((n) => (
                       <option key={n} value={n}>{n} Stars</option>
@@ -348,7 +348,7 @@ export const ReviewsPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                   Review & Living Experience
                 </label>
                 <textarea
@@ -357,7 +357,7 @@ export const ReviewsPage: React.FC = () => {
                   value={reviewText}
                   onChange={(e) => setReviewText(e.target.value)}
                   placeholder="Share details regarding electricity unit charges, summer power backup, landlord visits, noise levels..."
-                  className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                  className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                 />
               </div>
 
@@ -365,13 +365,13 @@ export const ReviewsPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-[#5f7572] hover:bg-[#f6f9f8] rounded-xl cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-[#6a6a6a] hover:bg-[#f7f7f7] rounded-full cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl shadow-xs transition-all cursor-pointer"
+                  className="px-5 py-2.5 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full shadow-xs transition-all cursor-pointer"
                 >
                   Publish Community Review
                 </button>
