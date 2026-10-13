@@ -47,50 +47,50 @@ export const AgreementAnalyzerPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-heading text-2xl font-bold text-[#17222b] tracking-tight">
+            <h1 className="font-heading text-2xl font-bold text-[#222222] tracking-tight">
               Rental Agreement Risk Analyzer
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#117c74]/10 text-[#117c74] flex items-center gap-1">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#ff385c]/10 text-[#ff385c] flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5" /> Model Tenancy Act (MTA) Guard
             </span>
           </div>
-          <p className="text-xs text-[#5f7572] mt-1">
+          <p className="text-xs text-[#6a6a6a] mt-1">
             Detect predatory clauses, unfair 11-month lock-ins, deposit forfeiture, and unannounced inspections before signing.
           </p>
         </div>
       </div>
 
       {/* Sample Contract Selector Tabs */}
-      <div className="bg-white p-3 rounded-2xl border border-[#e2ece9] shadow-2xs flex flex-wrap items-center gap-2">
-        <span className="text-xs font-bold text-[#5f7572] px-2 flex items-center gap-1.5">
-          <BookOpen className="w-3.5 h-3.5 text-[#117c74]" /> Test Preloaded Contracts:
+      <div className="bg-white p-3 rounded-2xl border border-[#ebebeb] shadow-subtle flex flex-wrap items-center gap-2">
+        <span className="text-xs font-bold text-[#6a6a6a] px-2 flex items-center gap-1.5">
+          <BookOpen className="w-3.5 h-3.5 text-[#ff385c]" /> Test Preloaded Contracts:
         </span>
         <button
           onClick={() => handleSelectSample('predatory')}
-          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
             selectedSampleKey === 'predatory'
-              ? 'bg-[#f43f5e] text-white shadow-2xs'
-              : 'bg-[#f6f9f8] text-[#5f7572] hover:text-[#17222b]'
+              ? 'bg-[#f43f5e] text-white shadow-subtle'
+              : 'bg-[#f7f7f7] text-[#6a6a6a] hover:text-[#222222]'
           }`}
         >
           Predatory DLF 3 Contract (High Risk)
         </button>
         <button
           onClick={() => handleSelectSample('balanced')}
-          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
             selectedSampleKey === 'balanced'
-              ? 'bg-[#10b981] text-white shadow-2xs'
-              : 'bg-[#f6f9f8] text-[#5f7572] hover:text-[#17222b]'
+              ? 'bg-[#10b981] text-white shadow-subtle'
+              : 'bg-[#f7f7f7] text-[#6a6a6a] hover:text-[#222222]'
           }`}
         >
           Fair Sector 23 NCU Flat Contract (Safe)
         </button>
         <button
           onClick={() => handleSelectSample('mixed')}
-          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
             selectedSampleKey === 'mixed'
-              ? 'bg-[#f59e0b] text-white shadow-2xs'
-              : 'bg-[#f6f9f8] text-[#5f7572] hover:text-[#17222b]'
+              ? 'bg-[#f59e0b] text-white shadow-subtle'
+              : 'bg-[#f7f7f7] text-[#6a6a6a] hover:text-[#222222]'
           }`}
         >
           Mixed Palam Vihar Contract (Moderate)
@@ -100,16 +100,16 @@ export const AgreementAnalyzerPage: React.FC = () => {
       {/* Main Two-Column Layout: Input / Risk Dashboard */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Raw Text Input (5 cols) */}
-        <div className="lg:col-span-5 bg-white rounded-3xl border border-[#e2ece9] p-5 shadow-2xs flex flex-col justify-between space-y-4">
+        <div className="lg:col-span-5 bg-white rounded-3xl border border-[#ebebeb] p-5 shadow-subtle flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-[#5f7572] flex items-center gap-1.5">
-                <FileText className="w-4 h-4 text-[#117c74]" />
+              <label className="text-xs font-bold uppercase tracking-wider text-[#6a6a6a] flex items-center gap-1.5">
+                <FileText className="w-4 h-4 text-[#ff385c]" />
                 Contract Text / Pasted Clauses
               </label>
               <button
                 onClick={() => setRawText('')}
-                className="text-xs text-[#5f7572] hover:text-[#f43f5e] cursor-pointer"
+                className="text-xs text-[#6a6a6a] hover:text-[#f43f5e] cursor-pointer"
               >
                 Clear
               </button>
@@ -119,11 +119,11 @@ export const AgreementAnalyzerPage: React.FC = () => {
               value={rawText}
               onChange={(e) => setRawText(e.target.value)}
               placeholder="Paste your rental agreement clauses here..."
-              className="w-full p-4 text-xs font-mono-code leading-relaxed bg-[#f6f9f8] border border-[#e2ece9] rounded-2xl focus:outline-none focus:border-[#117c74] text-[#17222b] resize-none"
+              className="w-full p-4 text-xs font-mono-code leading-relaxed bg-[#f7f7f7] border border-[#ebebeb] rounded-2xl focus:outline-none focus:border-[#222222] text-[#222222] resize-none"
             />
           </div>
 
-          <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9] text-[11px] text-[#5f7572] leading-relaxed">
+          <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb] text-[11px] text-[#6a6a6a] leading-relaxed">
             💡 <strong>Pro Tip:</strong> Look closely at Clause 1 (Security Deposit) and Clause 2 (Lock-in Period). Landlords often draft these to withhold ₹20,000+ when college semesters finish.
           </div>
         </div>
@@ -131,20 +131,20 @@ export const AgreementAnalyzerPage: React.FC = () => {
         {/* Right: Analysis Results & Meter (7 cols) */}
         <div className="lg:col-span-7 space-y-5">
           {/* Top Overall Risk Meter Card */}
-          <div className="bg-white rounded-3xl border border-[#e2ece9] p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="bg-white rounded-3xl border border-[#ebebeb] p-6 shadow-subtle flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="space-y-1.5 text-center sm:text-left flex-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#5f7572]">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#6a6a6a]">
                 Comprehensive Clause Health
               </span>
-              <h2 className="font-heading text-xl font-bold text-[#17222b] flex items-center gap-2">
+              <h2 className="font-heading text-xl font-bold text-[#222222] flex items-center gap-2">
                 {analysis.riskCategory}
               </h2>
-              <p className="text-xs text-[#5f7572] leading-relaxed">
+              <p className="text-xs text-[#6a6a6a] leading-relaxed">
                 {analysis.summaryNote}
               </p>
               <div className="pt-1 text-xs">
-                <span className="text-[#5f7572]">Deposit Safety Rating: </span>
-                <strong className="text-[#17222b]">{analysis.depositSafetyRating}</strong>
+                <span className="text-[#6a6a6a]">Deposit Safety Rating: </span>
+                <strong className="text-[#222222]">{analysis.depositSafetyRating}</strong>
               </div>
             </div>
 
@@ -155,7 +155,7 @@ export const AgreementAnalyzerPage: React.FC = () => {
                   cx="18"
                   cy="18"
                   r="15"
-                  className="stroke-[#e2ece9]"
+                  className="stroke-[#ebebeb]"
                   strokeWidth="3.5"
                   fill="none"
                 />
@@ -172,10 +172,10 @@ export const AgreementAnalyzerPage: React.FC = () => {
                 />
               </svg>
               <div className="absolute flex flex-col items-center justify-center">
-                <span className="font-heading text-2xl font-bold text-[#17222b]">
+                <span className="font-heading text-2xl font-bold text-[#222222]">
                   {analysis.overallRiskScore}
                 </span>
-                <span className="text-[9px] uppercase tracking-wider font-semibold text-[#5f7572]">
+                <span className="text-[9px] uppercase tracking-wider font-semibold text-[#6a6a6a]">
                   Risk Index
                 </span>
               </div>
@@ -184,20 +184,20 @@ export const AgreementAnalyzerPage: React.FC = () => {
 
           {/* Clause-by-Clause Breakdown List */}
           <div className="space-y-4">
-            <h3 className="font-heading text-base font-bold text-[#17222b] flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#117c74]" />
+            <h3 className="font-heading text-base font-bold text-[#222222] flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#ff385c]" />
               Identified Clauses & Recommendations ({analysis.clauses.length})
             </h3>
 
             {analysis.clauses.map((clause) => (
               <div
                 key={clause.id}
-                className={`rounded-2xl border p-5 shadow-2xs space-y-3 transition-all ${
+                className={`rounded-2xl border p-5 shadow-subtle space-y-3 transition-all ${
                   clause.riskLevel === 'high'
                     ? 'bg-[#fef2f2]/60 border-[#fecdd3]'
                     : clause.riskLevel === 'medium'
                     ? 'bg-[#fffbeb]/60 border-[#fde68a]'
-                    : 'bg-white border-[#e2ece9]'
+                    : 'bg-white border-[#ebebeb]'
                 }`}
               >
                 {/* Clause Header with Risk Badge */}
@@ -215,7 +215,7 @@ export const AgreementAnalyzerPage: React.FC = () => {
                       >
                         {clause.riskLevel} Risk
                       </span>
-                      <h4 className="font-heading font-bold text-sm text-[#17222b]">
+                      <h4 className="font-heading font-bold text-sm text-[#222222]">
                         {clause.title}
                       </h4>
                     </div>
@@ -223,13 +223,13 @@ export const AgreementAnalyzerPage: React.FC = () => {
                 </div>
 
                 {/* Original Clause Excerpt */}
-                <div className="p-3 bg-white/80 rounded-xl border border-black/5 text-xs font-mono-code text-[#17222b] leading-relaxed">
+                <div className="p-3 bg-white/80 rounded-xl border border-black/5 text-xs font-mono-code text-[#222222] leading-relaxed">
                   "{clause.originalClause}"
                 </div>
 
                 {/* Plain-Language Explanation */}
-                <div className="text-xs text-[#5f7572] leading-relaxed">
-                  <strong className="text-[#17222b]">Plain English Impact: </strong>
+                <div className="text-xs text-[#6a6a6a] leading-relaxed">
+                  <strong className="text-[#222222]">Plain English Impact: </strong>
                   {clause.plainExplanation}
                 </div>
 

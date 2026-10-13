@@ -204,18 +204,18 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
   };
 
   return (
-    <div className="min-h-screen bg-[#f6f9f8] text-[#17222b] font-sans flex flex-col justify-between selection:bg-[#117c74]/20 selection:text-[#117c74]">
+    <div className="min-h-screen bg-[#f7f7f7] text-[#222222] font-sans flex flex-col justify-between selection:bg-[#ff385c]/20 selection:text-[#ff385c]">
       {/* Top Navbar */}
-      <nav className="w-full bg-white/95 backdrop-blur-md border-b border-[#e2ece9] px-6 lg:px-12 py-4 flex items-center justify-between sticky top-0 z-40">
+      <nav className="w-full bg-white/95 backdrop-blur-md border-b border-[#ebebeb] px-6 lg:px-12 py-4 flex items-center justify-between sticky top-0 z-40">
         <div
           onClick={() => onNavigate('/')}
           className="flex items-center gap-2.5 cursor-pointer select-none"
         >
-          <div className="w-9 h-9 rounded-xl bg-[#117c74] flex items-center justify-center text-white shadow-xs">
+          <div className="w-9 h-9 rounded-full bg-[#ff385c] flex items-center justify-center text-white shadow-xs">
             <span className="font-heading font-bold text-lg">R</span>
           </div>
           <div>
-            <span className="font-heading font-bold text-lg text-[#17222b] tracking-tight">
+            <span className="font-heading font-bold text-lg text-[#222222] tracking-tight">
               RoomSync
             </span>
           </div>
@@ -223,7 +223,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
 
         <button
           onClick={() => onNavigate('/')}
-          className="text-xs font-semibold text-[#5f7572] hover:text-[#17222b] transition-colors cursor-pointer"
+          className="text-xs font-semibold text-[#6a6a6a] hover:text-[#222222] transition-colors cursor-pointer"
         >
           &larr; Back to Home
         </button>
@@ -231,13 +231,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
 
       {/* Main Container */}
       <div className="flex-1 flex items-center justify-center p-4 sm:p-8">
-        <div className="w-full max-w-md bg-white rounded-3xl border border-[#e2ece9] shadow-xl overflow-hidden p-6 sm:p-8 space-y-6">
+        <div className="w-full max-w-md bg-white rounded-3xl border border-[#ebebeb] shadow-xl overflow-hidden p-6 sm:p-8 space-y-6">
           {/* Header */}
           <div className="text-center space-y-1">
-            <h2 className="font-heading text-2xl font-bold text-[#17222b]">
+            <h2 className="font-heading text-2xl font-bold text-[#222222]">
               {mode === 'login' ? 'Welcome back to RoomSync' : 'Create Your RoomSync Account'}
             </h2>
-            <p className="text-xs text-[#5f7572]">
+            <p className="text-xs text-[#6a6a6a]">
               {mode === 'login'
                 ? 'Sign in to access your roommate compatibility feed and verified flats.'
                 : 'For working professionals, students, and flatmates. Find verified roommates with real compatibility.'}
@@ -245,7 +245,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
           </div>
 
           {/* Mode Switch Tabs */}
-          <div className="flex p-1 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
+          <div className="flex p-1 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
             <button
               type="button"
               onClick={() => {
@@ -255,8 +255,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
               }}
               className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 mode === 'login'
-                  ? 'bg-white text-[#17222b] shadow-xs'
-                  : 'text-[#5f7572] hover:text-[#17222b]'
+                  ? 'bg-white text-[#222222] shadow-xs'
+                  : 'text-[#6a6a6a] hover:text-[#222222]'
               }`}
             >
               Log In
@@ -270,8 +270,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
               }}
               className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 mode === 'signup'
-                  ? 'bg-white text-[#17222b] shadow-xs'
-                  : 'text-[#5f7572] hover:text-[#17222b]'
+                  ? 'bg-white text-[#222222] shadow-xs'
+                  : 'text-[#6a6a6a] hover:text-[#222222]'
               }`}
             >
               Sign Up
@@ -293,7 +293,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                         setLoginError(null);
                         onNavigate('/signup');
                       }}
-                      className="block text-[#117c74] font-bold underline mt-1 cursor-pointer"
+                      className="block text-[#ff385c] font-bold underline mt-1 cursor-pointer"
                     >
                       Sign up with "{email}" instead &rarr;
                     </button>
@@ -303,35 +303,35 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
 
               <form onSubmit={handleLoginSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                     Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 absolute left-3 top-2.5 text-[#5f7572]" />
+                    <Mail className="w-4 h-4 absolute left-3 top-2.5 text-[#6a6a6a]" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@email.com or company@work.com"
-                      className="w-full pl-9 pr-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                     Password
                   </label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 absolute left-3 top-2.5 text-[#5f7572]" />
+                    <Lock className="w-4 h-4 absolute left-3 top-2.5 text-[#6a6a6a]" />
                     <input
                       type="password"
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter your password"
-                      className="w-full pl-9 pr-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     />
                   </div>
                 </div>
@@ -339,7 +339,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3 px-4 bg-[#117c74] hover:bg-[#0d635c] text-white font-semibold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2 disabled:opacity-50"
+                  className="w-full py-3 px-4 bg-[#ff385c] hover:bg-[#e00b41] text-white shadow-xs font-semibold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2 disabled:opacity-50"
                 >
                   <span>{isSubmitting ? 'Authenticating...' : 'Log In to Dashboard'}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -351,7 +351,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
             <form onSubmit={handleInitialSignupSubmit} className="space-y-4">
               {/* User Type / Role Selector */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1.5">
                   I am a:
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -376,8 +376,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                         }}
                         className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-[#117c74] text-white border-[#117c74] shadow-xs'
-                            : 'bg-[#f6f9f8] text-[#17222b] border-[#e2ece9] hover:bg-white'
+                            ? 'bg-[#ff385c] text-white border-[#ff385c] shadow-xs'
+                            : 'bg-[#f7f7f7] text-[#222222] border-[#ebebeb] hover:bg-white'
                         }`}
                       >
                         <Icon className="w-4 h-4 shrink-0" />
@@ -389,24 +389,24 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 absolute left-3 top-2.5 text-[#5f7572]" />
+                  <User className="w-4 h-4 absolute left-3 top-2.5 text-[#6a6a6a]" />
                   <input
                     type="text"
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="e.g. Priya Patel or Aarav Sharma"
-                    className="w-full pl-9 pr-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                    className="w-full pl-9 pr-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                   {userType === 'student'
                     ? 'College & Academic Year'
                     : userType === 'professional'
@@ -415,9 +415,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                 </label>
                 <div className="relative">
                   {userType === 'student' ? (
-                    <GraduationCap className="w-4 h-4 absolute left-3 top-2.5 text-[#5f7572]" />
+                    <GraduationCap className="w-4 h-4 absolute left-3 top-2.5 text-[#6a6a6a]" />
                   ) : (
-                    <Briefcase className="w-4 h-4 absolute left-3 top-2.5 text-[#5f7572]" />
+                    <Briefcase className="w-4 h-4 absolute left-3 top-2.5 text-[#6a6a6a]" />
                   )}
                   <input
                     type="text"
@@ -431,24 +431,24 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                         ? 'e.g. Senior UX Designer @ TechCorp'
                         : 'e.g. Freelance Architect'
                     }
-                    className="w-full pl-9 pr-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                    className="w-full pl-9 pr-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 absolute left-3 top-2.5 text-[#5f7572]" />
+                  <Mail className="w-4 h-4 absolute left-3 top-2.5 text-[#6a6a6a]" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@gmail.com or company@work.com"
-                    className="w-full pl-9 pr-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                    className="w-full pl-9 pr-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                   />
                 </div>
 
@@ -461,32 +461,32 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                     </span>
                   </div>
                 ) : (
-                  <span className="text-[10px] text-[#5f7572] mt-1.5 block">
+                  <span className="text-[10px] text-[#6a6a6a] mt-1.5 block">
                     Any email is accepted. All profiles receive trust verification.
                   </span>
                 )}
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 absolute left-3 top-2.5 text-[#5f7572]" />
+                  <Lock className="w-4 h-4 absolute left-3 top-2.5 text-[#6a6a6a]" />
                   <input
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a strong password"
-                    className="w-full pl-9 pr-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                    className="w-full pl-9 pr-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-[#117c74] hover:bg-[#0d635c] text-white font-semibold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+                className="w-full py-3 px-4 bg-[#ff385c] hover:bg-[#e00b41] text-white shadow-xs font-semibold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
               >
                 <span>Continue to Lifestyle & Preferences</span>
                 <ArrowRight className="w-4 h-4" />
@@ -495,7 +495,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
           )}
 
           {/* Toggle mode link */}
-          <div className="text-center text-xs text-[#5f7572]">
+          <div className="text-center text-xs text-[#6a6a6a]">
             {mode === 'login' ? (
               <span>
                 Don't have an account?{' '}
@@ -506,7 +506,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                     setLoginError(null);
                     onNavigate('/signup');
                   }}
-                  className="font-bold text-[#117c74] hover:underline cursor-pointer"
+                  className="font-bold text-[#ff385c] hover:underline cursor-pointer"
                 >
                   Sign Up Free
                 </button>
@@ -521,7 +521,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                     setLoginError(null);
                     onNavigate('/login');
                   }}
-                  className="font-bold text-[#117c74] hover:underline cursor-pointer"
+                  className="font-bold text-[#ff385c] hover:underline cursor-pointer"
                 >
                   Log In
                 </button>
@@ -534,21 +534,21 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
       {/* ==================== SECONDARY ONBOARDING MODAL ==================== */}
       {isOnboardingOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-[#e2ece9] overflow-hidden max-h-[92vh] flex flex-col">
+          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-[#ebebeb] overflow-hidden max-h-[92vh] flex flex-col">
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-[#e2ece9] bg-gradient-to-r from-[#117c74]/10 via-transparent to-[#10b981]/10 flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-[#ebebeb] bg-gradient-to-r from-[#ff385c]/5 via-transparent to-[#10b981]/10 flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-heading text-lg font-bold text-[#17222b]">
+                  <h3 className="font-heading text-lg font-bold text-[#222222]">
                     {onboardingStep === 1
                       ? 'Step 2 — Lifestyle'
                       : 'Step 3 — Preferences'}
                   </h3>
-                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#117c74] text-white">
+                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#ff385c] text-white">
                     Step {onboardingStep === 1 ? '2 of 3' : '3 of 3'}
                   </span>
                 </div>
-                <p className="text-xs text-[#5f7572] mt-0.5">
+                <p className="text-xs text-[#6a6a6a] mt-0.5">
                   {onboardingStep === 1
                     ? `Welcome, ${fullName || 'Flatmate'}! Tell us your sleep routine, cleanliness, and social vibe.`
                     : 'Configure food preferences, work/study routine, room sharing, and flat dealbreakers.'}
@@ -564,9 +564,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
             </div>
 
             {/* Modal Progress Line */}
-            <div className="w-full bg-[#e2ece9] h-1">
+            <div className="w-full bg-[#ebebeb] h-1">
               <div
-                className="bg-[#117c74] h-full transition-all duration-300"
+                className="bg-[#ff385c] h-full transition-all duration-300"
                 style={{ width: onboardingStep === 1 ? '50%' : '100%' }}
               />
             </div>
@@ -584,8 +584,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
               {onboardingStep === 1 && (
                 <div className="space-y-4">
                   {/* Indian Student Avatar Selector */}
-                  <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b]">
+                  <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#222222]">
                       Choose Your Avatar
                     </label>
                     <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
@@ -598,7 +598,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                             onClick={() => setSelectedAvatar(av.url)}
                             className={`relative rounded-2xl overflow-hidden aspect-square border-2 transition-transform cursor-pointer ${
                               isSelected
-                                ? 'border-[#117c74] scale-105 shadow-md ring-2 ring-[#117c74]/20'
+                                ? 'border-[#ff385c] scale-105 shadow-md ring-2 ring-[#ff385c]/20'
                                 : 'border-transparent hover:scale-102 opacity-80 hover:opacity-100'
                             }`}
                             title={av.name}
@@ -609,7 +609,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                               className="w-full h-full object-cover"
                             />
                             {isSelected && (
-                              <div className="absolute inset-0 bg-[#117c74]/20 flex items-center justify-center">
+                              <div className="absolute inset-0 bg-[#ff385c]/20 flex items-center justify-center">
                                 <Check className="w-4 h-4 text-white drop-shadow-md stroke-[3]" />
                               </div>
                             )}
@@ -620,14 +620,14 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                   </div>
 
                   {/* Sleep Schedule (bedtime / wake time) */}
-                  <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-3">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                      <Moon className="w-4 h-4 text-[#117c74]" /> Sleep Schedule (Bedtime & Wake Time)
+                  <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-3">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                      <Moon className="w-4 h-4 text-[#ff385c]" /> Sleep Schedule (Bedtime & Wake Time)
                     </label>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <span className="text-[11px] text-[#5f7572] block mb-1">
+                        <span className="text-[11px] text-[#6a6a6a] block mb-1">
                           Typical Bedtime
                         </span>
                         <select
@@ -642,7 +642,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                               setSleepSchedule('flexible');
                             }
                           }}
-                          className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                         >
                           <option value="10:00 PM">10:00 PM (Early Bird)</option>
                           <option value="11:00 PM">11:00 PM (Balanced)</option>
@@ -653,13 +653,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                       </div>
 
                       <div>
-                        <span className="text-[11px] text-[#5f7572] block mb-1">
+                        <span className="text-[11px] text-[#6a6a6a] block mb-1">
                           Typical Wake Time
                         </span>
                         <select
                           value={wakeTime}
                           onChange={(e) => setWakeTime(e.target.value)}
-                          className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                         >
                           <option value="06:00 AM">06:00 AM (Early workout/prep)</option>
                           <option value="07:30 AM">07:30 AM (Morning prep)</option>
@@ -681,8 +681,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                           onClick={() => setSleepSchedule(s.key as SleepSchedule)}
                           className={`flex-1 p-2 rounded-xl border text-center transition-all cursor-pointer ${
                             sleepSchedule === s.key
-                              ? 'bg-[#117c74] text-white border-[#117c74] shadow-xs'
-                              : 'bg-white text-[#5f7572] border-[#e2ece9]'
+                              ? 'bg-[#ff385c] text-white border-[#ff385c] shadow-xs'
+                              : 'bg-white text-[#6a6a6a] border-[#ebebeb]'
                           }`}
                         >
                           <div className="text-xs font-bold">{s.label}</div>
@@ -693,12 +693,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                   </div>
 
                   {/* Cleanliness (1-5 Scale) */}
-                  <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2.5">
+                  <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                        <Sparkles className="w-4 h-4 text-[#117c74]" /> Cleanliness (1–5 Scale)
+                      <label className="text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-[#ff385c]" /> Cleanliness (1–5 Scale)
                       </label>
-                      <span className="text-xs font-bold text-[#117c74]">
+                      <span className="text-xs font-bold text-[#ff385c]">
                         {cleanlinessRating === 1 && '1/5 — Very Casual'}
                         {cleanlinessRating === 2 && '2/5 — Easygoing'}
                         {cleanlinessRating === 3 && '3/5 — Moderately Tidy'}
@@ -715,35 +715,35 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                           onClick={() => setCleanlinessRating(lvl)}
                           className={`flex-1 py-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
                             cleanlinessRating === lvl
-                              ? 'bg-[#117c74] text-white border-[#117c74] shadow-xs'
-                              : 'bg-white text-[#17222b] border-[#e2ece9]'
+                              ? 'bg-[#ff385c] text-white border-[#ff385c] shadow-xs'
+                              : 'bg-white text-[#222222] border-[#ebebeb]'
                           }`}
                         >
                           {lvl}
                         </button>
                       ))}
                     </div>
-                    <div className="flex justify-between text-[10px] text-[#5f7572]">
+                    <div className="flex justify-between text-[10px] text-[#6a6a6a]">
                       <span>Casual about clutter</span>
                       <span>Daily sweep & zero dishes in sink</span>
                     </div>
                   </div>
 
                   {/* Noise Tolerance & Social/Party Habits */}
-                  <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-3">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                      <Volume2 className="w-4 h-4 text-[#117c74]" /> Social & Party Behavior
+                  <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-3">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                      <Volume2 className="w-4 h-4 text-[#ff385c]" /> Social & Party Behavior
                     </label>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <span className="text-[11px] text-[#5f7572] block mb-1">
+                        <span className="text-[11px] text-[#6a6a6a] block mb-1">
                           Guest Hosting Frequency
                         </span>
                         <select
                           value={guestFrequency}
                           onChange={(e) => setGuestFrequency(e.target.value)}
-                          className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                         >
                           <option value="Never or rarely">Never or rarely</option>
                           <option value="Weekends only with notice">Weekends only with notice</option>
@@ -753,13 +753,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                       </div>
 
                       <div>
-                        <span className="text-[11px] text-[#5f7572] block mb-1">
+                        <span className="text-[11px] text-[#6a6a6a] block mb-1">
                           Party & Gathering Policy
                         </span>
                         <select
                           value={partyFrequency}
                           onChange={(e) => setPartyFrequency(e.target.value)}
-                          className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                         >
                           <option value="Zero parties / quiet flat">Zero parties / strict quiet flat</option>
                           <option value="Occasional chill chai/study gatherings">Occasional chill chai/study gatherings</option>
@@ -780,8 +780,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                           onClick={() => setSocialHabit(s.key as SocialHabit)}
                           className={`flex-1 p-2 text-xs font-semibold rounded-xl border text-center transition-all cursor-pointer ${
                             socialHabit === s.key
-                              ? 'bg-[#117c74] text-white border-[#117c74] shadow-xs'
-                              : 'bg-white text-[#5f7572] border-[#e2ece9]'
+                              ? 'bg-[#ff385c] text-white border-[#ff385c] shadow-xs'
+                              : 'bg-white text-[#6a6a6a] border-[#ebebeb]'
                           }`}
                         >
                           <div className="font-bold">{s.label}</div>
@@ -792,14 +792,14 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                   </div>
 
                   {/* Smoking & Drinking Tolerance */}
-                  <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                      <Cigarette className="w-4 h-4 text-[#117c74]" /> Smoking & Drinking Tolerance
+                  <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                      <Cigarette className="w-4 h-4 text-[#ff385c]" /> Smoking & Drinking Tolerance
                     </label>
                     <select
                       value={substanceTolerance}
                       onChange={(e) => setSubstanceTolerance(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="Strictly non-smoking & alcohol-free">Strictly non-smoking & alcohol-free flat</option>
                       <option value="Balcony / outdoor smoking only">Balcony / outdoor smoking only</option>
@@ -814,9 +814,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
               {onboardingStep === 2 && (
                 <div className="space-y-4">
                   {/* Food preference (veg / non-veg / eggetarian / Jain / vegan) */}
-                  <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-3">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                      <Utensils className="w-4 h-4 text-[#117c74]" /> Food Preferences
+                  <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-3">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                      <Utensils className="w-4 h-4 text-[#ff385c]" /> Food Preferences
                     </label>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -833,8 +833,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                           onClick={() => setFoodPreference(f.key as FoodPreference)}
                           className={`p-2.5 text-xs font-semibold rounded-xl border text-center transition-all cursor-pointer ${
                             foodPreference === f.key
-                              ? 'bg-[#117c74] text-white border-[#117c74] shadow-xs'
-                              : 'bg-white text-[#17222b] border-[#e2ece9]'
+                              ? 'bg-[#ff385c] text-white border-[#ff385c] shadow-xs'
+                              : 'bg-white text-[#222222] border-[#ebebeb]'
                           }`}
                         >
                           <div className="font-bold">{f.label}</div>
@@ -844,13 +844,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                     </div>
 
                     <div className="pt-1">
-                      <span className="text-[11px] text-[#5f7572] block mb-1">
+                      <span className="text-[11px] text-[#6a6a6a] block mb-1">
                         Cook & Tiffin Plan
                       </span>
                       <select
                         value={cookPreference}
                         onChange={(e) => setCookPreference(e.target.value)}
-                        className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                        className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                       >
                         <option value="Cook sharing (ghar ka khana split 50:50)">Hire common flat cook (ghar ka khana split 50:50)</option>
                         <option value="Tiffin service delivery">Daily tiffin delivery</option>
@@ -861,20 +861,20 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                   </div>
 
                   {/* Work / Study habits (schedule, intensity, focus) */}
-                  <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-3">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                      <BookOpen className="w-4 h-4 text-[#117c74]" /> Work & Study Focus (Rhythm & Routine)
+                  <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-3">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                      <BookOpen className="w-4 h-4 text-[#ff385c]" /> Work & Study Focus (Rhythm & Routine)
                     </label>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <span className="text-[11px] text-[#5f7572] block mb-1">
+                        <span className="text-[11px] text-[#6a6a6a] block mb-1">
                           Daily Work / Study Schedule
                         </span>
                         <select
                           value={studySchedule}
                           onChange={(e) => setStudySchedule(e.target.value)}
-                          className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                         >
                           <option value="Standard daytime (9 AM – 6 PM work/classes)">Standard 9 AM – 6 PM (Office/Campus)</option>
                           <option value="Early riser focus (06:00 AM start)">Early riser (06:00 AM morning focus)</option>
@@ -884,13 +884,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                       </div>
 
                       <div>
-                        <span className="text-[11px] text-[#5f7572] block mb-1">
+                        <span className="text-[11px] text-[#6a6a6a] block mb-1">
                           Focus Intensity / Screen Time
                         </span>
                         <select
                           value={studyHours}
                           onChange={(e) => setStudyHours(e.target.value)}
-                          className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b]"
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222]"
                         >
                           <option value="2–3 hours/day">2–3 hours/day (Casual)</option>
                           <option value="4–6 hours/day">4–6 hours/day (Standard)</option>
@@ -911,8 +911,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                           onClick={() => setStudyHabit(st.key as StudyHabit)}
                           className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border text-center transition-colors cursor-pointer ${
                             studyHabit === st.key
-                              ? 'bg-[#117c74] text-white border-[#117c74]'
-                              : 'bg-white text-[#5f7572] border-[#e2ece9]'
+                              ? 'bg-[#ff385c] text-white border-[#ff385c]'
+                              : 'bg-white text-[#6a6a6a] border-[#ebebeb]'
                           }`}
                         >
                           {st.label}
@@ -922,9 +922,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                   </div>
 
                   {/* Room sharing preference */}
-                  <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#17222b] flex items-center gap-1.5">
-                      <Home className="w-4 h-4 text-[#117c74]" /> Room Sharing Preference
+                  <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#222222] flex items-center gap-1.5">
+                      <Home className="w-4 h-4 text-[#ff385c]" /> Room Sharing Preference
                     </label>
                     <div className="grid grid-cols-3 gap-2">
                       {[
@@ -938,8 +938,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                           onClick={() => setRoomSharing(r.key as any)}
                           className={`p-2.5 text-xs font-semibold rounded-xl border text-center transition-all cursor-pointer ${
                             roomSharing === r.key
-                              ? 'bg-[#117c74] text-white border-[#117c74] shadow-xs'
-                              : 'bg-white text-[#17222b] border-[#e2ece9]'
+                              ? 'bg-[#ff385c] text-white border-[#ff385c] shadow-xs'
+                              : 'bg-white text-[#222222] border-[#ebebeb]'
                           }`}
                         >
                           <div className="font-bold">{r.label}</div>
@@ -950,12 +950,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                   </div>
 
                   {/* Checklist for Dealbreakers */}
-                  <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2.5">
+                  <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold uppercase tracking-wider text-[#17222b]">
+                      <label className="text-xs font-bold uppercase tracking-wider text-[#222222]">
                         Checklist for Flat Dealbreakers
                       </label>
-                      <span className="text-[10px] text-[#5f7572]">
+                      <span className="text-[10px] text-[#6a6a6a]">
                         {dealbreakers.length} selected
                       </span>
                     </div>
@@ -970,7 +970,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                             className={`p-2 rounded-xl border text-xs flex items-center justify-between cursor-pointer transition-colors ${
                               checked
                                 ? 'bg-[#fef2f2] border-[#fecdd3] text-[#991b1b] font-medium'
-                                : 'bg-white border-[#e2ece9] text-[#5f7572]'
+                                : 'bg-white border-[#ebebeb] text-[#6a6a6a]'
                             }`}
                           >
                             <span className="truncate pr-2">{item}</span>
@@ -990,16 +990,16 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                   </div>
 
                   {/* Budget Slider */}
-                  <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2">
-                    <div className="flex justify-between text-xs font-bold text-[#17222b]">
+                  <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2">
+                    <div className="flex justify-between text-xs font-bold text-[#222222]">
                       <span>Monthly Rent Budget</span>
-                      <span className="text-[#117c74]">
+                      <span className="text-[#ff385c]">
                         ₹{budgetMin.toLocaleString('en-IN')} – ₹{budgetMax.toLocaleString('en-IN')}
                       </span>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <span className="text-[10px] text-[#5f7572]">Min (₹{budgetMin})</span>
+                        <span className="text-[10px] text-[#6a6a6a]">Min (₹{budgetMin})</span>
                         <input
                           type="range"
                           min={5000}
@@ -1007,11 +1007,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                           step={500}
                           value={budgetMin}
                           onChange={(e) => setBudgetMin(Number(e.target.value))}
-                          className="w-full accent-[#117c74]"
+                          className="w-full accent-[#ff385c]"
                         />
                       </div>
                       <div>
-                        <span className="text-[10px] text-[#5f7572]">Max (₹{budgetMax})</span>
+                        <span className="text-[10px] text-[#6a6a6a]">Max (₹{budgetMax})</span>
                         <input
                           type="range"
                           min={10000}
@@ -1019,7 +1019,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                           step={500}
                           value={budgetMax}
                           onChange={(e) => setBudgetMax(Number(e.target.value))}
-                          className="w-full accent-[#117c74]"
+                          className="w-full accent-[#ff385c]"
                         />
                       </div>
                     </div>
@@ -1037,12 +1037,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
             )}
 
             {/* Modal Footer Controls */}
-            <div className="px-6 py-4 border-t border-[#e2ece9] bg-white flex items-center justify-between">
+            <div className="px-6 py-4 border-t border-[#ebebeb] bg-white flex items-center justify-between">
               {onboardingStep === 1 ? (
                 <button
                   type="button"
                   onClick={() => setIsOnboardingOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-[#5f7572] hover:bg-[#f6f9f8] rounded-xl cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-[#6a6a6a] hover:bg-[#f7f7f7] rounded-xl cursor-pointer"
                 >
                   Edit Account Details
                 </button>
@@ -1050,7 +1050,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                 <button
                   type="button"
                   onClick={() => setOnboardingStep(1)}
-                  className="px-4 py-2 text-xs font-semibold text-[#5f7572] hover:bg-[#f6f9f8] rounded-xl cursor-pointer flex items-center gap-1.5"
+                  className="px-4 py-2 text-xs font-semibold text-[#6a6a6a] hover:bg-[#f7f7f7] rounded-xl cursor-pointer flex items-center gap-1.5"
                 >
                   <ArrowLeft className="w-4 h-4" /> Back to Lifestyle
                 </button>
@@ -1060,7 +1060,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                 <button
                   type="button"
                   onClick={() => setOnboardingStep(2)}
-                  className="px-5 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white font-semibold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2.5 bg-[#ff385c] hover:bg-[#e00b41] text-white shadow-xs font-semibold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
                 >
                   <span>Continue to Step 3 — Preferences</span>
                   <ArrowRight className="w-4 h-4" />
@@ -1070,7 +1070,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                   type="button"
                   disabled={isSubmitting}
                   onClick={handleCompleteOnboarding}
-                  className="px-6 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                  className="px-6 py-2.5 bg-[#ff385c] hover:bg-[#e00b41] text-white shadow-xs font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
@@ -1091,7 +1091,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
       )}
 
       {/* Footer */}
-      <footer className="py-4 text-center text-xs text-[#5f7572] border-t border-[#e2ece9] bg-white">
+      <footer className="py-4 text-center text-xs text-[#6a6a6a] border-t border-[#ebebeb] bg-white">
         RoomSync — College Student Housing Platform (2026)
       </footer>
     </div>

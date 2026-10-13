@@ -54,7 +54,7 @@ export const SafetyMapPage: React.FC = () => {
     // Add Main Campus Anchor Marker
     const campusIcon = L.divIcon({
       className: 'custom-campus-marker',
-      html: `<div style="background-color: #117c74; color: white; border: 2px solid white; border-radius: 9999px; padding: 6px 10px; font-weight: bold; font-size: 11px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); white-space: nowrap; display: flex; align-items: center; gap: 4px;">🎓 Main Campus</div>`,
+      html: `<div style="background-color: #ff385c; color: white; border: 2px solid white; border-radius: 9999px; padding: 6px 10px; font-weight: bold; font-size: 11px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); white-space: nowrap; display: flex; align-items: center; gap: 4px;">🎓 Main Campus</div>`,
       iconSize: [110, 30],
       iconAnchor: [55, 15],
     });
@@ -118,42 +118,42 @@ export const SafetyMapPage: React.FC = () => {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-[#17222b] tracking-tight">
+          <h1 className="font-heading text-2xl font-bold text-[#222222] tracking-tight">
             Student Safety & Locality Risk Map
           </h1>
-          <p className="text-xs text-[#5f7572] mt-1">
+          <p className="text-xs text-[#6a6a6a] mt-1">
             Real-world locality risk assessments, night street lighting, and campus commute times.
           </p>
         </div>
 
         {/* Layer Toggles */}
-        <div className="flex items-center gap-1.5 p-1 bg-white border border-[#e2ece9] rounded-2xl shadow-2xs">
+        <div className="flex items-center gap-1.5 p-1 bg-white border border-[#ebebeb] rounded-full shadow-subtle">
           <button
             onClick={() => setActiveLayer('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
               activeLayer === 'all'
-                ? 'bg-[#117c74] text-white shadow-2xs'
-                : 'text-[#5f7572] hover:text-[#17222b]'
+                ? 'bg-[#222222] text-white shadow-xs'
+                : 'text-[#6a6a6a] hover:text-[#222222]'
             }`}
           >
             All Risk Data
           </button>
           <button
             onClick={() => setActiveLayer('night')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
               activeLayer === 'night'
-                ? 'bg-[#117c74] text-white shadow-2xs'
-                : 'text-[#5f7572] hover:text-[#17222b]'
+                ? 'bg-[#222222] text-white shadow-xs'
+                : 'text-[#6a6a6a] hover:text-[#222222]'
             }`}
           >
             Night Lighting
           </button>
           <button
             onClick={() => setActiveLayer('transit')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
               activeLayer === 'transit'
-                ? 'bg-[#117c74] text-white shadow-2xs'
-                : 'text-[#5f7572] hover:text-[#17222b]'
+                ? 'bg-[#222222] text-white shadow-xs'
+                : 'text-[#6a6a6a] hover:text-[#222222]'
             }`}
           >
             Transit & Shuttle
@@ -164,10 +164,10 @@ export const SafetyMapPage: React.FC = () => {
       {/* Map + Detail Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Interactive Map Area (7 cols) */}
-        <div className="lg:col-span-7 bg-white rounded-3xl border border-[#e2ece9] overflow-hidden shadow-2xs flex flex-col h-[520px]">
+        <div className="lg:col-span-7 bg-white rounded-3xl border border-[#ebebeb] overflow-hidden shadow-subtle flex flex-col h-[520px]">
           {/* Quick Locality Bar */}
-          <div className="p-3 bg-[#f6f9f8] border-b border-[#e2ece9] flex items-center gap-2 overflow-x-auto">
-            <span className="text-xs font-bold text-[#5f7572] px-2 shrink-0">
+          <div className="p-3 bg-[#f7f7f7] border-b border-[#ebebeb] flex items-center gap-2 overflow-x-auto">
+            <span className="text-xs font-bold text-[#6a6a6a] px-2 shrink-0">
               Zones:
             </span>
             {localities.map((loc) => {
@@ -176,10 +176,10 @@ export const SafetyMapPage: React.FC = () => {
                 <button
                   key={loc.id}
                   onClick={() => handleSelectLocality(loc)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
                     isSelected
-                      ? 'bg-[#117c74] text-white shadow-xs'
-                      : 'bg-white text-[#17222b] border border-[#e2ece9] hover:bg-[#e2ece9]'
+                      ? 'bg-[#222222] text-white shadow-xs'
+                      : 'bg-white text-[#222222] border border-[#ebebeb] hover:border-[#222222]'
                   }`}
                 >
                   {loc.name.split(' ')[0]} ({loc.safetyScore})
@@ -192,7 +192,7 @@ export const SafetyMapPage: React.FC = () => {
           <div ref={mapContainerRef} className="flex-1 w-full h-full z-10" />
 
           {/* Legend Footer */}
-          <div className="px-4 py-2 bg-white border-t border-[#e2ece9] flex items-center justify-between text-xs text-[#5f7572]">
+          <div className="px-4 py-2 bg-white border-t border-[#ebebeb] flex items-center justify-between text-xs text-[#6a6a6a]">
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#10b981]" /> Low Risk (80+)
@@ -211,13 +211,13 @@ export const SafetyMapPage: React.FC = () => {
         </div>
 
         {/* Locality Detailed Inspection Panel (5 cols) */}
-        <div className="lg:col-span-5 bg-white rounded-3xl border border-[#e2ece9] p-6 shadow-2xs space-y-5 flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-white rounded-3xl border border-[#ebebeb] p-6 shadow-subtle space-y-5 flex flex-col justify-between">
           <div>
             {/* Header */}
-            <div className="flex items-start justify-between pb-4 border-b border-[#e2ece9]">
+            <div className="flex items-start justify-between pb-4 border-b border-[#ebebeb]">
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="font-heading text-xl font-bold text-[#17222b]">
+                  <h2 className="font-heading text-xl font-bold text-[#222222]">
                     {active.name}
                   </h2>
                   <span
@@ -228,16 +228,16 @@ export const SafetyMapPage: React.FC = () => {
                     {active.riskLevel.toUpperCase()} RISK
                   </span>
                 </div>
-                <p className="text-xs text-[#5f7572] mt-1 flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-[#117c74]" /> Commute: {active.ncuCommuteTime} ({active.distanceToNCUKm} km to Campus)
+                <p className="text-xs text-[#6a6a6a] mt-1 flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-[#ff385c]" /> Commute: {active.ncuCommuteTime} ({active.distanceToNCUKm} km to Campus)
                 </p>
               </div>
 
-              <div className="text-center bg-[#f6f9f8] p-2.5 rounded-2xl border border-[#e2ece9]">
-                <div className="text-2xl font-heading font-bold text-[#117c74]">
+              <div className="text-center bg-[#f7f7f7] p-2.5 rounded-2xl border border-[#ebebeb]">
+                <div className="text-2xl font-heading font-bold text-[#ff385c]">
                   {active.safetyScore}
                 </div>
-                <div className="text-[10px] font-bold text-[#5f7572] uppercase tracking-wider">
+                <div className="text-[10px] font-bold text-[#6a6a6a] uppercase tracking-wider">
                   Safety Index
                 </div>
               </div>
@@ -245,14 +245,14 @@ export const SafetyMapPage: React.FC = () => {
 
             {/* Metric Gauges */}
             <div className="grid grid-cols-2 gap-3 my-4">
-              <div className="p-3 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#5f7572] flex items-center gap-1">
+              <div className="p-3 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6a6a6a] flex items-center gap-1">
                   <Lightbulb className="w-3.5 h-3.5 text-[#f59e0b]" /> Night Street Lighting
                 </span>
-                <div className="text-base font-bold text-[#17222b]">
+                <div className="text-base font-bold text-[#222222]">
                   {active.streetLightingScore} / 100
                 </div>
-                <div className="w-full bg-[#e2ece9] h-1.5 rounded-full overflow-hidden">
+                <div className="w-full bg-[#ebebeb] h-1.5 rounded-full overflow-hidden">
                   <div
                     className="bg-[#f59e0b] h-full"
                     style={{ width: `${active.streetLightingScore}%` }}
@@ -260,14 +260,14 @@ export const SafetyMapPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-3 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#5f7572] flex items-center gap-1">
-                  <Shield className="w-3.5 h-3.5 text-[#117c74]" /> Police Chowki
+              <div className="p-3 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6a6a6a] flex items-center gap-1">
+                  <Shield className="w-3.5 h-3.5 text-[#ff385c]" /> Police Chowki
                 </span>
-                <div className="text-xs font-bold text-[#17222b] line-clamp-1">
+                <div className="text-xs font-bold text-[#222222] line-clamp-1">
                   {active.nearestPoliceStation}
                 </div>
-                <span className="text-[10px] text-[#5f7572] block">
+                <span className="text-[10px] text-[#6a6a6a] block">
                   Student Density: {active.studentDensity}
                 </span>
               </div>
@@ -310,15 +310,15 @@ export const SafetyMapPage: React.FC = () => {
             )}
 
             {/* Transit Points */}
-            <div className="mt-3 text-xs text-[#5f7572]">
-              <span className="font-semibold text-[#17222b] flex items-center gap-1 mb-1">
-                <Bus className="w-3.5 h-3.5 text-[#117c74]" /> Key Transit Hubs:
+            <div className="mt-3 text-xs text-[#6a6a6a]">
+              <span className="font-semibold text-[#222222] flex items-center gap-1 mb-1">
+                <Bus className="w-3.5 h-3.5 text-[#ff385c]" /> Key Transit Hubs:
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {active.transitPoints.map((tp, i) => (
                   <span
                     key={i}
-                    className="px-2 py-0.5 bg-[#f6f9f8] border border-[#e2ece9] rounded-md text-[11px]"
+                    className="px-2 py-0.5 bg-[#f7f7f7] border border-[#ebebeb] rounded-md text-[11px]"
                   >
                     {tp}
                   </span>
@@ -328,18 +328,18 @@ export const SafetyMapPage: React.FC = () => {
           </div>
 
           {/* Action button */}
-          <div className="pt-3 border-t border-[#e2ece9] flex items-center justify-between">
+          <div className="pt-3 border-t border-[#ebebeb] flex items-center justify-between">
             <div>
-              <span className="text-[10px] text-[#5f7572] uppercase font-bold block">
+              <span className="text-[10px] text-[#6a6a6a] uppercase font-bold block">
                 Average 2BHK Student Rent
               </span>
-              <span className="text-sm font-bold text-[#17222b]">
+              <span className="text-sm font-bold text-[#222222]">
                 ₹{active.medianRent2BHK.toLocaleString('en-IN')}/mo
               </span>
             </div>
             <button
               onClick={() => setActiveTab('discover')}
-              className="px-4 py-2 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer"
+              className="px-4 py-2 bg-[#ff385c] hover:bg-[#e00b41] text-white shadow-xs text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer"
             >
               Browse Flats in {active.name.split(' ')[0]} &rarr;
             </button>

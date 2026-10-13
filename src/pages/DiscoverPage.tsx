@@ -211,39 +211,39 @@ export const DiscoverPage: React.FC = () => {
       {/* Page Title & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-[#17222b] tracking-tight">
+          <h1 className="font-heading text-2xl font-bold text-[#222222] tracking-tight">
             Trust-Verified Student Listings
           </h1>
-          <p className="text-xs text-[#5f7572] mt-1">
+          <p className="text-xs text-[#6a6a6a] mt-1">
             Curated student flats, PGs, and rooms with transparent scam detection & price verification.
           </p>
         </div>
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full transition-all shadow-xs cursor-pointer"
         >
-          <PlusCircle className="w-4 h-4" />
-          List a Room / Flat
+          <PlusCircle className="w-4 h-4 text-[#ff385c]" />
+          <span>List a Room / Flat</span>
         </button>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-[#e2ece9] shadow-2xs space-y-3">
+      <div className="bg-white p-4 rounded-2xl border border-[#ebebeb] shadow-subtle space-y-3">
         {/* Top Row: Locality pills, Rent Slider, Verified Checkbox */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Locality pills */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-[#5f7572] mr-1 flex items-center gap-1">
-              <Filter className="w-3.5 h-3.5" /> Locality:
+            <span className="text-xs font-semibold text-[#6a6a6a] mr-1 flex items-center gap-1">
+              <Filter className="w-3.5 h-3.5 text-[#ff385c]" /> Locality:
             </span>
             {['All', 'Sector 23', 'DLF Phase 3', 'Palam Vihar', 'Sushant Lok'].map((loc) => (
               <button
                 key={loc}
                 onClick={() => setLocalityFilter(loc)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
                   localityFilter === loc
-                    ? 'bg-[#117c74] text-white shadow-2xs'
-                    : 'bg-[#f6f9f8] text-[#5f7572] hover:text-[#17222b] hover:bg-[#e2ece9]'
+                    ? 'bg-[#222222] text-white shadow-xs'
+                    : 'bg-white border border-[#ebebeb] text-[#222222] hover:border-[#222222]'
                 }`}
               >
                 {loc}
@@ -254,8 +254,8 @@ export const DiscoverPage: React.FC = () => {
           {/* Budget Slider & Verified Checkbox */}
           <div className="flex items-center gap-6 text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-[#5f7572]">Max Rent:</span>
-              <span className="font-semibold text-[#17222b]">
+              <span className="text-[#6a6a6a]">Max Rent:</span>
+              <span className="font-semibold text-[#222222]">
                 ₹{maxBudget.toLocaleString('en-IN')}
               </span>
               <input
@@ -265,7 +265,7 @@ export const DiscoverPage: React.FC = () => {
                 step={1000}
                 value={maxBudget}
                 onChange={(e) => setMaxBudget(Number(e.target.value))}
-                className="accent-[#117c74] cursor-pointer w-24 sm:w-32"
+                className="accent-[#ff385c] cursor-pointer w-24 sm:w-32"
               />
             </div>
 
@@ -274,21 +274,21 @@ export const DiscoverPage: React.FC = () => {
                 type="checkbox"
                 checked={verifiedOnly}
                 onChange={(e) => setVerifiedOnly(e.target.checked)}
-                className="accent-[#117c74] rounded-sm cursor-pointer"
+                className="accent-[#ff385c] rounded-sm cursor-pointer"
               />
-              <span className="text-[#17222b] font-medium">Verified Landlords Only</span>
+              <span className="text-[#222222] font-medium">Verified Landlords Only</span>
             </label>
           </div>
         </div>
 
         {/* Secondary Row: Property Type & Gender Filters */}
-        <div className="flex flex-wrap items-center gap-3 pt-2.5 border-t border-[#e2ece9] text-xs">
+        <div className="flex flex-wrap items-center gap-3 pt-2.5 border-t border-[#ebebeb] text-xs">
           <div className="flex items-center gap-1.5">
-            <span className="text-[#5f7572] font-medium">Type:</span>
+            <span className="text-[#6a6a6a] font-medium">Type:</span>
             <select
               value={propertyTypeFilter}
               onChange={(e) => setPropertyTypeFilter(e.target.value)}
-              className="px-2.5 py-1 bg-[#f6f9f8] border border-[#e2ece9] rounded-lg text-xs text-[#17222b] focus:outline-none"
+              className="px-3 py-1.5 bg-[#f7f7f7] border border-[#ebebeb] rounded-full text-xs text-[#222222] focus:outline-none focus:border-[#222222]"
             >
               <option value="All">All Types</option>
               <option value="Flat">Flat</option>
@@ -299,11 +299,11 @@ export const DiscoverPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="text-[#5f7572] font-medium">Gender Allowed:</span>
+            <span className="text-[#6a6a6a] font-medium">Gender Allowed:</span>
             <select
               value={genderFilter}
               onChange={(e) => setGenderFilter(e.target.value)}
-              className="px-2.5 py-1 bg-[#f6f9f8] border border-[#e2ece9] rounded-lg text-xs text-[#17222b] focus:outline-none"
+              className="px-3 py-1.5 bg-[#f7f7f7] border border-[#ebebeb] rounded-full text-xs text-[#222222] focus:outline-none focus:border-[#222222]"
             >
               <option value="All">Any Gender</option>
               <option value="Boys">Boys Only</option>
@@ -320,7 +320,7 @@ export const DiscoverPage: React.FC = () => {
                 setGenderFilter('All');
                 setVerifiedOnly(false);
               }}
-              className="text-[#117c74] hover:underline font-semibold ml-auto cursor-pointer"
+              className="text-[#ff385c] hover:underline font-semibold ml-auto cursor-pointer"
             >
               Reset Filters
             </button>
@@ -333,7 +333,7 @@ export const DiscoverPage: React.FC = () => {
         {filteredListings.map((listing) => (
           <div
             key={listing.id}
-            className="group bg-white rounded-2xl border border-[#e2ece9] overflow-hidden shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col"
+            className="group bg-white rounded-2xl border border-[#ebebeb] overflow-hidden shadow-subtle hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col"
           >
             {/* Image Preview with Badges */}
             <div className="relative h-48 w-full bg-neutral-100 overflow-hidden">
@@ -379,27 +379,27 @@ export const DiscoverPage: React.FC = () => {
             {/* Content Details */}
             <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
               <div>
-                <div className="flex items-center justify-between text-xs text-[#5f7572] mb-1">
-                  <span className="font-semibold text-[#117c74] flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-[#117c74]" /> {listing.locality}
+                <div className="flex items-center justify-between text-xs text-[#6a6a6a] mb-1">
+                  <span className="font-semibold text-[#ff385c] flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-[#ff385c]" /> {listing.locality}
                   </span>
-                  <span className="px-2 py-0.5 rounded-md bg-[#117c74]/10 text-[#117c74] text-[10px] font-semibold">
+                  <span className="px-2 py-0.5 rounded-md bg-[#ff385c]/10 text-[#ff385c] text-[10px] font-semibold">
                     {listing.bhkOrRoomType || listing.roomType}
                   </span>
                 </div>
 
-                <h3 className="font-heading font-bold text-sm text-[#17222b] line-clamp-1 group-hover:text-[#117c74] transition-colors">
+                <h3 className="font-heading font-bold text-sm text-[#222222] line-clamp-1 group-hover:text-[#ff385c] transition-colors">
                   {listing.title}
                 </h3>
 
-                <p className="text-xs text-[#5f7572] mt-1.5 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-[#6a6a6a] mt-1.5 line-clamp-2 leading-relaxed">
                   {listing.description}
                 </p>
 
                 {/* Property Spec Tags */}
                 <div className="flex flex-wrap gap-1.5 mt-2.5">
                   {listing.propertyType && (
-                    <span className="text-[10px] px-2 py-0.5 bg-[#f6f9f8] text-[#17222b] font-medium border border-[#e2ece9] rounded-md">
+                    <span className="text-[10px] px-2 py-0.5 bg-[#f7f7f7] text-[#222222] font-medium border border-[#ebebeb] rounded-md">
                       {listing.propertyType}
                     </span>
                   )}
@@ -430,13 +430,13 @@ export const DiscoverPage: React.FC = () => {
                   {listing.amenities.slice(0, 3).map((amenity, i) => (
                     <span
                       key={i}
-                      className="text-[10px] px-2 py-0.5 bg-[#f6f9f8] text-[#5f7572] border border-[#e2ece9] rounded-md"
+                      className="text-[10px] px-2 py-0.5 bg-[#f7f7f7] text-[#6a6a6a] border border-[#ebebeb] rounded-md"
                     >
                       {amenity}
                     </span>
                   ))}
                   {listing.amenities.length > 3 && (
-                    <span className="text-[10px] px-1.5 py-0.5 text-[#5f7572]">
+                    <span className="text-[10px] px-1.5 py-0.5 text-[#6a6a6a]">
                       +{listing.amenities.length - 3} more
                     </span>
                   )}
@@ -444,13 +444,13 @@ export const DiscoverPage: React.FC = () => {
               </div>
 
               {/* Card Footer */}
-              <div className="pt-3 border-t border-[#e2ece9] flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-[#ebebeb] flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-[#117c74]/10 text-[#117c74] flex items-center justify-center font-bold text-xs">
+                  <div className="w-7 h-7 rounded-full bg-[#ff385c]/10 text-[#ff385c] flex items-center justify-center font-bold text-xs">
                     {listing.landlordName.charAt(0)}
                   </div>
                   <div>
-                    <div className="font-medium text-[#17222b] text-[11px] line-clamp-1">
+                    <div className="font-medium text-[#222222] text-[11px] line-clamp-1">
                       {listing.landlordName}
                     </div>
                     {listing.landlordVerified ? (
@@ -466,7 +466,7 @@ export const DiscoverPage: React.FC = () => {
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => setSelectedListingDetail(listing)}
-                    className="px-3 py-1.5 bg-[#f6f9f8] hover:bg-[#117c74] hover:text-white text-[#17222b] rounded-xl font-medium transition-colors cursor-pointer"
+                    className="px-3.5 py-1.5 bg-[#f7f7f7] hover:bg-[#222222] hover:text-white text-[#222222] rounded-full border border-[#ebebeb] font-medium transition-colors cursor-pointer text-xs"
                   >
                     View Details
                   </button>
@@ -477,7 +477,7 @@ export const DiscoverPage: React.FC = () => {
                         deleteListing(listing.id);
                       }
                     }}
-                    className="p-1.5 text-[#5f7572] hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+                    className="p-1.5 text-[#6a6a6a] hover:text-red-600 hover:bg-red-50 rounded-full transition-colors cursor-pointer"
                     title="Remove listing"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -490,15 +490,15 @@ export const DiscoverPage: React.FC = () => {
       </div>
 
       {filteredListings.length === 0 && (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#e2ece9] p-8 space-y-4 max-w-lg mx-auto">
-          <div className="w-14 h-14 bg-[#117c74]/10 rounded-2xl flex items-center justify-center mx-auto text-[#117c74]">
+        <div className="text-center py-16 bg-white rounded-2xl border border-[#ebebeb] p-8 space-y-4 max-w-lg mx-auto">
+          <div className="w-14 h-14 bg-[#ff385c]/10 rounded-2xl flex items-center justify-center mx-auto text-[#ff385c]">
             <Home className="w-7 h-7" />
           </div>
           <div>
-            <h3 className="font-heading font-bold text-base text-[#17222b]">
+            <h3 className="font-heading font-bold text-base text-[#222222]">
               {listings.length === 0 ? 'No Housing Listings Yet' : 'No listings match your filter criteria'}
             </h3>
-            <p className="text-xs text-[#5f7572] mt-1.5 leading-relaxed">
+            <p className="text-xs text-[#6a6a6a] mt-1.5 leading-relaxed">
               {listings.length === 0
                 ? 'All dummy mock listings have been removed. Post a verified room, flat, or PG near the NCU campus to get started!'
                 : 'Try adjusting your filters, property type, or maximum rent slider to view available housing options.'}
@@ -507,7 +507,7 @@ export const DiscoverPage: React.FC = () => {
           {listings.length === 0 && (
             <button
               onClick={() => setIsCreateModalOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl shadow-xs transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#ff385c] hover:bg-[#e00b41] text-white shadow-xs text-xs font-semibold rounded-xl shadow-xs transition-all cursor-pointer"
             >
               <PlusCircle className="w-4 h-4" />
               Post a Room / Flat
@@ -519,36 +519,36 @@ export const DiscoverPage: React.FC = () => {
       {/* Trust Breakdown Panel / Modal */}
       {trustBreakdownListing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-[#e2ece9] overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2ece9] bg-gradient-to-r from-[#117c74]/10 to-transparent">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-[#ebebeb] overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#ebebeb] bg-gradient-to-r from-[#ff385c]/5 to-transparent">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-[#117c74]/10 text-[#117c74]">
-                  <ShieldCheck className="w-5 h-5 text-[#117c74]" />
+                <div className="p-2 rounded-xl bg-[#ff385c]/10 text-[#ff385c]">
+                  <ShieldCheck className="w-5 h-5 text-[#ff385c]" />
                 </div>
                 <div>
-                  <h3 className="font-heading text-lg font-bold text-[#17222b]">
+                  <h3 className="font-heading text-lg font-bold text-[#222222]">
                     Trust Score Breakdown
                   </h3>
-                  <p className="text-xs text-[#5f7572]">
+                  <p className="text-xs text-[#6a6a6a]">
                     Transparent anti-fraud scoring for {trustBreakdownListing.locality}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setTrustBreakdownListing(null)}
-                className="p-1.5 text-[#5f7572] hover:text-[#17222b] rounded-full cursor-pointer"
+                className="p-1.5 text-[#6a6a6a] hover:text-[#222222] rounded-full cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="flex items-center justify-between p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9]">
+              <div className="flex items-center justify-between p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb]">
                 <div>
-                  <div className="text-xs font-semibold uppercase tracking-wider text-[#5f7572]">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-[#6a6a6a]">
                     Overall Verified Score
                   </div>
-                  <div className="text-xs text-[#5f7572] mt-0.5">
+                  <div className="text-xs text-[#6a6a6a] mt-0.5">
                     {trustBreakdownListing.trustScore >= 80
                       ? 'Low risk verified student property'
                       : trustBreakdownListing.trustScore >= 50
@@ -567,7 +567,7 @@ export const DiscoverPage: React.FC = () => {
 
               {/* Signals Checklist */}
               <div className="space-y-2.5">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#5f7572] block">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#6a6a6a] block">
                   Verification Signals & Checks
                 </span>
                 {trustBreakdownListing.trustBreakdown.signals.map((sig, idx) => (
@@ -599,10 +599,10 @@ export const DiscoverPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="px-6 py-3 border-t border-[#e2ece9] bg-white flex justify-end">
+            <div className="px-6 py-3 border-t border-[#ebebeb] bg-white flex justify-end">
               <button
                 onClick={() => setTrustBreakdownListing(null)}
-                className="px-4 py-2 bg-[#117c74] text-white text-xs font-semibold rounded-xl cursor-pointer"
+                className="px-5 py-2 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full cursor-pointer transition-colors"
               >
                 Close Breakdown
               </button>
@@ -614,19 +614,19 @@ export const DiscoverPage: React.FC = () => {
       {/* Listing Detail Modal */}
       {selectedListingDetail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-[#e2ece9] overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2ece9]">
+          <div className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-[#ebebeb] overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#ebebeb]">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold px-2.5 py-1 bg-[#117c74]/10 text-[#117c74] rounded-lg">
+                <span className="text-xs font-semibold px-2.5 py-1 bg-[#ff385c]/10 text-[#ff385c] rounded-lg">
                   {selectedListingDetail.locality}
                 </span>
-                <span className="text-xs text-[#5f7572]">
+                <span className="text-xs text-[#6a6a6a]">
                   {selectedListingDetail.roomType}
                 </span>
               </div>
               <button
                 onClick={() => setSelectedListingDetail(null)}
-                className="p-1.5 text-[#5f7572] hover:text-[#17222b] rounded-full cursor-pointer"
+                className="p-1.5 text-[#6a6a6a] hover:text-[#222222] rounded-full cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -647,36 +647,36 @@ export const DiscoverPage: React.FC = () => {
                     className="w-full h-full object-cover hidden md:block"
                   />
                 ) : (
-                  <div className="bg-[#f6f9f8] flex items-center justify-center text-xs text-[#5f7572] hidden md:flex">
+                  <div className="bg-[#f7f7f7] flex items-center justify-center text-xs text-[#6a6a6a] hidden md:flex">
                     Photo verified by Student Ambassador
                   </div>
                 )}
               </div>
 
               {/* Title & Price Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e2ece9]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#ebebeb]">
                 <div>
-                  <h2 className="font-heading text-xl font-bold text-[#17222b]">
+                  <h2 className="font-heading text-xl font-bold text-[#222222]">
                     {selectedListingDetail.title}
                   </h2>
-                  <p className="text-xs text-[#5f7572] mt-1 flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-[#117c74]" />
+                  <p className="text-xs text-[#6a6a6a] mt-1 flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-[#ff385c]" />
                     {selectedListingDetail.fullAddress} • {selectedListingDetail.distanceToNCU}
                   </p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-heading font-bold text-[#117c74]">
+                  <div className="text-2xl font-heading font-bold text-[#ff385c]">
                     ₹{selectedListingDetail.rent.toLocaleString('en-IN')}
-                    <span className="text-xs font-normal text-[#5f7572]"> / mo</span>
+                    <span className="text-xs font-normal text-[#6a6a6a]"> / mo</span>
                   </div>
-                  <div className="text-xs text-[#5f7572]">
+                  <div className="text-xs text-[#6a6a6a]">
                     Deposit: ₹{selectedListingDetail.deposit.toLocaleString('en-IN')}
                   </div>
                 </div>
               </div>
 
               {/* Trust & Verification Banner */}
-              <div className="flex items-center justify-between p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9]">
+              <div className="flex items-center justify-between p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb]">
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm ${getScoreBadgeClass(
@@ -686,10 +686,10 @@ export const DiscoverPage: React.FC = () => {
                     {selectedListingDetail.trustScore}
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-[#17222b]">
+                    <div className="text-xs font-bold text-[#222222]">
                       Verified Trust Rating
                     </div>
-                    <div className="text-[11px] text-[#5f7572]">
+                    <div className="text-[11px] text-[#6a6a6a]">
                       Landlord ID: {selectedListingDetail.landlordVerified ? 'Verified' : 'Unverified'} • Rent within market bounds
                     </div>
                   </div>
@@ -700,7 +700,7 @@ export const DiscoverPage: React.FC = () => {
                     setSelectedListingDetail(null);
                     setTrustBreakdownListing(l);
                   }}
-                  className="text-xs font-semibold text-[#117c74] hover:underline cursor-pointer"
+                  className="text-xs font-semibold text-[#ff385c] hover:underline cursor-pointer"
                 >
                   View Score Signals &rarr;
                 </button>
@@ -708,44 +708,44 @@ export const DiscoverPage: React.FC = () => {
 
               {/* Property Architecture & Space Grid */}
               <div className="space-y-2">
-                <span className="font-bold text-xs text-[#5f7572] uppercase tracking-wider flex items-center gap-1.5">
-                  <Building className="w-3.5 h-3.5 text-[#117c74]" /> Property Details & Architecture
+                <span className="font-bold text-xs text-[#6a6a6a] uppercase tracking-wider flex items-center gap-1.5">
+                  <Building className="w-3.5 h-3.5 text-[#ff385c]" /> Property Details & Architecture
                 </span>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Property Type</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Property Type</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.propertyType || 'Apartment / Flat'}
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">BHK / Room Layout</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">BHK / Room Layout</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.bhkOrRoomType || selectedListingDetail.roomType}
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Open Vacancies</span>
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Open Vacancies</span>
                     <span className="font-semibold text-emerald-700">
                       {selectedListingDetail.totalVacancies ?? 1} Bed / Room Open
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Furnishing Level</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Furnishing Level</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.furnishing}
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Floor Details</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Floor Details</span>
+                    <span className="font-semibold text-[#222222]">
                       Floor {selectedListingDetail.floorNumber ?? 1} of {selectedListingDetail.totalFloors ?? 4}
                       {selectedListingDetail.hasLift ? ' • Lift' : ' • No Lift'}
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Area (Sq Ft)</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Area (Sq Ft)</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.areaSqFt ? `${selectedListingDetail.areaSqFt} sq ft` : 'Spacious Layout'}
                       {selectedListingDetail.areaSqFt ? ` (₹${Math.round(selectedListingDetail.rent / selectedListingDetail.areaSqFt)}/sqft)` : ''}
                     </span>
@@ -755,61 +755,61 @@ export const DiscoverPage: React.FC = () => {
 
               {/* Flatmate Matching & House Rules */}
               <div className="space-y-2">
-                <span className="font-bold text-xs text-[#5f7572] uppercase tracking-wider flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-[#117c74]" /> Flatmate Preferences & House Rules
+                <span className="font-bold text-xs text-[#6a6a6a] uppercase tracking-wider flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-[#ff385c]" /> Flatmate Preferences & House Rules
                 </span>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Gender Allowed</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Gender Allowed</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.genderAllowed || selectedListingDetail.genderPreference || 'Any'}
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Food Policy</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Food Policy</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.foodRules || 'Veg Only'}
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Curfew / Gate Closing</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Curfew / Gate Closing</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.curfewTime || 'No Curfew'}
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Kitchen Access</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Kitchen Access</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.cookingAllowed !== false ? 'Cooking Permitted' : 'No Self Cooking'}
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Guests & Visitors</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Guests & Visitors</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.guestPolicy || 'Daytime allowed'}
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Quiet Hours</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Quiet Hours</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.quietHours || '11:00 PM - 7:00 AM'}
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Smoking Policy</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Smoking Policy</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.smokingPolicy || 'No Smoking'}
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Alcohol Policy</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Alcohol Policy</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.drinkingPolicy || 'No Alcohol'}
                     </span>
                   </div>
-                  <div className="p-3 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
-                    <span className="text-[10px] text-[#5f7572] block">Pets Policy</span>
-                    <span className="font-semibold text-[#17222b]">
+                  <div className="p-3 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
+                    <span className="text-[10px] text-[#6a6a6a] block">Pets Policy</span>
+                    <span className="font-semibold text-[#222222]">
                       {selectedListingDetail.petsPolicy || 'No Pets'}
                     </span>
                   </div>
@@ -831,16 +831,16 @@ export const DiscoverPage: React.FC = () => {
               </div>
 
               {/* Exact Map Pin Coordinates Card */}
-              <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                 <div>
-                  <div className="font-bold text-[#17222b] flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-[#117c74]" />
+                  <div className="font-bold text-[#222222] flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-[#ff385c]" />
                     <span>Exact Map Pin Coordinates</span>
                   </div>
-                  <div className="text-[11px] text-[#5f7572] mt-0.5 font-mono">
+                  <div className="text-[11px] text-[#6a6a6a] mt-0.5 font-mono">
                     Lat: {selectedListingDetail.locationLat ?? 28.5135}° N • Lng: {selectedListingDetail.locationLng ?? 77.0422}° E
                   </div>
-                  <div className="text-[11px] text-[#5f7572]">
+                  <div className="text-[11px] text-[#6a6a6a]">
                     Locality: {selectedListingDetail.locality} ({selectedListingDetail.distanceToNCU})
                   </div>
                 </div>
@@ -849,7 +849,7 @@ export const DiscoverPage: React.FC = () => {
                   href={`https://www.google.com/maps?q=${selectedListingDetail.locationLat ?? 28.5135},${selectedListingDetail.locationLng ?? 77.0422}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-[#117c74] hover:text-white text-[#17222b] font-semibold rounded-xl border border-[#e2ece9] transition-colors cursor-pointer shrink-0"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-[#222222] hover:text-white text-[#222222] font-semibold rounded-xl border border-[#ebebeb] transition-colors cursor-pointer shrink-0"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>Open in Google Maps</span>
@@ -857,8 +857,8 @@ export const DiscoverPage: React.FC = () => {
               </div>
 
               {/* Description */}
-              <div className="space-y-2 text-xs leading-relaxed text-[#17222b]">
-                <span className="font-bold text-[#5f7572] uppercase tracking-wider block">
+              <div className="space-y-2 text-xs leading-relaxed text-[#222222]">
+                <span className="font-bold text-[#6a6a6a] uppercase tracking-wider block">
                   Property Overview
                 </span>
                 <p>{selectedListingDetail.description}</p>
@@ -866,16 +866,16 @@ export const DiscoverPage: React.FC = () => {
 
               {/* Amenities */}
               <div className="space-y-2">
-                <span className="font-bold text-xs text-[#5f7572] uppercase tracking-wider block">
+                <span className="font-bold text-xs text-[#6a6a6a] uppercase tracking-wider block">
                   Included Amenities
                 </span>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {selectedListingDetail.amenities.map((amenity, i) => (
                     <div
                       key={i}
-                      className="p-2.5 bg-[#f6f9f8] rounded-xl border border-[#e2ece9] text-xs text-[#17222b] flex items-center gap-2"
+                      className="p-2.5 bg-[#f7f7f7] rounded-xl border border-[#ebebeb] text-xs text-[#222222] flex items-center gap-2"
                     >
-                      <CheckCircle className="w-3.5 h-3.5 text-[#117c74]" />
+                      <CheckCircle className="w-3.5 h-3.5 text-[#ff385c]" />
                       <span>{amenity}</span>
                     </div>
                   ))}
@@ -883,16 +883,16 @@ export const DiscoverPage: React.FC = () => {
               </div>
 
               {/* Landlord Contact Info */}
-              <div className="p-4 bg-white rounded-2xl border border-[#e2ece9] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="p-4 bg-white rounded-2xl border border-[#ebebeb] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#117c74]/10 text-[#117c74] flex items-center justify-center font-bold">
+                  <div className="w-10 h-10 rounded-full bg-[#ff385c]/10 text-[#ff385c] flex items-center justify-center font-bold">
                     {selectedListingDetail.landlordName.charAt(0)}
                   </div>
                   <div>
-                    <div className="font-semibold text-xs text-[#17222b]">
+                    <div className="font-semibold text-xs text-[#222222]">
                       {selectedListingDetail.landlordName}
                     </div>
-                    <div className="text-xs text-[#5f7572] flex items-center gap-1 mt-0.5">
+                    <div className="text-xs text-[#6a6a6a] flex items-center gap-1 mt-0.5">
                       <Phone className="w-3 h-3" /> {selectedListingDetail.landlordContact}
                     </div>
                   </div>
@@ -906,7 +906,7 @@ export const DiscoverPage: React.FC = () => {
                         setSelectedListingDetail(null);
                       }
                     }}
-                    className="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+                    className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-full transition-all cursor-pointer flex items-center gap-1.5"
                     title="Remove this listing"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -920,13 +920,13 @@ export const DiscoverPage: React.FC = () => {
                       });
                       setSelectedListingDetail(null);
                     }}
-                    className="px-4 py-2 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl transition-all cursor-pointer"
+                    className="px-5 py-2 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full transition-all cursor-pointer"
                   >
                     Direct Chat
                   </button>
                   <a
                     href={`tel:${selectedListingDetail.landlordContact}`}
-                    className="px-4 py-2 bg-[#f6f9f8] hover:bg-[#e2ece9] text-[#17222b] text-xs font-semibold rounded-xl transition-all"
+                    className="px-4 py-2 bg-[#f7f7f7] hover:bg-[#ebebeb] text-[#222222] text-xs font-semibold rounded-full border border-[#ebebeb] transition-all"
                   >
                     Call Landlord
                   </a>
@@ -940,19 +940,19 @@ export const DiscoverPage: React.FC = () => {
       {/* Create Listing Modal */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-[#e2ece9] overflow-hidden max-h-[92vh] flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2ece9] bg-gradient-to-r from-[#117c74]/10 to-transparent">
+          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-[#ebebeb] overflow-hidden max-h-[92vh] flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#ebebeb] bg-gradient-to-r from-[#ff385c]/5 to-transparent">
               <div>
-                <h3 className="font-heading text-lg font-bold text-[#17222b]">
+                <h3 className="font-heading text-lg font-bold text-[#222222]">
                   Post a Housing Listing (NCU Pilot)
                 </h3>
-                <p className="text-xs text-[#5f7572]">
+                <p className="text-xs text-[#6a6a6a]">
                   Add verified property details, house rules, and GPS pin coordinates for student matching.
                 </p>
               </div>
               <button
                 onClick={() => setIsCreateModalOpen(false)}
-                className="p-1.5 text-[#5f7572] hover:text-[#17222b] rounded-full cursor-pointer"
+                className="p-1.5 text-[#6a6a6a] hover:text-[#222222] rounded-full cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -961,13 +961,13 @@ export const DiscoverPage: React.FC = () => {
             <form onSubmit={handleCreateListing} className="p-6 overflow-y-auto space-y-6">
               {/* SECTION 1: BASIC INFORMATION & PRICING */}
               <div className="space-y-3.5">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#117c74] border-b border-[#e2ece9] pb-1.5">
-                  <Home className="w-4 h-4 text-[#117c74]" />
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#ff385c] border-b border-[#ebebeb] pb-1.5">
+                  <Home className="w-4 h-4 text-[#ff385c]" />
                   <span>1. Basic Details & Pricing</span>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                  <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                     Listing Title
                   </label>
                   <input
@@ -976,19 +976,19 @@ export const DiscoverPage: React.FC = () => {
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
                     placeholder="e.g. Furnished 2BHK Room with Balcony near NCU Gate 2"
-                    className="w-full px-3.5 py-2.5 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                    className="w-full px-3.5 py-2.5 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Locality
                     </label>
                     <select
                       value={newLocality}
                       onChange={(e) => handleLocalitySelect(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     >
                       <option value="Sector 23">Sector 23 (Campus Zone)</option>
                       <option value="DLF Phase 3">DLF Phase 3</option>
@@ -999,7 +999,7 @@ export const DiscoverPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Specific Address / Sector Plot
                     </label>
                     <input
@@ -1008,14 +1008,14 @@ export const DiscoverPage: React.FC = () => {
                       value={newAddress}
                       onChange={(e) => setNewAddress(e.target.value)}
                       placeholder="e.g. Block C, Plot 215, Sector 23"
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Monthly Rent (INR)
                     </label>
                     <input
@@ -1023,11 +1023,11 @@ export const DiscoverPage: React.FC = () => {
                       required
                       value={newRent}
                       onChange={(e) => setNewRent(Number(e.target.value))}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Security Deposit (INR)
                     </label>
                     <input
@@ -1035,13 +1035,13 @@ export const DiscoverPage: React.FC = () => {
                       required
                       value={newDeposit}
                       onChange={(e) => setNewDeposit(Number(e.target.value))}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                  <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                     Detail room features, AC/WiFi, walking distance to campus, etc.
                   </label>
                   <textarea
@@ -1050,27 +1050,27 @@ export const DiscoverPage: React.FC = () => {
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
                     placeholder="Detail room features, AC/WiFi, walking distance to campus, study desks, power backup, etc."
-                    className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                    className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                   />
                 </div>
               </div>
 
               {/* SECTION 2: PROPERTY DETAILS (FOR SEARCH FILTERS) */}
               <div className="space-y-3.5 pt-2">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#117c74] border-b border-[#e2ece9] pb-1.5">
-                  <Building className="w-4 h-4 text-[#117c74]" />
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#ff385c] border-b border-[#ebebeb] pb-1.5">
+                  <Building className="w-4 h-4 text-[#ff385c]" />
                   <span>2. Property Details & Space (Search Filters)</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       ★ Property Type
                     </label>
                     <select
                       value={newPropertyType}
                       onChange={(e) => setNewPropertyType(e.target.value as any)}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     >
                       <option value="Flat">Flat</option>
                       <option value="PG">PG</option>
@@ -1080,13 +1080,13 @@ export const DiscoverPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       ★ BHK or Room Type
                     </label>
                     <select
                       value={newBhkRoom}
                       onChange={(e) => setNewBhkRoom(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     >
                       <option value="1RK">1RK Studio</option>
                       <option value="1BHK">1BHK</option>
@@ -1099,7 +1099,7 @@ export const DiscoverPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       ★ Total Vacancies Open
                     </label>
                     <input
@@ -1109,20 +1109,20 @@ export const DiscoverPage: React.FC = () => {
                       required
                       value={newVacancies}
                       onChange={(e) => setNewVacancies(Number(e.target.value))}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Furnishing
                     </label>
                     <select
                       value={newFurnishing}
                       onChange={(e) => setNewFurnishing(e.target.value as any)}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     >
                       <option value="Fully Furnished">Fully Furnished</option>
                       <option value="Semi-Furnished">Semi-Furnished</option>
@@ -1131,7 +1131,7 @@ export const DiscoverPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Floor Number & Total
                     </label>
                     <div className="flex items-center gap-2">
@@ -1143,9 +1143,9 @@ export const DiscoverPage: React.FC = () => {
                         onChange={(e) => setNewFloorNumber(Number(e.target.value))}
                         title="Floor Number"
                         placeholder="Floor"
-                        className="w-1/2 px-2.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                        className="w-1/2 px-2.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                       />
-                      <span className="text-xs text-[#5f7572]">of</span>
+                      <span className="text-xs text-[#6a6a6a]">of</span>
                       <input
                         type="number"
                         min={1}
@@ -1154,13 +1154,13 @@ export const DiscoverPage: React.FC = () => {
                         onChange={(e) => setNewTotalFloors(Number(e.target.value))}
                         title="Total Floors"
                         placeholder="Total"
-                        className="w-1/2 px-2.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                        className="w-1/2 px-2.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Area in Sq Ft
                     </label>
                     <div className="relative">
@@ -1170,9 +1170,9 @@ export const DiscoverPage: React.FC = () => {
                         step={10}
                         value={newAreaSqFt}
                         onChange={(e) => setNewAreaSqFt(Number(e.target.value))}
-                        className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                        className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                       />
-                      <span className="absolute right-2.5 top-2 text-[10px] text-[#5f7572]">
+                      <span className="absolute right-2.5 top-2 text-[10px] text-[#6a6a6a]">
                         ~₹{Math.round(newRent / (newAreaSqFt || 1))}/sqft
                       </span>
                     </div>
@@ -1185,29 +1185,29 @@ export const DiscoverPage: React.FC = () => {
                       type="checkbox"
                       checked={newHasLift}
                       onChange={(e) => setNewHasLift(e.target.checked)}
-                      className="accent-[#117c74] rounded-sm"
+                      className="accent-[#ff385c] rounded-sm"
                     />
-                    <span className="text-[#17222b]">Elevator / Lift Available in Building</span>
+                    <span className="text-[#222222]">Elevator / Lift Available in Building</span>
                   </label>
                 </div>
               </div>
 
               {/* SECTION 3: FLATMATE AND HOUSE RULES */}
               <div className="space-y-3.5 pt-2">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#117c74] border-b border-[#e2ece9] pb-1.5">
-                  <Users className="w-4 h-4 text-[#117c74]" />
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#ff385c] border-b border-[#ebebeb] pb-1.5">
+                  <Users className="w-4 h-4 text-[#ff385c]" />
                   <span>3. Flatmate Matching & House Rules</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       ★ Gender Allowed
                     </label>
                     <select
                       value={newGenderAllowed}
                       onChange={(e) => setNewGenderAllowed(e.target.value as any)}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     >
                       <option value="Boys">Boys Only</option>
                       <option value="Girls">Girls Only</option>
@@ -1216,13 +1216,13 @@ export const DiscoverPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       ★ Food Rules
                     </label>
                     <select
                       value={newFoodRules}
                       onChange={(e) => setNewFoodRules(e.target.value as any)}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     >
                       <option value="Veg Only">Veg Only</option>
                       <option value="Non-Veg Allowed">Non-Veg Allowed</option>
@@ -1233,7 +1233,7 @@ export const DiscoverPage: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Current Occupants (Count)
                     </label>
                     <input
@@ -1242,12 +1242,12 @@ export const DiscoverPage: React.FC = () => {
                       max={15}
                       value={newOccupantsCount}
                       onChange={(e) => setNewOccupantsCount(Number(e.target.value))}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Occupant Details (Gender & Course - Optional)
                     </label>
                     <input
@@ -1255,20 +1255,20 @@ export const DiscoverPage: React.FC = () => {
                       value={newOccupantsDetails}
                       onChange={(e) => setNewOccupantsDetails(e.target.value)}
                       placeholder="e.g. 2 B.Tech CSE 3rd year boys"
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Guests Policy
                     </label>
                     <select
                       value={newGuestPolicy}
                       onChange={(e) => setNewGuestPolicy(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="Daytime only">Daytime only</option>
                       <option value="Overnight allowed">Overnight allowed</option>
@@ -1278,13 +1278,13 @@ export const DiscoverPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Smoking Policy
                     </label>
                     <select
                       value={newSmokingPolicy}
                       onChange={(e) => setNewSmokingPolicy(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="No Smoking">No Smoking</option>
                       <option value="Balcony only">Balcony only</option>
@@ -1293,13 +1293,13 @@ export const DiscoverPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Drinking & Alcohol
                     </label>
                     <select
                       value={newDrinkingPolicy}
                       onChange={(e) => setNewDrinkingPolicy(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="No Alcohol">No Alcohol</option>
                       <option value="Allowed inside room">Allowed inside room</option>
@@ -1309,13 +1309,13 @@ export const DiscoverPage: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Pets Policy
                     </label>
                     <select
                       value={newPetsPolicy}
                       onChange={(e) => setNewPetsPolicy(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="No Pets">No Pets</option>
                       <option value="Pets Allowed">Pets Allowed</option>
@@ -1323,13 +1323,13 @@ export const DiscoverPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Curfew / Gate Closing Time
                     </label>
                     <select
                       value={newCurfewTime}
                       onChange={(e) => setNewCurfewTime(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="No Curfew">No Curfew</option>
                       <option value="10:30 PM">10:30 PM</option>
@@ -1339,13 +1339,13 @@ export const DiscoverPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Quiet Hours
                     </label>
                     <select
                       value={newQuietHours}
                       onChange={(e) => setNewQuietHours(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     >
                       <option value="11:00 PM - 7:00 AM">11:00 PM - 7:00 AM</option>
                       <option value="10:00 PM - 6:00 AM">10:00 PM - 6:00 AM</option>
@@ -1360,31 +1360,31 @@ export const DiscoverPage: React.FC = () => {
                       type="checkbox"
                       checked={newCookingAllowed}
                       onChange={(e) => setNewCookingAllowed(e.target.checked)}
-                      className="accent-[#117c74] rounded-sm"
+                      className="accent-[#ff385c] rounded-sm"
                     />
-                    <span className="text-[#17222b]">Cooking allowed with modular kitchen access</span>
+                    <span className="text-[#222222]">Cooking allowed with modular kitchen access</span>
                   </label>
                 </div>
               </div>
 
               {/* SECTION 4: MAP PIN LOCATION (LAT / LONG) */}
               <div className="space-y-3.5 pt-2">
-                <div className="flex items-center justify-between border-b border-[#e2ece9] pb-1.5">
-                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#117c74]">
-                    <MapPin className="w-4 h-4 text-[#117c74]" />
+                <div className="flex items-center justify-between border-b border-[#ebebeb] pb-1.5">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#ff385c]">
+                    <MapPin className="w-4 h-4 text-[#ff385c]" />
                     <span>4. Map Pin Location (Lat/Long Coordinates)</span>
                   </div>
-                  <span className="text-[10px] text-[#5f7572]">Accurate Campus Distance</span>
+                  <span className="text-[10px] text-[#6a6a6a]">Accurate Campus Distance</span>
                 </div>
 
-                <div className="p-3 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-3">
-                  <div className="text-[11px] text-[#5f7572] leading-relaxed">
+                <div className="p-3 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-3">
+                  <div className="text-[11px] text-[#6a6a6a] leading-relaxed">
                     Set precise latitude & longitude coordinates so prospective flatmates can see the exact walk time from NCU Gate 1 and Gate 2.
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-semibold text-[#5f7572] mb-1">
+                      <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1">
                         Latitude (°N)
                       </label>
                       <input
@@ -1393,11 +1393,11 @@ export const DiscoverPage: React.FC = () => {
                         required
                         value={newLat}
                         onChange={(e) => setNewLat(Number(e.target.value))}
-                        className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b] font-mono"
+                        className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222] font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-semibold text-[#5f7572] mb-1">
+                      <label className="block text-[11px] font-semibold text-[#6a6a6a] mb-1">
                         Longitude (°E)
                       </label>
                       <input
@@ -1406,7 +1406,7 @@ export const DiscoverPage: React.FC = () => {
                         required
                         value={newLng}
                         onChange={(e) => setNewLng(Number(e.target.value))}
-                        className="w-full px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl text-[#17222b] font-mono"
+                        className="w-full px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl text-[#222222] font-mono"
                       />
                     </div>
                   </div>
@@ -1416,7 +1416,7 @@ export const DiscoverPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleLocalitySelect(newLocality)}
-                        className="px-3 py-1.5 bg-white hover:bg-[#e2ece9] text-[#17222b] font-medium rounded-xl border border-[#e2ece9] cursor-pointer transition-colors"
+                        className="px-3 py-1.5 bg-white hover:bg-[#ebebeb] text-[#222222] font-medium rounded-xl border border-[#ebebeb] cursor-pointer transition-colors"
                       >
                         📍 Auto-fill from {newLocality}
                       </button>
@@ -1425,7 +1425,7 @@ export const DiscoverPage: React.FC = () => {
                         type="button"
                         onClick={handleGetGPSLocation}
                         disabled={isLocating}
-                        className="px-3 py-1.5 bg-[#117c74]/10 hover:bg-[#117c74]/20 text-[#117c74] font-semibold rounded-xl cursor-pointer transition-colors flex items-center gap-1.5"
+                        className="px-3 py-1.5 bg-[#ff385c]/10 hover:bg-[#ff385c]/20 text-[#ff385c] font-semibold rounded-xl cursor-pointer transition-colors flex items-center gap-1.5"
                       >
                         <Navigation className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : ''}`} />
                         <span>{isLocating ? 'Acquiring GPS...' : 'Use My Current Location'}</span>
@@ -1436,7 +1436,7 @@ export const DiscoverPage: React.FC = () => {
                       href={`https://www.google.com/maps?q=${newLat},${newLng}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-[#117c74] hover:underline text-[11px] font-medium flex items-center gap-1"
+                      className="text-[#ff385c] hover:underline text-[11px] font-medium flex items-center gap-1"
                     >
                       <ExternalLink className="w-3 h-3" />
                       Preview Pin on Map
@@ -1447,14 +1447,14 @@ export const DiscoverPage: React.FC = () => {
 
               {/* SECTION 5: LANDLORD / SUBLETTER INFO & KYC */}
               <div className="space-y-3.5 pt-2">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#117c74] border-b border-[#e2ece9] pb-1.5">
-                  <ShieldCheck className="w-4 h-4 text-[#117c74]" />
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#ff385c] border-b border-[#ebebeb] pb-1.5">
+                  <ShieldCheck className="w-4 h-4 text-[#ff385c]" />
                   <span>5. Landlord / Subletter Verification</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Landlord / Subletter Name
                     </label>
                     <input
@@ -1463,11 +1463,11 @@ export const DiscoverPage: React.FC = () => {
                       value={newLandlordName}
                       onChange={(e) => setNewLandlordName(e.target.value)}
                       placeholder="e.g. Ramesh Chandra"
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold text-[#6a6a6a] mb-1">
                       Phone / WhatsApp Contact
                     </label>
                     <input
@@ -1476,7 +1476,7 @@ export const DiscoverPage: React.FC = () => {
                       value={newContact}
                       onChange={(e) => setNewContact(e.target.value)}
                       placeholder="+91 98XXX XXXXX"
-                      className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     />
                   </div>
                 </div>
@@ -1486,7 +1486,7 @@ export const DiscoverPage: React.FC = () => {
                     type="checkbox"
                     checked={newIsVerified}
                     onChange={(e) => setNewIsVerified(e.target.checked)}
-                    className="accent-[#117c74] rounded-sm"
+                    className="accent-[#ff385c] rounded-sm"
                   />
                   <span>Owner has provided Aadhaar KYC & verified utility bill</span>
                 </label>
@@ -1497,19 +1497,19 @@ export const DiscoverPage: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-3 border-t border-[#e2ece9] flex justify-end gap-2">
+              <div className="pt-3 border-t border-[#ebebeb] flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-[#5f7572] hover:bg-[#f6f9f8] rounded-xl cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-[#6a6a6a] hover:bg-[#f7f7f7] rounded-full cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2.5 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
                 >
-                  <Sparkles className="w-4 h-4" />
+                  <Sparkles className="w-4 h-4 text-[#ff385c]" />
                   <span>Compute Trust Score & Publish Listing</span>
                 </button>
               </div>

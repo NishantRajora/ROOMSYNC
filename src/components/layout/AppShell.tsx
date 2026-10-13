@@ -65,18 +65,18 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f6f9f8] text-[#17222b] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f7f7f7] text-[#222222] flex flex-col font-sans">
       {/* Active SOS Visit Banner if running */}
       {activeVisitAlert && (
         <div
           className={`py-2 px-4 text-xs font-semibold flex items-center justify-between transition-colors z-40 ${
             activeVisitAlert.status === 'alert_triggered'
               ? 'bg-[#f43f5e] text-white animate-pulse'
-              : 'bg-[#117c74] text-white'
+              : 'bg-[#222222] text-white'
           }`}
         >
           <div className="flex items-center gap-2 max-w-2xl truncate">
-            <ShieldAlert className="w-4 h-4 shrink-0" />
+            <ShieldAlert className="w-4 h-4 shrink-0 text-[#ff385c]" />
             <span>
               {activeVisitAlert.status === 'alert_triggered'
                 ? 'EMERGENCY CHECK-IN MISSED: Alert sent for property visit!'
@@ -88,13 +88,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setIsSosModalOpen(true)}
-              className="px-2.5 py-1 bg-white/20 hover:bg-white/30 rounded-lg text-white font-medium cursor-pointer"
+              className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-full text-white font-medium cursor-pointer"
             >
               View Timer
             </button>
             <button
               onClick={cancelVisitAlert}
-              className="px-2.5 py-1 bg-white text-[#117c74] hover:bg-white/90 rounded-lg font-bold cursor-pointer"
+              className="px-3 py-1 bg-white text-[#222222] hover:bg-white/90 rounded-full font-bold cursor-pointer"
             >
               I'm Safe
             </button>
@@ -102,60 +102,66 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
         </div>
       )}
 
-      {/* Sticky Top Bar */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#e2ece9] px-4 lg:px-8 py-3.5 flex items-center justify-between">
+      {/* Sticky Top Bar (Airbnb 80px fixed header) */}
+      <header className="sticky top-0 z-30 bg-white border-b border-[#ebebeb] px-4 lg:px-8 h-20 flex items-center justify-between">
         {/* Brand & Mobile Hamburger */}
         <div className="flex items-center gap-4">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-1.5 text-[#5f7572] hover:text-[#17222b] lg:hidden rounded-lg cursor-pointer"
+            className="p-2 text-[#6a6a6a] hover:text-[#222222] hover:bg-[#f7f7f7] lg:hidden rounded-full cursor-pointer transition-colors"
           >
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
           <div
             onClick={() => setActiveTab('discover')}
-            className="flex items-center gap-2.5 cursor-pointer select-none"
+            className="flex items-center gap-2.5 cursor-pointer select-none group"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#117c74] flex items-center justify-center text-white shadow-xs">
+            <div className="w-10 h-10 rounded-full bg-[#ff385c] hover:bg-[#e00b41] flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105">
               <span className="font-heading font-bold text-lg">R</span>
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-heading font-bold text-lg text-[#17222b] tracking-tight">
+                <span className="font-heading font-bold text-xl text-[#222222] tracking-tight">
                   RoomSync
                 </span>
               </div>
-              <span className="text-[11px] text-[#5f7572] hidden sm:block">
+              <span className="text-[11px] text-[#6a6a6a] hidden sm:block">
                 Find Your People. Find Your Place.
               </span>
             </div>
           </div>
         </div>
 
-        {/* Global Search Bar */}
-        <div className="hidden md:flex items-center flex-1 max-w-md mx-6">
-          <div className="relative w-full">
-            <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#5f7572]" />
+        {/* Global Search Bar (Airbnb Floating Capsule) */}
+        <div className="hidden md:flex items-center flex-1 max-w-lg mx-6">
+          <div className="relative w-full flex items-center bg-white border border-[#ebebeb] rounded-full p-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.05)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.12),0_6px_16px_rgba(0,0,0,0.08)] transition-all">
             <input
               type="text"
               value={globalSearch}
               onChange={(e) => setGlobalSearch(e.target.value)}
-              placeholder="Search student flats, verified roommates, localities..."
-              className="w-full pl-9 pr-4 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] focus:bg-white text-[#17222b] transition-all"
+              placeholder="Search flats, roommates, localities..."
+              className="w-full pl-4 pr-3 py-1.5 text-xs text-[#222222] placeholder-[#6a6a6a] bg-transparent focus:outline-none"
             />
+            <button
+              type="button"
+              className="w-8 h-8 rounded-full bg-[#ff385c] hover:bg-[#e00b41] text-white flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+              title="Search"
+            >
+              <Search className="w-3.5 h-3.5 stroke-[2.5]" />
+            </button>
           </div>
         </div>
 
-        {/* Right Action Icons & Profile Completion */}
+        {/* Right Action Icons & Profile Capsule */}
         <div className="flex items-center gap-3">
           {/* Quick SOS Visit Trigger */}
           <button
             onClick={() => setIsSosModalOpen(true)}
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#fef2f2] hover:bg-[#fee2e2] text-[#f43f5e] border border-[#fecdd3] rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#f7f7f7] hover:bg-[#ebebeb] text-[#222222] border border-[#ebebeb] rounded-full text-xs font-semibold transition-colors cursor-pointer"
             title="Start SOS Safety Check-in before visiting property"
           >
-            <ShieldAlert className="w-3.5 h-3.5" />
+            <ShieldAlert className="w-3.5 h-3.5 text-[#ff385c]" />
             <span>SOS Check-in</span>
           </button>
 
@@ -165,79 +171,52 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
               <VerifiedBadge college={currentUser.courseYear || "Verified Student"} size="sm" />
             </div>
           ) : currentUser.isProfessionalVerified || currentUser.userType === 'professional' ? (
-            <div className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-[#0369a1] bg-[#f0f9ff] px-2.5 py-1 rounded-full border border-[#bae6fd]">
+            <div className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-[#222222] bg-[#f7f7f7] px-3 py-1 rounded-full border border-[#ebebeb]">
               <span>💼 Verified Pro</span>
             </div>
           ) : (
             <button
               onClick={() => setActiveTab('profile')}
-              className="hidden sm:inline-flex items-center gap-1 text-xs font-medium text-[#f59e0b] bg-[#fffbeb] px-2.5 py-1 rounded-full border border-[#fde68a] cursor-pointer"
+              className="hidden sm:inline-flex items-center gap-1 text-xs font-medium text-[#222222] bg-[#f7f7f7] hover:bg-[#ebebeb] px-3 py-1 rounded-full border border-[#ebebeb] cursor-pointer"
             >
               Verify Profile ID
             </button>
           )}
 
-          {/* Profile Completion & User Menu Dropdown */}
+          {/* Profile Capsule (Airbnb style border pill) */}
           <div className="relative">
             <div
               onClick={() => setIsAccountDropdownOpen((prev) => !prev)}
-              className="flex items-center gap-2 pl-2 cursor-pointer group"
+              className="flex items-center gap-2.5 p-1 pl-3.5 bg-white hover:shadow-md border border-[#ebebeb] rounded-full cursor-pointer transition-all"
               title={`Logged in as ${currentUser.fullName} · ${currentUser.profileCompletion}% complete`}
             >
-              <div className="relative w-9 h-9">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="15"
-                    className="stroke-[#e2ece9]"
-                    strokeWidth="2.5"
-                    fill="none"
-                  />
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="15"
-                    className="stroke-[#117c74] transition-all duration-500"
-                    strokeWidth="2.5"
-                    strokeDasharray={`${currentUser.profileCompletion}, 100`}
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                </svg>
+              <Menu className="w-4 h-4 text-[#222222]" />
+              <div className="relative w-8 h-8">
                 <img
                   src={currentUser.avatarUrl}
                   alt={currentUser.fullName}
-                  className="w-7 h-7 rounded-full object-cover absolute top-1 left-1"
+                  className="w-8 h-8 rounded-full object-cover border border-[#ebebeb]"
                 />
-              </div>
-              <div className="hidden xl:block text-left">
-                <div className="text-xs font-semibold text-[#17222b] group-hover:text-[#117c74] transition-colors truncate max-w-[120px]">
-                  {currentUser.fullName}
-                </div>
-                <div className="text-[10px] text-[#5f7572]">
-                  {currentUser.userType === 'student' ? 'Student' : 'Professional'} · {currentUser.profileCompletion}%
-                </div>
               </div>
             </div>
 
             {/* Clean User Account Menu */}
             {isAccountDropdownOpen && (
-              <div className="absolute right-0 top-12 z-50 w-64 bg-white rounded-2xl shadow-xl border border-[#e2ece9] p-3 space-y-3 animate-in fade-in zoom-in-95">
-                <div className="flex items-center gap-2.5 p-2 bg-[#f6f9f8] rounded-xl border border-[#e2ece9]">
+              <div className="absolute right-0 top-14 z-50 w-64 bg-white rounded-2xl shadow-[0_6px_20px_rgba(0,0,0,0.12)] border border-[#ebebeb] p-3 space-y-2 animate-in fade-in zoom-in-95">
+                <div className="flex items-center gap-2.5 p-2.5 bg-[#f7f7f7] rounded-xl border border-[#ebebeb]">
                   <img
                     src={currentUser.avatarUrl}
                     alt={currentUser.fullName}
-                    className="w-10 h-10 rounded-full object-cover shrink-0"
+                    className="w-10 h-10 rounded-full object-cover shrink-0 border border-[#ebebeb]"
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs font-bold text-[#17222b] truncate">
+                    <div className="text-xs font-bold text-[#222222] truncate">
                       {currentUser.fullName}
                     </div>
-                    <div className="text-[11px] text-[#5f7572] truncate">
+                    <div className="text-[11px] text-[#6a6a6a] truncate">
                       {currentUser.email}
                     </div>
-                    <div className="text-[10px] font-medium text-[#117c74] mt-0.5">
+                    <div className="text-[10px] font-medium text-[#ff385c] mt-0.5">
                       {currentUser.courseYear || (currentUser.userType === 'student' ? 'Verified Student' : 'Working Professional')}
                     </div>
                   </div>
@@ -250,10 +229,10 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
                       setIsAccountDropdownOpen(false);
                       setActiveTab('profile');
                     }}
-                    className="w-full py-2 px-3 text-left hover:bg-[#f6f9f8] rounded-xl text-xs font-semibold text-[#17222b] flex items-center justify-between cursor-pointer transition-colors"
+                    className="w-full py-2 px-3 text-left hover:bg-[#f7f7f7] rounded-xl text-xs font-medium text-[#222222] flex items-center justify-between cursor-pointer transition-colors"
                   >
                     <span>My Profile & Verified ID</span>
-                    <span className="text-[10px] text-[#117c74] font-bold">{currentUser.profileCompletion}%</span>
+                    <span className="text-[10px] text-[#6a6a6a] font-bold">{currentUser.profileCompletion}%</span>
                   </button>
                   <button
                     type="button"
@@ -261,7 +240,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
                       setIsAccountDropdownOpen(false);
                       handleLogout();
                     }}
-                    className="w-full py-2 px-3 text-left hover:bg-[#fef2f2] rounded-xl text-xs font-semibold text-[#f43f5e] flex items-center gap-2 cursor-pointer transition-colors"
+                    className="w-full py-2 px-3 text-left hover:bg-[#fef2f2] rounded-xl text-xs font-medium text-[#e00b41] flex items-center gap-2 cursor-pointer transition-colors"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Log Out</span>
@@ -273,10 +252,10 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
         </div>
       </header>
 
-      {/* Main Container: Sidebar + Content */}
+      {/* Main Container: Sidebar + Content on #f7f7f7 Canvas */}
       <div className="flex-1 flex max-w-[1920px] w-full mx-auto">
         {/* Left Sidebar (Desktop) */}
-        <aside className="hidden lg:flex flex-col w-64 border-r border-[#e2ece9] bg-white p-4 shrink-0">
+        <aside className="hidden lg:flex flex-col w-64 border-r border-[#ebebeb] bg-white p-4 shrink-0">
           <nav className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -285,13 +264,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
                 <button
                   key={item.tab}
                   onClick={() => setActiveTab(item.tab)}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-[#117c74] text-white shadow-xs'
-                      : 'text-[#5f7572] hover:text-[#17222b] hover:bg-[#f6f9f8]'
+                      ? 'bg-[#222222] text-white shadow-xs'
+                      : 'text-[#6a6a6a] hover:text-[#222222] hover:bg-[#f7f7f7]'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#5f7572]'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#6a6a6a]'}`} />
                   <span>{item.label}</span>
                 </button>
               );
@@ -299,17 +278,17 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
           </nav>
 
           {/* Quick Safety Box on sidebar */}
-          <div className="mt-auto p-3.5 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-2">
-            <div className="flex items-center gap-2 text-xs font-bold text-[#17222b]">
-              <ShieldCheck className="w-4 h-4 text-[#117c74]" />
+          <div className="mt-auto p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold text-[#222222]">
+              <ShieldCheck className="w-4 h-4 text-[#ff385c]" />
               <span>Campus Safety Guide</span>
             </div>
-            <p className="text-[11px] text-[#5f7572] leading-relaxed">
+            <p className="text-[11px] text-[#6a6a6a] leading-relaxed">
               Curated student housing corridors, night lighting audit, transit access, and police chowki proximity.
             </p>
             <button
               onClick={() => setActiveTab('safetymap')}
-              className="text-[11px] font-semibold text-[#117c74] hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-[11px] font-semibold text-[#222222] hover:text-[#ff385c] flex items-center gap-1 cursor-pointer transition-colors"
             >
               Explore Safety & Risk Map &rarr;
             </button>
@@ -318,7 +297,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
           {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="mt-3 w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-[#5f7572] hover:text-[#f43f5e] hover:bg-[#fef2f2] rounded-xl transition-colors cursor-pointer"
+            className="mt-3 w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#6a6a6a] hover:text-[#e00b41] hover:bg-[#fef2f2] rounded-full transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
             <span>Log Out</span>
@@ -327,13 +306,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden fixed inset-0 z-40 bg-black/50 flex">
-            <div className="w-72 bg-white h-full p-4 flex flex-col space-y-2 shadow-2xl animate-in slide-in-from-left duration-200">
-              <div className="flex items-center justify-between pb-3 border-b border-[#e2ece9]">
-                <span className="font-heading font-bold text-base text-[#17222b]">Navigation</span>
+          <div className="lg:hidden fixed inset-0 z-40 bg-black/40 flex backdrop-blur-xs">
+            <div className="w-72 bg-white h-full p-4 flex flex-col space-y-2 shadow-2xl animate-in slide-in-from-left duration-200 border-r border-[#ebebeb]">
+              <div className="flex items-center justify-between pb-3 border-b border-[#ebebeb]">
+                <span className="font-heading font-bold text-base text-[#222222]">Navigation</span>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-1 text-[#5f7572] hover:text-[#17222b] cursor-pointer"
+                  className="p-1.5 text-[#6a6a6a] hover:text-[#222222] rounded-full hover:bg-[#f7f7f7] cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -349,10 +328,10 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
                         setActiveTab(item.tab);
                         setIsMobileMenuOpen(false);
                       }}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer ${
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
                         isActive
-                          ? 'bg-[#117c74] text-white'
-                          : 'text-[#5f7572] hover:text-[#17222b] hover:bg-[#f6f9f8]'
+                          ? 'bg-[#222222] text-white'
+                          : 'text-[#6a6a6a] hover:text-[#222222] hover:bg-[#f7f7f7]'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -361,13 +340,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
                   );
                 })}
               </div>
-              <div className="pt-2 border-t border-[#e2ece9]">
+              <div className="pt-2 border-t border-[#ebebeb]">
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     handleLogout();
                   }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-[#f43f5e] hover:bg-[#fef2f2] cursor-pointer"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full text-xs font-medium text-[#e00b41] hover:bg-[#fef2f2] cursor-pointer transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Log Out</span>
@@ -378,8 +357,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
           </div>
         )}
 
-        {/* Main Content Area */}
-        <main className="flex-1 p-4 lg:p-8 overflow-x-hidden min-h-[calc(100vh-65px)]">
+        {/* Main Content Area on Faint Canvas */}
+        <main className="flex-1 p-4 lg:p-8 overflow-x-hidden min-h-[calc(100vh-80px)] bg-[#f7f7f7]">
           {children}
         </main>
       </div>
@@ -395,7 +374,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
 
       {/* Global Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#17222b] text-white text-xs font-medium px-4 py-2.5 rounded-2xl shadow-xl border border-white/10 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#222222] text-white text-xs font-medium px-5 py-2.5 rounded-full shadow-2xl border border-white/10 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2 duration-200">
           <CheckCircle className="w-4 h-4 text-[#10b981]" />
           <span>{toastMessage}</span>
         </div>

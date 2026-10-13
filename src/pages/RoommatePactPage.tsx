@@ -177,23 +177,23 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-heading text-2xl font-bold text-[#17222b] tracking-tight">
+            <h1 className="font-heading text-2xl font-bold text-[#222222] tracking-tight">
               Roommate Living Pact Wizard
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#117c74]/10 text-[#117c74] flex items-center gap-1">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#ff385c]/10 text-[#ff385c] flex items-center gap-1">
               <Hash className="w-3 h-3" /> SHA-256 Tamper Evident
             </span>
           </div>
-          <p className="text-xs text-[#5f7572] mt-1">
+          <p className="text-xs text-[#6a6a6a] mt-1">
             Prevent flatmate disputes before they start: Quiet hours, chore rotation, guest norms, and digital signatures.
           </p>
         </div>
         <button
           onClick={() => setIsWizardOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full transition-all shadow-xs cursor-pointer"
         >
-          <PlusCircle className="w-4 h-4" />
-          Create New Roommate Pact
+          <PlusCircle className="w-4 h-4 text-[#ff385c]" />
+          <span>Create New Roommate Pact</span>
         </button>
       </div>
 
@@ -201,7 +201,7 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Pact List / Selector (4 cols) */}
         <div className="lg:col-span-4 space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#5f7572] block px-1">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#6a6a6a] block px-1">
             Active Flat Agreements ({pacts.length})
           </span>
           {pacts.map((p) => {
@@ -212,12 +212,12 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                 onClick={() => setSelectedPact(p)}
                 className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-white border-[#117c74] shadow-md ring-2 ring-[#117c74]/10'
-                    : 'bg-white border-[#e2ece9] hover:border-[#117c74]/40 shadow-2xs'
+                    ? 'bg-white border-[#222222] shadow-md ring-2 ring-[#222222]/10'
+                    : 'bg-white border-[#ebebeb] hover:border-[#222222]/40 shadow-subtle'
                 }`}
               >
                 <div className="flex items-start justify-between">
-                  <h3 className="font-heading font-bold text-sm text-[#17222b] line-clamp-1">
+                  <h3 className="font-heading font-bold text-sm text-[#222222] line-clamp-1">
                     {p.title}
                   </h3>
                   <span
@@ -230,14 +230,14 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                     {p.status === 'fully_signed' ? 'Fully Signed' : 'Signatures Pending'}
                   </span>
                 </div>
-                <p className="text-xs text-[#5f7572] mt-1 line-clamp-1">
+                <p className="text-xs text-[#6a6a6a] mt-1 line-clamp-1">
                   {p.address}
                 </p>
-                <div className="mt-3 flex items-center justify-between text-[11px] text-[#5f7572] pt-2 border-t border-[#e2ece9]">
+                <div className="mt-3 flex items-center justify-between text-[11px] text-[#6a6a6a] pt-2 border-t border-[#ebebeb]">
                   <span className="flex items-center gap-1">
-                    <Users className="w-3.5 h-3.5 text-[#117c74]" /> {p.flatmates.length} flatmates
+                    <Users className="w-3.5 h-3.5 text-[#ff385c]" /> {p.flatmates.length} flatmates
                   </span>
-                  <span className="font-mono-code text-[10px] text-[#117c74]">
+                  <span className="font-mono-code text-[10px] text-[#ff385c]">
                     #{p.sha256Hash.slice(0, 8)}
                   </span>
                 </div>
@@ -247,32 +247,32 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
         </div>
 
         {/* Pact View / Signature Panel (8 cols) */}
-        <div className="lg:col-span-8 bg-white rounded-3xl border border-[#e2ece9] p-6 shadow-2xs space-y-6">
+        <div className="lg:col-span-8 bg-white rounded-3xl border border-[#ebebeb] p-6 shadow-subtle space-y-6">
           {selectedPact ? (
             <>
               {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e2ece9]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#ebebeb]">
                 <div>
-                  <h2 className="font-heading text-xl font-bold text-[#17222b]">
+                  <h2 className="font-heading text-xl font-bold text-[#222222]">
                     {selectedPact.title}
                   </h2>
-                  <p className="text-xs text-[#5f7572] mt-0.5">
+                  <p className="text-xs text-[#6a6a6a] mt-0.5">
                     Property: {selectedPact.address}
                   </p>
                 </div>
                 <button
                   onClick={() => window.print()}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#f6f9f8] hover:bg-[#e2ece9] text-[#17222b] rounded-xl border border-[#e2ece9] transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#f7f7f7] hover:bg-[#ebebeb] text-[#222222] rounded-xl border border-[#ebebeb] transition-colors cursor-pointer"
                 >
                   <Printer className="w-3.5 h-3.5" /> Print / Save PDF
                 </button>
               </div>
 
               {/* SHA-256 Cryptographic Hash Pill */}
-              <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-1.5">
+              <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#5f7572] flex items-center gap-1">
-                    <Hash className="w-3.5 h-3.5 text-[#117c74]" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#6a6a6a] flex items-center gap-1">
+                    <Hash className="w-3.5 h-3.5 text-[#ff385c]" />
                     Cryptographic SHA-256 Tamper Evidence
                   </span>
                   <button
@@ -280,27 +280,27 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                       navigator.clipboard.writeText(selectedPact.sha256Hash);
                       showToast('SHA-256 digest copied to clipboard!');
                     }}
-                    className="text-[11px] text-[#117c74] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] text-[#ff385c] hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <Copy className="w-3 h-3" /> Copy Hash
                   </button>
                 </div>
-                <div className="font-mono-code text-xs text-[#17222b] bg-white p-2.5 rounded-xl border border-[#e2ece9] break-all select-all">
+                <div className="font-mono-code text-xs text-[#222222] bg-white p-2.5 rounded-xl border border-[#ebebeb] break-all select-all">
                   {selectedPact.sha256Hash}
                 </div>
-                <p className="text-[10px] text-[#5f7572]">
+                <p className="text-[10px] text-[#6a6a6a]">
                   This mathematical fingerprint changes if a single comma is altered in the agreement text. (Future expansion: anchoring to public blockchain registry).
                 </p>
               </div>
 
               {/* Formatted Document Text Preview */}
-              <div className="p-5 bg-white rounded-2xl border border-[#e2ece9] shadow-inner text-xs font-mono-code leading-relaxed text-[#17222b] whitespace-pre-wrap max-h-80 overflow-y-auto">
+              <div className="p-5 bg-white rounded-2xl border border-[#ebebeb] shadow-inner text-xs font-mono-code leading-relaxed text-[#222222] whitespace-pre-wrap max-h-80 overflow-y-auto">
                 {selectedPact.documentText}
               </div>
 
               {/* Flatmate Signatures Status */}
               <div className="space-y-3">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#5f7572] block">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#6a6a6a] block">
                   Flatmate Digital Signatures
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -335,8 +335,8 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
               {selectedPact.flatmates.some(
                 (f) => f.name.toLowerCase() === currentUser.fullName.toLowerCase() && !f.signed
               ) && (
-                <div className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] space-y-3">
-                  <span className="text-xs font-bold text-[#17222b] block">
+                <div className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] space-y-3">
+                  <span className="text-xs font-bold text-[#222222] block">
                     Sign this pact as {currentUser.fullName}:
                   </span>
                   <div className="flex gap-2">
@@ -345,12 +345,12 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                       value={signInput}
                       onChange={(e) => setSignInput(e.target.value)}
                       placeholder={`Type "${currentUser.fullName}" to digitally sign`}
-                      className="flex-1 px-3 py-2 text-xs bg-white border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74]"
+                      className="flex-1 px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222]"
                     />
                     <button
                       onClick={handleSignSelectedPact}
                       disabled={!signInput.trim()}
-                      className="px-4 py-2 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl transition-all disabled:opacity-50 cursor-pointer"
+                      className="px-5 py-2 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full transition-all disabled:opacity-50 cursor-pointer shadow-xs"
                     >
                       Submit Signature
                     </button>
@@ -359,7 +359,7 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
               )}
             </>
           ) : (
-            <div className="text-center py-16 text-xs text-[#5f7572]">
+            <div className="text-center py-16 text-xs text-[#6a6a6a]">
               Select a Roommate Pact or click "Create New Roommate Pact" above.
             </div>
           )}
@@ -369,14 +369,14 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
       {/* 4-Step Creation Wizard Modal */}
       {isWizardOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-[#e2ece9] overflow-hidden max-h-[90vh] flex flex-col">
+          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-[#ebebeb] overflow-hidden max-h-[90vh] flex flex-col">
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-[#e2ece9] flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-[#ebebeb] flex items-center justify-between">
               <div>
-                <h3 className="font-heading text-lg font-bold text-[#17222b]">
+                <h3 className="font-heading text-lg font-bold text-[#222222]">
                   Roommate Pact Wizard
                 </h3>
-                <p className="text-xs text-[#5f7572]">
+                <p className="text-xs text-[#6a6a6a]">
                   Step {step} of 4: {['Flatmates & Property', 'Quiet Hours', 'Chores Schedule', 'Guests & Deposit Split'][step - 1]}
                 </p>
               </div>
@@ -385,7 +385,7 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                   <div
                     key={s}
                     className={`w-6 h-1.5 rounded-full transition-all ${
-                      s <= step ? 'bg-[#117c74]' : 'bg-[#e2ece9]'
+                      s <= step ? 'bg-[#222222]' : 'bg-[#ebebeb]'
                     }`}
                   />
                 ))}
@@ -398,7 +398,7 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
               {step === 1 && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                       Pact Title
                     </label>
                     <input
@@ -406,12 +406,12 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                       value={pactTitle}
                       onChange={(e) => setPactTitle(e.target.value)}
                       placeholder="e.g. Sector 23 Flat 412 Roommate Pact"
-                      className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                       Property Address
                     </label>
                     <input
@@ -419,46 +419,46 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="e.g. Plot 412, Block C, Sector 23, Gurugram"
-                      className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     />
                   </div>
 
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-semibold uppercase tracking-wider text-[#5f7572]">
+                      <label className="text-xs font-semibold uppercase tracking-wider text-[#6a6a6a]">
                         Flatmate Details & Signatories
                       </label>
                       <button
                         type="button"
                         onClick={handleAddFlatmate}
-                        className="text-xs text-[#117c74] font-semibold hover:underline cursor-pointer"
+                        className="text-xs text-[#ff385c] font-semibold hover:underline cursor-pointer"
                       >
                         + Add Another Flatmate
                       </button>
                     </div>
 
                     {flatmates.map((f, i) => (
-                      <div key={i} className="p-3 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <div key={i} className="p-3 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <input
                           type="text"
                           value={f.name}
                           onChange={(e) => handleUpdateFlatmate(i, 'name', e.target.value)}
                           placeholder="Name"
-                          className="px-2.5 py-1.5 text-xs bg-white border border-[#e2ece9] rounded-lg"
+                          className="px-2.5 py-1.5 text-xs bg-white border border-[#ebebeb] rounded-lg"
                         />
                         <input
                           type="email"
                           value={f.email}
                           onChange={(e) => handleUpdateFlatmate(i, 'email', e.target.value)}
                           placeholder="Email (@ncuindia.edu)"
-                          className="px-2.5 py-1.5 text-xs bg-white border border-[#e2ece9] rounded-lg"
+                          className="px-2.5 py-1.5 text-xs bg-white border border-[#ebebeb] rounded-lg"
                         />
                         <input
                           type="text"
                           value={f.upi}
                           onChange={(e) => handleUpdateFlatmate(i, 'upi', e.target.value)}
                           placeholder="UPI ID for settlements"
-                          className="px-2.5 py-1.5 text-xs bg-white border border-[#e2ece9] rounded-lg"
+                          className="px-2.5 py-1.5 text-xs bg-white border border-[#ebebeb] rounded-lg"
                         />
                       </div>
                     ))}
@@ -471,7 +471,7 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                         Weekday Quiet Hours
                       </label>
                       <input
@@ -479,11 +479,11 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                         value={weekdayQuiet}
                         onChange={(e) => setWeekdayQuiet(e.target.value)}
                         placeholder="e.g. 11:00 PM – 07:30 AM"
-                        className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                        className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                         Weekend Quiet Hours
                       </label>
                       <input
@@ -491,20 +491,20 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                         value={weekendQuiet}
                         onChange={(e) => setWeekendQuiet(e.target.value)}
                         placeholder="e.g. 12:30 AM – 08:30 AM"
-                        className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                        className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                       Music, Study & Exam Protocol
                     </label>
                     <textarea
                       rows={3}
                       value={quietRules}
                       onChange={(e) => setQuietRules(e.target.value)}
-                      className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     />
                   </div>
                 </div>
@@ -514,38 +514,38 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
               {step === 3 && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                       Living Area & Bathroom Cleaning Routine
                     </label>
                     <input
                       type="text"
                       value={cleaningSchedule}
                       onChange={(e) => setCleaningSchedule(e.target.value)}
-                      className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                       Kitchen & Sink Hygiene Rule
                     </label>
                     <input
                       type="text"
                       value={kitchenRules}
                       onChange={(e) => setKitchenRules(e.target.value)}
-                      className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                       Garbage & Disposal Duty
                     </label>
                     <input
                       type="text"
                       value={garbageSchedule}
                       onChange={(e) => setGarbageSchedule(e.target.value)}
-                      className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     />
                   </div>
                 </div>
@@ -560,34 +560,34 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                       id="guestCheck"
                       checked={guestAllowed}
                       onChange={(e) => setGuestAllowed(e.target.checked)}
-                      className="accent-[#117c74]"
+                      className="accent-[#ff385c]"
                     />
-                    <label htmlFor="guestCheck" className="text-xs font-semibold text-[#17222b] cursor-pointer">
+                    <label htmlFor="guestCheck" className="text-xs font-semibold text-[#222222] cursor-pointer">
                       Overnight guests permitted with advance notice
                     </label>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                       Advance Notice Required (Hours)
                     </label>
                     <input
                       type="number"
                       value={guestNoticeHours}
                       onChange={(e) => setGuestNoticeHours(Number(e.target.value))}
-                      className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                       Security Deposit & Damage Refund Split
                     </label>
                     <input
                       type="text"
                       value={depositSplitRatio}
                       onChange={(e) => setDepositSplitRatio(e.target.value)}
-                      className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                      className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                     />
                   </div>
 
@@ -599,11 +599,11 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 border-t border-[#e2ece9] flex items-center justify-between">
+            <div className="px-6 py-4 border-t border-[#ebebeb] flex items-center justify-between">
               <button
                 type="button"
                 onClick={step === 1 ? () => setIsWizardOpen(false) : handlePrevStep}
-                className="px-4 py-2 text-xs font-semibold text-[#5f7572] hover:bg-[#f6f9f8] rounded-xl cursor-pointer"
+                className="px-4 py-2 text-xs font-semibold text-[#6a6a6a] hover:bg-[#f7f7f7] rounded-full cursor-pointer"
               >
                 {step === 1 ? 'Cancel' : 'Back'}
               </button>
@@ -612,7 +612,7 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  className="px-5 py-2 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2.5 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full transition-all cursor-pointer flex items-center gap-1.5 shadow-xs"
                 >
                   Continue <ChevronRight className="w-4 h-4" />
                 </button>
@@ -620,9 +620,10 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                 <button
                   type="button"
                   onClick={handleGeneratePact}
-                  className="px-5 py-2 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-6 py-2.5 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
                 >
-                  Generate & Compute SHA-256
+                  <Sparkles className="w-4 h-4 text-[#ff385c]" />
+                  <span>Generate & Compute SHA-256</span>
                 </button>
               )}
             </div>

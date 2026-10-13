@@ -82,7 +82,7 @@ export const BillSplitterPage: React.FC = () => {
         width: 260,
         margin: 1.5,
         color: {
-          dark: '#117c74',
+          dark: '#222222',
           light: '#ffffff',
         },
       });
@@ -133,19 +133,19 @@ export const BillSplitterPage: React.FC = () => {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-[#17222b] tracking-tight">
+          <h1 className="font-heading text-2xl font-bold text-[#222222] tracking-tight">
             Flatmate Bill Splitter & UPI Settlements
           </h1>
-          <p className="text-xs text-[#5f7572] mt-1">
+          <p className="text-xs text-[#6a6a6a] mt-1">
             Track electricity, WiFi, and cook charges. Generates instant scan-to-pay UPI QR codes for zero awkwardness.
           </p>
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full transition-all shadow-xs cursor-pointer"
         >
-          <PlusCircle className="w-4 h-4" />
-          Add Shared Expense
+          <PlusCircle className="w-4 h-4 text-[#ff385c]" />
+          <span>Add Shared Expense</span>
         </button>
       </div>
 
@@ -154,10 +154,10 @@ export const BillSplitterPage: React.FC = () => {
         {balances.map((b) => (
           <div
             key={b.name}
-            className="bg-white rounded-2xl border border-[#e2ece9] p-4 shadow-2xs space-y-2"
+            className="bg-white rounded-2xl border border-[#ebebeb] p-4 shadow-subtle space-y-2"
           >
             <div className="flex items-center justify-between">
-              <span className="font-heading font-bold text-sm text-[#17222b]">
+              <span className="font-heading font-bold text-sm text-[#222222]">
                 {b.name}
               </span>
               <span
@@ -166,7 +166,7 @@ export const BillSplitterPage: React.FC = () => {
                     ? 'bg-[#ecfdf5] text-[#065f46]'
                     : b.net < 0
                     ? 'bg-[#fef2f2] text-[#991b1b]'
-                    : 'bg-[#f6f9f8] text-[#5f7572]'
+                    : 'bg-[#f7f7f7] text-[#6a6a6a]'
                 }`}
               >
                 {b.net > 0
@@ -176,7 +176,7 @@ export const BillSplitterPage: React.FC = () => {
                   : 'Settled up'}
               </span>
             </div>
-            <div className="flex items-center justify-between text-xs text-[#5f7572] pt-1">
+            <div className="flex items-center justify-between text-xs text-[#6a6a6a] pt-1">
               <span>Paid: ₹{b.totalPaid.toLocaleString('en-IN')}</span>
               <span>Share: ₹{b.totalOwed.toLocaleString('en-IN')}</span>
             </div>
@@ -185,17 +185,17 @@ export const BillSplitterPage: React.FC = () => {
       </div>
 
       {/* Optimal Debt Settlement Cards ("Who owes whom") */}
-      <div className="bg-white rounded-3xl border border-[#e2ece9] p-6 shadow-2xs space-y-4">
+      <div className="bg-white rounded-3xl border border-[#ebebeb] p-6 shadow-subtle space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-heading text-base font-bold text-[#17222b]">
+            <h3 className="font-heading text-base font-bold text-[#222222]">
               Recommended Minimal Settlements
             </h3>
-            <p className="text-xs text-[#5f7572]">
+            <p className="text-xs text-[#6a6a6a]">
               Optimized algorithm minimizes transactions needed to clear all debts.
             </p>
           </div>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-xl bg-[#117c74]/10 text-[#117c74]">
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-xl bg-[#ff385c]/10 text-[#ff385c]">
             {settlements.length} Transfers Needed
           </span>
         </div>
@@ -209,35 +209,35 @@ export const BillSplitterPage: React.FC = () => {
             {settlements.map((s, idx) => (
               <div
                 key={idx}
-                className="p-4 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] flex items-center justify-between gap-3"
+                className="p-4 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-full bg-white border border-[#e2ece9] flex items-center justify-center text-xs font-bold text-[#17222b]">
+                  <div className="w-8 h-8 rounded-full bg-white border border-[#ebebeb] flex items-center justify-center text-xs font-bold text-[#222222]">
                     {s.from.charAt(0)}
                   </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#5f7572] shrink-0" />
-                  <div className="w-8 h-8 rounded-full bg-[#117c74] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                  <ArrowRight className="w-3.5 h-3.5 text-[#6a6a6a] shrink-0" />
+                  <div className="w-8 h-8 rounded-full bg-[#ff385c] text-white flex items-center justify-center text-xs font-bold shrink-0">
                     {s.to.charAt(0)}
                   </div>
                   <div className="min-w-0">
-                    <div className="text-xs font-bold text-[#17222b] truncate">
+                    <div className="text-xs font-bold text-[#222222] truncate">
                       {s.from} &rarr; {s.to}
                     </div>
-                    <div className="text-[10px] text-[#5f7572] font-mono-code truncate">
+                    <div className="text-[10px] text-[#6a6a6a] font-mono-code truncate">
                       UPI: {s.toUpi}
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="font-heading font-bold text-sm text-[#117c74]">
+                  <span className="font-heading font-bold text-sm text-[#ff385c]">
                     ₹{s.amount.toLocaleString('en-IN')}
                   </span>
                   <button
                     onClick={() => handleOpenSettleModal(s)}
-                    className="px-3 py-1.5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="px-3.5 py-1.5 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
                   >
-                    <QrCode className="w-3.5 h-3.5" /> Settle Up
+                    <QrCode className="w-3.5 h-3.5 text-[#ff385c]" /> Settle Up
                   </button>
                 </div>
               </div>
@@ -247,12 +247,12 @@ export const BillSplitterPage: React.FC = () => {
       </div>
 
       {/* Expenses History List */}
-      <div className="bg-white rounded-3xl border border-[#e2ece9] p-6 shadow-2xs space-y-4">
-        <h3 className="font-heading text-base font-bold text-[#17222b]">
+      <div className="bg-white rounded-3xl border border-[#ebebeb] p-6 shadow-subtle space-y-4">
+        <h3 className="font-heading text-base font-bold text-[#222222]">
           Recent Shared Expenses ({expenses.length})
         </h3>
 
-        <div className="divide-y divide-[#e2ece9]">
+        <div className="divide-y divide-[#ebebeb]">
           {expenses.map((exp) => (
             <div
               key={exp.id}
@@ -260,10 +260,10 @@ export const BillSplitterPage: React.FC = () => {
             >
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#f6f9f8] text-[#117c74] border border-[#e2ece9]">
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#f7f7f7] text-[#ff385c] border border-[#ebebeb]">
                     {exp.category}
                   </span>
-                  <h4 className="font-heading font-semibold text-sm text-[#17222b]">
+                  <h4 className="font-heading font-semibold text-sm text-[#222222]">
                     {exp.title}
                   </h4>
                   {exp.settled && (
@@ -272,14 +272,14 @@ export const BillSplitterPage: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-[#5f7572] mt-1">
-                  Paid by <strong className="text-[#17222b]">{exp.paidByName}</strong> • Split with{' '}
+                <p className="text-xs text-[#6a6a6a] mt-1">
+                  Paid by <strong className="text-[#222222]">{exp.paidByName}</strong> • Split with{' '}
                   {exp.splitWithNames.join(', ')} (₹{Math.round(exp.amount / exp.splitWithNames.length)}/each)
                 </p>
               </div>
 
               <div className="flex items-center gap-4">
-                <span className="font-heading font-bold text-base text-[#17222b]">
+                <span className="font-heading font-bold text-base text-[#222222]">
                   ₹{exp.amount.toLocaleString('en-IN')}
                 </span>
                 <button
@@ -287,7 +287,7 @@ export const BillSplitterPage: React.FC = () => {
                   className={`text-xs px-2.5 py-1 rounded-xl font-medium transition-colors cursor-pointer ${
                     exp.settled
                       ? 'bg-[#ecfdf5] text-[#065f46] hover:bg-[#a7f3d0]'
-                      : 'bg-[#f6f9f8] text-[#5f7572] hover:bg-[#e2ece9]'
+                      : 'bg-[#f7f7f7] text-[#6a6a6a] hover:bg-[#ebebeb]'
                   }`}
                 >
                   {exp.settled ? 'Mark Active' : 'Mark Settled'}
@@ -301,27 +301,27 @@ export const BillSplitterPage: React.FC = () => {
       {/* Settle Up UPI QR Modal */}
       {settleModalData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-[#e2ece9] overflow-hidden text-center p-6 space-y-4">
+          <div className="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-[#ebebeb] overflow-hidden text-center p-6 space-y-4">
             <button
               onClick={() => setSettleModalData(null)}
-              className="absolute top-4 right-4 p-1.5 text-[#5f7572] hover:text-[#17222b] rounded-full cursor-pointer"
+              className="absolute top-4 right-4 p-1.5 text-[#6a6a6a] hover:text-[#222222] rounded-full cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div>
-              <div className="inline-flex p-3 rounded-2xl bg-[#117c74]/10 text-[#117c74] mb-2">
+              <div className="inline-flex p-3 rounded-2xl bg-[#ff385c]/10 text-[#ff385c] mb-2">
                 <QrCode className="w-6 h-6" />
               </div>
-              <h3 className="font-heading text-lg font-bold text-[#17222b]">
+              <h3 className="font-heading text-lg font-bold text-[#222222]">
                 Scan to Settle via UPI
               </h3>
-              <p className="text-xs text-[#5f7572] mt-0.5">
-                Pay <strong className="text-[#17222b]">{settleModalData.to}</strong>
+              <p className="text-xs text-[#6a6a6a] mt-0.5">
+                Pay <strong className="text-[#222222]">{settleModalData.to}</strong>
               </p>
             </div>
 
-            <div className="p-3 bg-[#f6f9f8] rounded-2xl border border-[#e2ece9] inline-block mx-auto shadow-inner">
+            <div className="p-3 bg-[#f7f7f7] rounded-2xl border border-[#ebebeb] inline-block mx-auto shadow-inner">
               <img
                 src={settleModalData.qrUrl}
                 alt="UPI Settlement QR"
@@ -330,10 +330,10 @@ export const BillSplitterPage: React.FC = () => {
             </div>
 
             <div>
-              <div className="text-2xl font-heading font-bold text-[#117c74]">
+              <div className="text-2xl font-heading font-bold text-[#ff385c]">
                 ₹{settleModalData.amount.toLocaleString('en-IN')}
               </div>
-              <div className="text-xs font-mono-code text-[#5f7572] mt-0.5">
+              <div className="text-xs font-mono-code text-[#6a6a6a] mt-0.5">
                 {settleModalData.toUpi}
               </div>
             </div>
@@ -341,7 +341,7 @@ export const BillSplitterPage: React.FC = () => {
             <div className="pt-2 space-y-2">
               <a
                 href={settleModalData.deepLink}
-                className="w-full py-3 px-4 bg-[#117c74] hover:bg-[#0d635c] text-white font-semibold rounded-2xl text-xs transition-all shadow-md flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-[#ff385c] hover:bg-[#e00b41] text-white shadow-xs font-semibold rounded-2xl text-xs transition-all shadow-md flex items-center justify-center gap-2"
               >
                 <ExternalLink className="w-4 h-4" /> Open in UPI App (GPay / PhonePe / Paytm)
               </a>
@@ -350,7 +350,7 @@ export const BillSplitterPage: React.FC = () => {
                   navigator.clipboard.writeText(settleModalData.deepLink);
                   showToast('UPI payment string copied to clipboard!');
                 }}
-                className="w-full py-2 text-xs text-[#5f7572] hover:text-[#17222b] font-medium cursor-pointer"
+                className="w-full py-2 text-xs text-[#6a6a6a] hover:text-[#222222] font-medium cursor-pointer"
               >
                 Copy UPI Intent String
               </button>
@@ -362,14 +362,14 @@ export const BillSplitterPage: React.FC = () => {
       {/* Add Shared Expense Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-[#e2ece9] overflow-hidden p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e2ece9]">
-              <h3 className="font-heading text-lg font-bold text-[#17222b]">
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-[#ebebeb] overflow-hidden p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#ebebeb]">
+              <h3 className="font-heading text-lg font-bold text-[#222222]">
                 Add Shared Expense
               </h3>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="p-1.5 text-[#5f7572] hover:text-[#17222b] rounded-full cursor-pointer"
+                className="p-1.5 text-[#6a6a6a] hover:text-[#222222] rounded-full cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -377,7 +377,7 @@ export const BillSplitterPage: React.FC = () => {
 
             <form onSubmit={handleAddExpenseSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                   Expense Description
                 </label>
                 <input
@@ -386,13 +386,13 @@ export const BillSplitterPage: React.FC = () => {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. DHBVN Electricity or Blinkit Groceries"
-                  className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                  className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                     Amount (INR)
                   </label>
                   <input
@@ -401,17 +401,17 @@ export const BillSplitterPage: React.FC = () => {
                     min={1}
                     value={amount}
                     onChange={(e) => setAmount(Number(e.target.value))}
-                    className="w-full px-3.5 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                    className="w-full px-3.5 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                     Category
                   </label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value as any)}
-                    className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                    className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                   >
                     <option value="Rent">Rent</option>
                     <option value="Electricity">Electricity</option>
@@ -425,13 +425,13 @@ export const BillSplitterPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1">
                   Paid By
                 </label>
                 <select
                   value={paidByName}
                   onChange={(e) => setPaidByName(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-[#f6f9f8] border border-[#e2ece9] rounded-xl text-[#17222b]"
+                  className="w-full px-3 py-2 text-xs bg-[#f7f7f7] border border-[#ebebeb] rounded-xl text-[#222222]"
                 >
                   {flatmateOptions.map((f) => (
                     <option key={f.name} value={f.name}>
@@ -442,7 +442,7 @@ export const BillSplitterPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1.5">
                   Split With Flatmates
                 </label>
                 <div className="space-y-1.5">
@@ -455,7 +455,7 @@ export const BillSplitterPage: React.FC = () => {
                         className={`p-2.5 rounded-xl border text-xs flex items-center justify-between cursor-pointer transition-colors ${
                           isChecked
                             ? 'bg-[#ecfdf5] border-[#a7f3d0] text-[#065f46]'
-                            : 'bg-[#f6f9f8] border-[#e2ece9] text-[#5f7572]'
+                            : 'bg-[#f7f7f7] border-[#ebebeb] text-[#6a6a6a]'
                         }`}
                       >
                         <span className="font-semibold">{f.name}</span>
@@ -470,13 +470,13 @@ export const BillSplitterPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-[#5f7572] hover:bg-[#f6f9f8] rounded-xl cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-[#6a6a6a] hover:bg-[#f7f7f7] rounded-full cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-[#117c74] hover:bg-[#0d635c] text-white text-xs font-semibold rounded-xl shadow-xs transition-all cursor-pointer"
+                  className="px-5 py-2.5 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full shadow-xs transition-all cursor-pointer"
                 >
                   Add & Recalculate
                 </button>

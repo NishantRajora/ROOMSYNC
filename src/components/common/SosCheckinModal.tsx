@@ -35,25 +35,25 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-[#e2ece9] overflow-hidden">
+      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-[#ebebeb] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2ece9] bg-gradient-to-r from-[#117c74]/10 to-transparent">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#ebebeb] bg-gradient-to-r from-[#ff385c]/5 to-transparent">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-[#117c74]/10 text-[#117c74]">
-              <ShieldAlert className="w-5 h-5 text-[#117c74]" />
+            <div className="p-2 rounded-xl bg-[#ff385c]/10 text-[#ff385c]">
+              <ShieldAlert className="w-5 h-5 text-[#ff385c]" />
             </div>
             <div>
-              <h3 className="font-heading text-lg font-bold text-[#17222b]">
+              <h3 className="font-heading text-lg font-bold text-[#222222]">
                 SOS Safety Visit Check-in
               </h3>
-              <p className="text-xs text-[#5f7572]">
+              <p className="text-xs text-[#6a6a6a]">
                 Automated safety countdown for flat viewings in NCR
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-[#5f7572] hover:text-[#17222b] hover:bg-black/5 rounded-full transition-colors"
+            className="p-1.5 text-[#6a6a6a] hover:text-[#222222] hover:bg-black/5 rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -69,12 +69,12 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
                     <AlertTriangle className="w-5 h-5" />
                     <span>EMERGENCY SOS BROADCAST ACTIVE</span>
                   </div>
-                  <p className="text-sm text-[#17222b]">
+                  <p className="text-sm text-[#222222]">
                     Check-in window expired! Automated alert dispatched to{' '}
                     <strong className="font-semibold">{activeVisitAlert.emergencyContactName}</strong> (
                     {activeVisitAlert.emergencyContactPhone}) with your destination:
                   </p>
-                  <p className="text-xs font-mono-code bg-white p-2.5 rounded-lg border border-[#f43f5e]/20 text-[#17222b]">
+                  <p className="text-xs font-mono-code bg-white p-2.5 rounded-lg border border-[#f43f5e]/20 text-[#222222]">
                     📍 {activeVisitAlert.destination}
                   </p>
                   <div className="flex items-center gap-2 pt-2">
@@ -94,21 +94,21 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="inline-flex items-center justify-center p-6 rounded-full bg-[#117c74]/10 border-4 border-[#117c74]/20">
-                    <div className="text-4xl font-mono-code font-bold text-[#117c74]">
+                  <div className="inline-flex items-center justify-center p-6 rounded-full bg-[#ff385c]/10 border-4 border-[#ff385c]/20">
+                    <div className="text-4xl font-mono-code font-bold text-[#ff385c]">
                       {formatTime(activeVisitAlert.remainingSeconds)}
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="font-heading font-semibold text-lg text-[#17222b]">
+                    <h4 className="font-heading font-semibold text-lg text-[#222222]">
                       Visit in Progress
                     </h4>
-                    <p className="text-xs text-[#5f7572] mt-1 flex items-center justify-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-[#117c74]" />
+                    <p className="text-xs text-[#6a6a6a] mt-1 flex items-center justify-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-[#ff385c]" />
                       {activeVisitAlert.destination}
                     </p>
-                    <p className="text-xs text-[#5f7572] mt-0.5">
+                    <p className="text-xs text-[#6a6a6a] mt-0.5">
                       Emergency Contact: {activeVisitAlert.emergencyContactName} ({activeVisitAlert.emergencyContactPhone})
                     </p>
                   </div>
@@ -122,7 +122,7 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
                     cancelVisitAlert();
                     onClose();
                   }}
-                  className="w-full py-3 px-4 bg-[#117c74] hover:bg-[#0d635c] text-white font-semibold rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3 px-4 bg-[#ff385c] hover:bg-[#e00b41] text-white shadow-xs font-semibold rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <CheckCircle className="w-5 h-5" />
                   I'm Safe — End Visit
@@ -141,24 +141,24 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
           ) : (
             <form onSubmit={handleStart} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1.5">
                   Property Viewing Destination
                 </label>
                 <div className="relative">
-                  <MapPin className="w-4 h-4 absolute left-3 top-3 text-[#5f7572]" />
+                  <MapPin className="w-4 h-4 absolute left-3 top-3 text-[#6a6a6a]" />
                   <input
                     type="text"
                     required
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
                     placeholder="e.g. House 412, Sector 23, Gurugram"
-                    className="w-full pl-9.5 pr-3 py-2.5 text-sm bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                    className="w-full pl-9.5 pr-3 py-2.5 text-sm bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1.5">
                   Estimated Viewing Duration
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -169,8 +169,8 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
                       onClick={() => setDurationMinutes(mins)}
                       className={`py-2 px-3 text-sm font-medium rounded-xl border transition-all cursor-pointer ${
                         durationMinutes === mins
-                          ? 'bg-[#117c74] text-white border-[#117c74] shadow-xs'
-                          : 'bg-[#f6f9f8] text-[#17222b] border-[#e2ece9] hover:bg-white'
+                          ? 'bg-[#ff385c] text-white border-[#117c74] shadow-xs'
+                          : 'bg-[#f7f7f7] text-[#222222] border-[#ebebeb] hover:bg-white'
                       }`}
                     >
                       {mins} mins
@@ -181,7 +181,7 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1.5">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1.5">
                     Emergency Contact Name
                   </label>
                   <input
@@ -190,22 +190,22 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
                     placeholder="Friend or family"
-                    className="w-full px-3 py-2 text-sm bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                    className="w-full px-3 py-2 text-sm bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#5f7572] mb-1.5">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#6a6a6a] mb-1.5">
                     Emergency Phone
                   </label>
                   <div className="relative">
-                    <Phone className="w-3.5 h-3.5 absolute left-3 top-3 text-[#5f7572]" />
+                    <Phone className="w-3.5 h-3.5 absolute left-3 top-3 text-[#6a6a6a]" />
                     <input
                       type="tel"
                       required
                       value={contactPhone}
                       onChange={(e) => setContactPhone(e.target.value)}
                       placeholder="+91 XXXXX XXXXX"
-                      className="w-full pl-9 pr-3 py-2 text-sm bg-[#f6f9f8] border border-[#e2ece9] rounded-xl focus:outline-none focus:border-[#117c74] text-[#17222b]"
+                      className="w-full pl-9 pr-3 py-2 text-sm bg-[#f7f7f7] border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222] text-[#222222]"
                     />
                   </div>
                 </div>
@@ -220,9 +220,9 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
 
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-[#117c74] hover:bg-[#0d635c] text-white font-semibold rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 px-4 bg-[#222222] hover:bg-black text-white font-semibold rounded-full transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
-                <ShieldAlert className="w-4 h-4" />
+                <ShieldAlert className="w-4 h-4 text-[#ff385c]" />
                 Start Safe Visit Timer ({durationMinutes}m)
               </button>
             </form>
