@@ -273,13 +273,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* 6. MEET THE TEAM SECTION */}
-      <section className="py-20 lg:py-28 px-6 lg:px-12 bg-[#f7f7f7]">
+      <section className="py-20 lg:py-28 px-6 lg:px-12 bg-[#f6f9f8]">
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-[#222222] tracking-tight">
+            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-[#17222b] tracking-tight">
               Meet the Team
             </h2>
-            <p className="text-sm sm:text-base text-[#6a6a6a]">
+            <p className="text-sm sm:text-base text-[#5f7572]">
               The students building safer housing for students.
             </p>
           </div>
@@ -317,17 +317,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       (e.target as HTMLImageElement).style.display = 'none';
                       (e.currentTarget.parentElement?.querySelector('.fallback-initials') as HTMLElement).style.display = 'flex';
                     }}
-                    className="w-[130px] h-[130px] rounded-full object-cover border-2 border-[#ebebeb] group-hover:border-[#ff385c] shadow-sm group-hover:shadow-md transition-all duration-300"
+                    className="w-[130px] h-[130px] rounded-full object-cover border-2 border-[#e2ece9] group-hover:border-[#117c74] shadow-sm group-hover:shadow-md transition-all duration-300"
                   />
                   <div
-                    className="fallback-initials hidden absolute inset-0 w-[130px] h-[130px] rounded-full bg-[#ff385c] text-white items-center justify-center text-2xl font-bold border-2 border-[#ff385c] shadow-sm"
+                    className="fallback-initials hidden absolute inset-0 w-[130px] h-[130px] rounded-full bg-[#117c74] text-white items-center justify-center text-2xl font-bold border-2 border-[#117c74] shadow-sm"
                   >
                     {member.initials}
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-heading font-bold text-[#222222]">{member.name}</h3>
-                  <p className="text-xs text-[#6a6a6a]">{member.role}</p>
+                  <h3 className="font-heading font-bold text-[#17222b]">{member.name}</h3>
+                  <p className="text-xs text-[#5f7572]">{member.role}</p>
                 </div>
               </div>
             ))}
