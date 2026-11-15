@@ -48,6 +48,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           {/* Right Action Buttons */}
           <div className="flex items-center gap-3">
             <button
+              onClick={() => onNavigate('/analyzer')}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-[#ff385c] bg-[#ff385c]/10 hover:bg-[#ff385c]/20 rounded-full transition-all cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>AI Lease Analyzer</span>
+            </button>
+            <button
               onClick={() => onNavigate('/login')}
               className="px-4 py-2 text-xs font-semibold text-[#222222] hover:text-black hover:bg-[#f7f7f7] rounded-full transition-colors cursor-pointer"
             >
@@ -87,7 +94,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             India's first AI-powered flatmate matching and safe-renting platform built for college students. Verified peers, trusted listings, zero scams.
           </p>
 
-          {/* Two CTA Buttons */}
+          {/* Three CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
             <button
               onClick={() => onNavigate('/signup')}
@@ -97,8 +104,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </button>
             <button
+              onClick={() => onNavigate('/analyzer')}
+              className="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-[#f7f7f7] text-[#222222] border border-[#ebebeb] font-semibold text-sm rounded-full shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Sparkles className="w-4 h-4 text-[#ff385c]" />
+              <span>Scan Lease (Free AI)</span>
+            </button>
+            <button
               onClick={scrollToHowItWorks}
-              className="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-[#f7f7f7] text-[#222222] border border-[#ebebeb] font-semibold text-sm rounded-full transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              className="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-[#f7f7f7] text-[#6a6a6a] hover:text-[#222222] border border-[#ebebeb] font-semibold text-sm rounded-full transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span>See How It Works</span>
               <span className="text-xs">↓</span>
@@ -202,8 +216,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </h2>
         </div>
 
-        {/* 3 Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* 4 Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Card 1: Trust Scored Listings */}
           <div className="bg-white rounded-2xl border border-[#ebebeb] p-6 shadow-subtle hover:shadow-md transition-all space-y-4">
             <div className="w-12 h-12 rounded-xl bg-[#ecfdf5] border border-[#a7f3d0] flex items-center justify-center text-xl">
@@ -215,6 +229,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               </h3>
               <p className="text-xs text-[#6a6a6a] leading-relaxed">
                 Every flat rated 0–100 using price, landlord, photos, and scam patterns
+              </p>
+            </div>
+          </div>
+
+          {/* Card 2: AI Agreement Risk Analyzer */}
+          <div
+            onClick={() => onNavigate('/analyzer')}
+            className="bg-white rounded-2xl border border-[#ebebeb] p-6 shadow-subtle hover:shadow-md hover:border-[#ff385c]/40 transition-all space-y-4 cursor-pointer group"
+          >
+            <div className="w-12 h-12 rounded-xl bg-[#ff385c]/10 border border-[#ff385c]/20 flex items-center justify-center text-xl group-hover:scale-105 transition-transform">
+              <Sparkles className="w-6 h-6 text-[#ff385c]" />
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <h3 className="font-heading font-bold text-base text-[#222222]">
+                  AI Lease Analyzer
+                </h3>
+                <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full">Groq AI</span>
+              </div>
+              <p className="text-xs text-[#6a6a6a] leading-relaxed">
+                Detects predatory lock-in, deposit traps, and auto-generates fair legal counter-clauses
               </p>
             </div>
           </div>

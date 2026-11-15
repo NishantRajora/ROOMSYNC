@@ -150,6 +150,8 @@ export interface AgreementAnalysisResult {
   clauses: AgreementClauseAnalysis[];
   summaryNote: string;
   depositSafetyRating: string;
+  engineUsed?: 'ai' | 'regex';
+  modelName?: string;
 }
 
 export interface PactFlatmate {
