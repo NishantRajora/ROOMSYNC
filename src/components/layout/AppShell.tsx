@@ -19,6 +19,7 @@ import {
   ExternalLink,
   ShieldCheck,
   LogOut,
+  Lock,
 } from 'lucide-react';
 import { VerifiedBadge } from '../common/VerifiedBadge';
 import { SosCheckinModal } from '../common/SosCheckinModal';
@@ -38,6 +39,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
     cancelVisitAlert,
     toastMessage,
     logout,
+    hasFinalizedRoommates,
   } = useApp();
 
   const handleLogout = () => {
@@ -260,6 +262,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.tab;
+              const isGated = (item.tab === 'pact' || item.tab === 'bills') && !hasFinalizedRoommates;
               return (
                 <button
                   key={item.tab}
@@ -272,6 +275,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
                 >
                   <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#6a6a6a]'}`} />
                   <span>{item.label}</span>
+                  {isGated && (
+                    <span className="ml-auto flex items-center gap-1 text-[10px] text-[#6a6a6a]/70 font-semibold px-1.5 py-0.5 rounded bg-black/5" title="Requires finalized roommate">
+                      <Lock className="w-2.5 h-2.5" />
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -321,6 +329,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeTab === item.tab;
+                  const isGated = (item.tab === 'pact' || item.tab === 'bills') && !hasFinalizedRoommates;
                   return (
                     <button
                       key={item.tab}
@@ -336,6 +345,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
                     >
                       <Icon className="w-4 h-4" />
                       <span>{item.label}</span>
+                      {isGated && (
+                        <span className="ml-auto text-[10px] text-[#6a6a6a]/70">
+                          <Lock className="w-2.5 h-2.5" />
+                        </span>
+                      )}
                     </button>
                   );
                 })}

@@ -15,10 +15,27 @@ import {
   ExternalLink,
   DollarSign,
   TrendingUp,
+  Lock,
+  MessageSquare,
+  Users,
+  Sparkles,
+  Clock,
+  Trash2,
 } from 'lucide-react';
 
 export const BillSplitterPage: React.FC = () => {
-  const { currentUser, expenses, addExpense, toggleSettleExpense, showToast } = useApp();
+  const {
+    currentUser,
+    expenses,
+    addExpense,
+    deleteExpense,
+    clearAllExpenses,
+    toggleSettleExpense,
+    showToast,
+    hasFinalizedRoommates,
+    finalizedRoommates,
+    setActiveTab,
+  } = useApp();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [settleModalData, setSettleModalData] = useState<{
@@ -36,31 +53,28 @@ export const BillSplitterPage: React.FC = () => {
   const [paidByName, setPaidByName] = useState(currentUser.fullName);
   const [paidByUpi, setPaidByUpi] = useState(currentUser.upiId);
   const [category, setCategory] = useState<Expense['category']>('WiFi');
-  const [splitWith, setSplitWith] = useState<string[]>([
-    currentUser.fullName,
-    'Rohan Mehra',
-    'Kabir Singhania',
-  ]);
-
-
-
-
-  const staticFlatmates = [
-    { name: 'Rohan Mehra', upi: 'rohan.mehra@okaxis' },
-    { name: 'Kabir Singhania', upi: 'kabir.singh@icici' },
-  ];
-
   const flatmateOptions = [
     { name: currentUser.fullName, upi: currentUser.upiId },
-    ...staticFlatmates.filter((f) => f.name !== currentUser.fullName),
+    ...finalizedRoommates.map((r) => ({
+      name: r.name,
+      upi: r.upi || `${r.name.toLowerCase().replace(/\s+/g, '.')}@upi`,
+    })),
   ];
+
+  const [splitWith, setSplitWith] = useState<string[]>(() => [
+    currentUser.fullName,
+    ...finalizedRoommates.map((r) => r.name),
+  ]);
 
   React.useEffect(() => {
     setPaidByName(currentUser.fullName);
     setPaidByUpi(currentUser.upiId);
-    const newSplit = [currentUser.fullName, ...staticFlatmates.filter((f) => f.name !== currentUser.fullName).map((f) => f.name)];
+    const newSplit = [
+      currentUser.fullName,
+      ...finalizedRoommates.map((r) => r.name),
+    ];
     setSplitWith(newSplit);
-  }, [currentUser]);
+  }, [currentUser, finalizedRoommates]);
 
   const upiDirectory = flatmateOptions.reduce((acc, f) => {
     acc[f.name] = f.upi;
@@ -128,8 +142,104 @@ export const BillSplitterPage: React.FC = () => {
     }
   };
 
+  if (!hasFinalizedRoommates) {
+    return (
+      <div className="max-w-4xl mx-auto py-12 px-4 space-y-8 animate-in fade-in">
+        {/* Header Locked Card */}
+        <div className="bg-white rounded-3xl border border-[#ebebeb] p-8 sm:p-12 shadow-subtle text-center space-y-6">
+          <div className="w-20 h-20 rounded-3xl bg-[#ff385c]/10 text-[#ff385c] flex items-center justify-center mx-auto border border-[#ff385c]/20 shadow-xs">
+            <Lock className="w-10 h-10" />
+          </div>
+
+          <div className="max-w-xl mx-auto space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+              <Clock className="w-3.5 h-3.5 text-amber-600" />
+              <span>Co-Living Prerequisite</span>
+            </div>
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-[#222222] tracking-tight">
+              Shared Bill Splitter is Locked
+            </h1>
+            <p className="text-sm text-[#6a6a6a] leading-relaxed">
+              The Shared Bill Splitter automatically calculates debt minimization and generates instant scan-to-pay UPI QR codes for <strong>confirmed flatmates living together</strong>. To split expenses, you must first finalize a roommate via <strong>Messages</strong>.
+            </p>
+          </div>
+
+          {/* 3 Step Flow */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left pt-2">
+            <div className="p-4 rounded-2xl bg-[#f7f7f7] border border-[#ebebeb] space-y-2">
+              <span className="font-heading font-bold text-2xl text-[#ff385c]/40">01</span>
+              <h4 className="font-heading font-bold text-xs text-[#222222]">Match & Connect</h4>
+              <p className="text-[11px] text-[#6a6a6a] leading-relaxed">
+                Browse student roommate matches and chat to align on rent budget and flat amenities.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#f7f7f7] border border-[#ebebeb] space-y-2">
+              <span className="font-heading font-bold text-2xl text-[#ff385c]/40">02</span>
+              <h4 className="font-heading font-bold text-xs text-[#222222]">Confirm in Chat</h4>
+              <p className="text-[11px] text-[#6a6a6a] leading-relaxed">
+                Click "Send Roommate Request" in chat. Once accepted, your co-living group is formed!
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#ecfdf5] border border-[#a7f3d0] space-y-2">
+              <span className="font-heading font-bold text-2xl text-[#10b981]/40">03</span>
+              <h4 className="font-heading font-bold text-xs text-[#065f46]">Split Bills with Zero Friction</h4>
+              <p className="text-[11px] text-[#065f46] leading-relaxed">
+                Log WiFi, electricity, groceries, and settle with zero awkwardness via UPI QR codes!
+              </p>
+            </div>
+          </div>
+
+          {/* Action CTAs */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+            <button
+              onClick={() => setActiveTab('messages')}
+              className="w-full sm:w-auto px-6 py-3 bg-[#ff385c] hover:bg-[#e00b41] text-white font-bold text-xs rounded-full shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>Go to Messages to Finalize Roommate</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setActiveTab('matches')}
+              className="w-full sm:w-auto px-6 py-3 bg-white hover:bg-[#f7f7f7] text-[#222222] font-semibold text-xs rounded-full border border-[#ebebeb] transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Users className="w-4 h-4 text-[#ff385c]" />
+              <span>Browse Roommate Matches</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Active Co-Living Flatmates Banner */}
+      <div className="p-4 bg-gradient-to-r from-[#ecfdf5] to-white rounded-2xl border border-[#a7f3d0] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[#10b981] text-white flex items-center justify-center shrink-0">
+            <CheckCircle className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-[#065f46]">
+              Co-Living Group Active: {finalizedRoommates.map((r) => r.name).join(', ')} & You
+            </h4>
+            <p className="text-[11px] text-[#065f46]/80">
+              Shared expenses and UPI QR settlements are routed directly among confirmed flatmates.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setActiveTab('messages')}
+          className="text-xs font-bold text-[#065f46] hover:underline flex items-center gap-1 cursor-pointer shrink-0"
+        >
+          <span>Chat with Roommates</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -248,54 +358,96 @@ export const BillSplitterPage: React.FC = () => {
 
       {/* Expenses History List */}
       <div className="bg-white rounded-3xl border border-[#ebebeb] p-6 shadow-subtle space-y-4">
-        <h3 className="font-heading text-base font-bold text-[#222222]">
-          Recent Shared Expenses ({expenses.length})
-        </h3>
-
-        <div className="divide-y divide-[#ebebeb]">
-          {expenses.map((exp) => (
-            <div
-              key={exp.id}
-              className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+        <div className="flex items-center justify-between">
+          <h3 className="font-heading text-base font-bold text-[#222222]">
+            Recent Shared Expenses ({expenses.length})
+          </h3>
+          {expenses.length > 0 && (
+            <button
+              onClick={() => {
+                if (window.confirm('Are you sure you want to clear all shared expenses?')) {
+                  clearAllExpenses();
+                }
+              }}
+              className="text-xs text-[#6a6a6a] hover:text-[#f43f5e] transition-colors cursor-pointer"
             >
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#f7f7f7] text-[#ff385c] border border-[#ebebeb]">
-                    {exp.category}
-                  </span>
-                  <h4 className="font-heading font-semibold text-sm text-[#222222]">
-                    {exp.title}
-                  </h4>
-                  {exp.settled && (
-                    <span className="text-[10px] font-bold text-[#10b981] bg-[#ecfdf5] px-2 py-0.5 rounded-full border border-[#a7f3d0]">
-                      Settled
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-[#6a6a6a] mt-1">
-                  Paid by <strong className="text-[#222222]">{exp.paidByName}</strong> • Split with{' '}
-                  {exp.splitWithNames.join(', ')} (₹{Math.round(exp.amount / exp.splitWithNames.length)}/each)
-                </p>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <span className="font-heading font-bold text-base text-[#222222]">
-                  ₹{exp.amount.toLocaleString('en-IN')}
-                </span>
-                <button
-                  onClick={() => toggleSettleExpense(exp.id)}
-                  className={`text-xs px-2.5 py-1 rounded-xl font-medium transition-colors cursor-pointer ${
-                    exp.settled
-                      ? 'bg-[#ecfdf5] text-[#065f46] hover:bg-[#a7f3d0]'
-                      : 'bg-[#f7f7f7] text-[#6a6a6a] hover:bg-[#ebebeb]'
-                  }`}
-                >
-                  {exp.settled ? 'Mark Active' : 'Mark Settled'}
-                </button>
-              </div>
-            </div>
-          ))}
+              Clear All Bills
+            </button>
+          )}
         </div>
+
+        {expenses.length === 0 ? (
+          <div className="py-12 text-center text-xs text-[#6a6a6a] space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-[#ff385c]/10 text-[#ff385c] flex items-center justify-center mx-auto">
+              <Receipt className="w-6 h-6" />
+            </div>
+            <h4 className="font-heading font-bold text-sm text-[#222222]">
+              No shared expenses recorded yet
+            </h4>
+            <p className="text-xs text-[#6a6a6a] max-w-sm mx-auto leading-relaxed">
+              Add shared bills like WiFi, electricity, groceries, or housekeeping with your confirmed flatmates.
+            </p>
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#ff385c] hover:bg-[#e00b41] text-white text-xs font-semibold rounded-full shadow-xs transition-all cursor-pointer"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>Add First Shared Expense</span>
+            </button>
+          </div>
+        ) : (
+          <div className="divide-y divide-[#ebebeb]">
+            {expenses.map((exp) => (
+              <div
+                key={exp.id}
+                className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#f7f7f7] text-[#ff385c] border border-[#ebebeb]">
+                      {exp.category}
+                    </span>
+                    <h4 className="font-heading font-semibold text-sm text-[#222222]">
+                      {exp.title}
+                    </h4>
+                    {exp.settled && (
+                      <span className="text-[10px] font-bold text-[#10b981] bg-[#ecfdf5] px-2 py-0.5 rounded-full border border-[#a7f3d0]">
+                        Settled
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[#6a6a6a] mt-1">
+                    Paid by <strong className="text-[#222222]">{exp.paidByName}</strong> • Split with{' '}
+                    {exp.splitWithNames.join(', ')} (₹{Math.round(exp.amount / exp.splitWithNames.length)}/each)
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="font-heading font-bold text-base text-[#222222]">
+                    ₹{exp.amount.toLocaleString('en-IN')}
+                  </span>
+                  <button
+                    onClick={() => toggleSettleExpense(exp.id)}
+                    className={`text-xs px-2.5 py-1 rounded-xl font-medium transition-colors cursor-pointer ${
+                      exp.settled
+                        ? 'bg-[#ecfdf5] text-[#065f46] hover:bg-[#a7f3d0]'
+                        : 'bg-[#f7f7f7] text-[#6a6a6a] hover:bg-[#ebebeb]'
+                    }`}
+                  >
+                    {exp.settled ? 'Mark Active' : 'Mark Settled'}
+                  </button>
+                  <button
+                    onClick={() => deleteExpense(exp.id)}
+                    className="p-1.5 text-[#6a6a6a] hover:text-[#f43f5e] hover:bg-[#fef2f2] rounded-lg transition-colors cursor-pointer"
+                    title="Delete expense"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Settle Up UPI QR Modal */}

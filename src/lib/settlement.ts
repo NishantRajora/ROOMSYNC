@@ -16,7 +16,14 @@ export function computeSettlements(
 } {
   const userMap: Record<string, { totalPaid: number; totalOwed: number }> = {};
 
-  // Initialize
+  // Initialize with known flatmates from upiDirectory
+  for (const name of Object.keys(upiDirectory)) {
+    if (name) {
+      userMap[name] = { totalPaid: 0, totalOwed: 0 };
+    }
+  }
+
+  // Tally expenses
   for (const exp of expenses) {
     if (!userMap[exp.paidByName]) {
       userMap[exp.paidByName] = { totalPaid: 0, totalOwed: 0 };

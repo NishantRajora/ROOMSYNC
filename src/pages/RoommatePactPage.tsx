@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { RoommatePact, PactFlatmate } from '../types';
 import { computeSHA256 } from '../lib/crypto';
@@ -17,21 +17,47 @@ import {
   Clock,
   Sparkles,
   Calendar,
+  Lock,
+  ArrowRight,
+  MessageSquare,
+  Trash2,
 } from 'lucide-react';
 
 export const RoommatePactPage: React.FC = () => {
-  const { currentUser, pacts, addPact, signPact, showToast } = useApp();
+  const {
+    currentUser,
+    pacts,
+    addPact,
+    signPact,
+    deletePact,
+    showToast,
+    hasFinalizedRoommates,
+    finalizedRoommates,
+    setActiveTab,
+  } = useApp();
 
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [selectedPact, setSelectedPact] = useState<RoommatePact | null>(pacts[0] || null);
+
+  useEffect(() => {
+    if (selectedPact && !pacts.some((p) => p.id === selectedPact.id)) {
+      setSelectedPact(pacts[0] || null);
+    } else if (!selectedPact && pacts.length > 0) {
+      setSelectedPact(pacts[0]);
+    }
+  }, [pacts, selectedPact]);
 
   // Wizard Steps (1: Flatmates & Property, 2: Quiet Hours, 3: Chores, 4: Guests & Split)
   const [step, setStep] = useState<number>(1);
 
   // Step 1 Form
-  const [pactTitle, setPactTitle] = useState('Sector 23 Flat Living Pact');
-  const [address, setAddress] = useState('Plot 412, Block C, Sector 23, Gurugram');
-  const [flatmates, setFlatmates] = useState<PactFlatmate[]>([
+  const [pactTitle, setPactTitle] = useState(() =>
+    finalizedRoommates.length > 0
+      ? `${currentUser.fullName} & ${finalizedRoommates.map((r) => r.name).join(', ')} Living Pact`
+      : 'Flatmate Living Pact'
+  );
+  const [address, setAddress] = useState('');
+  const [flatmates, setFlatmates] = useState<PactFlatmate[]>(() => [
     {
       name: currentUser.fullName,
       email: currentUser.email,
@@ -41,13 +67,13 @@ export const RoommatePactPage: React.FC = () => {
       signedAt: new Date().toLocaleString('en-IN') + ' IST',
       signatureText: currentUser.fullName,
     },
-    {
-      name: 'Rohan Mehra',
-      email: '22csu189@ncuindia.edu',
-      upi: 'rohan.mehra@okaxis',
-      phone: '+91 98765 43210',
+    ...finalizedRoommates.map((r) => ({
+      name: r.name,
+      email: r.email || `${r.name.toLowerCase().replace(/\s+/g, '.')}@college.edu`,
+      upi: r.upi || `${r.name.toLowerCase().replace(/\s+/g, '.')}@upi`,
+      phone: r.phone || '+91 98765 43210',
       signed: false,
-    },
+    })),
   ]);
 
   // Step 2 Form
@@ -171,8 +197,104 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
     setSignInput('');
   };
 
+  if (!hasFinalizedRoommates) {
+    return (
+      <div className="max-w-4xl mx-auto py-12 px-4 space-y-8 animate-in fade-in">
+        {/* Header Locked Card */}
+        <div className="bg-white rounded-3xl border border-[#ebebeb] p-8 sm:p-12 shadow-subtle text-center space-y-6">
+          <div className="w-20 h-20 rounded-3xl bg-[#ff385c]/10 text-[#ff385c] flex items-center justify-center mx-auto border border-[#ff385c]/20 shadow-xs">
+            <Lock className="w-10 h-10" />
+          </div>
+
+          <div className="max-w-xl mx-auto space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+              <Clock className="w-3.5 h-3.5 text-amber-600" />
+              <span>Co-Living Prerequisite</span>
+            </div>
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-[#222222] tracking-tight">
+              Roommate Living Pact is Locked
+            </h1>
+            <p className="text-sm text-[#6a6a6a] leading-relaxed">
+              Roommate Pacts are legally binding, SHA-256 tamper-evident agreements created between <strong>confirmed flatmates</strong>. To create a living pact, you must first finalize a roommate via <strong>Messages</strong>.
+            </p>
+          </div>
+
+          {/* 3 Step Flow */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left pt-2">
+            <div className="p-4 rounded-2xl bg-[#f7f7f7] border border-[#ebebeb] space-y-2">
+              <span className="font-heading font-bold text-2xl text-[#ff385c]/40">01</span>
+              <h4 className="font-heading font-bold text-xs text-[#222222]">Match & Chat</h4>
+              <p className="text-[11px] text-[#6a6a6a] leading-relaxed">
+                Connect with compatible student flatmates based on sleep, study, and cleanliness habits.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#f7f7f7] border border-[#ebebeb] space-y-2">
+              <span className="font-heading font-bold text-2xl text-[#ff385c]/40">02</span>
+              <h4 className="font-heading font-bold text-xs text-[#222222]">Send Roommate Request</h4>
+              <p className="text-[11px] text-[#6a6a6a] leading-relaxed">
+                In chat, click "Send Roommate Request" to confirm you are moving in together.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#ecfdf5] border border-[#a7f3d0] space-y-2">
+              <span className="font-heading font-bold text-2xl text-[#10b981]/40">03</span>
+              <h4 className="font-heading font-bold text-xs text-[#065f46]">Sign Pact & Unlock Bills</h4>
+              <p className="text-[11px] text-[#065f46] leading-relaxed">
+                Lock in chore schedules, quiet hours, and start splitting flat expenses in real time!
+              </p>
+            </div>
+          </div>
+
+          {/* Action CTAs */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+            <button
+              onClick={() => setActiveTab('messages')}
+              className="w-full sm:w-auto px-6 py-3 bg-[#ff385c] hover:bg-[#e00b41] text-white font-bold text-xs rounded-full shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>Go to Messages to Finalize Roommate</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setActiveTab('matches')}
+              className="w-full sm:w-auto px-6 py-3 bg-white hover:bg-[#f7f7f7] text-[#222222] font-semibold text-xs rounded-full border border-[#ebebeb] transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Users className="w-4 h-4 text-[#ff385c]" />
+              <span>Browse Roommate Matches</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Active Co-Living Flatmates Banner */}
+      <div className="p-4 bg-gradient-to-r from-[#ecfdf5] to-white rounded-2xl border border-[#a7f3d0] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[#10b981] text-white flex items-center justify-center shrink-0">
+            <CheckCircle className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-[#065f46]">
+              Confirmed Co-Living Flatmates: {finalizedRoommates.map((r) => r.name).join(', ')}
+            </h4>
+            <p className="text-[11px] text-[#065f46]/80">
+              Your living pacts and cryptographic SHA-256 signatures are linked directly to your confirmed flatmates.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setActiveTab('messages')}
+          className="text-xs font-bold text-[#065f46] hover:underline flex items-center gap-1 cursor-pointer shrink-0"
+        >
+          <span>Chat with Roommates</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -201,49 +323,88 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Pact List / Selector (4 cols) */}
         <div className="lg:col-span-4 space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#6a6a6a] block px-1">
-            Active Flat Agreements ({pacts.length})
-          </span>
-          {pacts.map((p) => {
-            const isSelected = selectedPact?.id === p.id;
-            return (
-              <div
-                key={p.id}
-                onClick={() => setSelectedPact(p)}
-                className={`p-4 rounded-2xl border transition-all cursor-pointer ${
-                  isSelected
-                    ? 'bg-white border-[#222222] shadow-md ring-2 ring-[#222222]/10'
-                    : 'bg-white border-[#ebebeb] hover:border-[#222222]/40 shadow-subtle'
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <h3 className="font-heading font-bold text-sm text-[#222222] line-clamp-1">
-                    {p.title}
-                  </h3>
-                  <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      p.status === 'fully_signed'
-                        ? 'bg-[#ecfdf5] text-[#065f46]'
-                        : 'bg-[#fffbeb] text-[#92400e]'
-                    }`}
-                  >
-                    {p.status === 'fully_signed' ? 'Fully Signed' : 'Signatures Pending'}
-                  </span>
-                </div>
-                <p className="text-xs text-[#6a6a6a] mt-1 line-clamp-1">
-                  {p.address}
-                </p>
-                <div className="mt-3 flex items-center justify-between text-[11px] text-[#6a6a6a] pt-2 border-t border-[#ebebeb]">
-                  <span className="flex items-center gap-1">
-                    <Users className="w-3.5 h-3.5 text-[#ff385c]" /> {p.flatmates.length} flatmates
-                  </span>
-                  <span className="font-mono-code text-[10px] text-[#ff385c]">
-                    #{p.sha256Hash.slice(0, 8)}
-                  </span>
-                </div>
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#6a6a6a]">
+              Active Flat Agreements ({pacts.length})
+            </span>
+          </div>
+
+          {pacts.length === 0 ? (
+            <div className="p-6 bg-white rounded-3xl border border-dashed border-[#ebebeb] text-center space-y-3 shadow-subtle">
+              <div className="w-10 h-10 rounded-2xl bg-[#ff385c]/10 text-[#ff385c] flex items-center justify-center mx-auto">
+                <Scroll className="w-5 h-5" />
               </div>
-            );
-          })}
+              <div className="space-y-1">
+                <h4 className="font-heading font-bold text-xs text-[#222222]">No Living Pacts Yet</h4>
+                <p className="text-[11px] text-[#6a6a6a] leading-relaxed">
+                  Draft your first SHA-256 tamper-evident living pact with your confirmed roommates.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsWizardOpen(true)}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full shadow-xs transition-all cursor-pointer"
+              >
+                <PlusCircle className="w-3.5 h-3.5 text-[#ff385c]" />
+                <span>Create First Pact</span>
+              </button>
+            </div>
+          ) : (
+            pacts.map((p) => {
+              const isSelected = selectedPact?.id === p.id;
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => setSelectedPact(p)}
+                  className={`p-4 rounded-2xl border transition-all cursor-pointer group ${
+                    isSelected
+                      ? 'bg-white border-[#222222] shadow-md ring-2 ring-[#222222]/10'
+                      : 'bg-white border-[#ebebeb] hover:border-[#222222]/40 shadow-subtle'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-heading font-bold text-sm text-[#222222] line-clamp-1">
+                      {p.title}
+                    </h3>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          p.status === 'fully_signed'
+                            ? 'bg-[#ecfdf5] text-[#065f46]'
+                            : 'bg-[#fffbeb] text-[#92400e]'
+                        }`}
+                      >
+                        {p.status === 'fully_signed' ? 'Fully Signed' : 'Pending'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (window.confirm(`Delete living pact "${p.title}"?`)) {
+                            deletePact(p.id);
+                          }
+                        }}
+                        title="Delete living pact"
+                        className="p-1 text-[#b0b0b0] hover:text-[#ff385c] hover:bg-rose-50 rounded-lg transition-colors cursor-pointer opacity-70 group-hover:opacity-100"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-[#6a6a6a] mt-1 line-clamp-1">
+                    {p.address}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between text-[11px] text-[#6a6a6a] pt-2 border-t border-[#ebebeb]">
+                    <span className="flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5 text-[#ff385c]" /> {p.flatmates.length} flatmates
+                    </span>
+                    <span className="font-mono-code text-[10px] text-[#ff385c]">
+                      #{p.sha256Hash.slice(0, 8)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
 
         {/* Pact View / Signature Panel (8 cols) */}
@@ -260,12 +421,24 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                     Property: {selectedPact.address}
                   </p>
                 </div>
-                <button
-                  onClick={() => window.print()}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#f7f7f7] hover:bg-[#ebebeb] text-[#222222] rounded-xl border border-[#ebebeb] transition-colors cursor-pointer"
-                >
-                  <Printer className="w-3.5 h-3.5" /> Print / Save PDF
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      if (window.confirm(`Delete living pact "${selectedPact.title}"?`)) {
+                        deletePact(selectedPact.id);
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white hover:bg-rose-50 text-[#ff385c] rounded-xl border border-rose-200 transition-colors cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Delete
+                  </button>
+                  <button
+                    onClick={() => window.print()}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#f7f7f7] hover:bg-[#ebebeb] text-[#222222] rounded-xl border border-[#ebebeb] transition-colors cursor-pointer"
+                  >
+                    <Printer className="w-3.5 h-3.5" /> Print / Save PDF
+                  </button>
+                </div>
               </div>
 
               {/* SHA-256 Cryptographic Hash Pill */}
@@ -359,8 +532,25 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
               )}
             </>
           ) : (
-            <div className="text-center py-16 text-xs text-[#6a6a6a]">
-              Select a Roommate Pact or click "Create New Roommate Pact" above.
+            <div className="text-center py-20 px-4 space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-[#ff385c]/10 text-[#ff385c] flex items-center justify-center mx-auto border border-[#ff385c]/20">
+                <Scroll className="w-7 h-7" />
+              </div>
+              <div className="max-w-md mx-auto space-y-1">
+                <h3 className="font-heading text-base font-bold text-[#222222]">
+                  No Living Pact Selected
+                </h3>
+                <p className="text-xs text-[#6a6a6a] leading-relaxed">
+                  You have no pre-existing living agreements. You and your confirmed roommate(s) can draft custom quiet hours, chores, and visitor rules.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsWizardOpen(true)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full shadow-xs transition-all cursor-pointer"
+              >
+                <PlusCircle className="w-4 h-4 text-[#ff385c]" />
+                <span>Create Living Pact Now</span>
+              </button>
             </div>
           )}
         </div>

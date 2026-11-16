@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { MessageSquare, X, Send, Minus, ChevronUp, Users } from 'lucide-react';
+import { MessageSquare, X, Send, Minus, ChevronUp, Users, CheckCircle, Home, Check, Sparkles } from 'lucide-react';
 import { isMessageInConversation } from '../../utils/chatUtils';
 
 export const FloatingChat: React.FC = () => {
@@ -15,6 +15,8 @@ export const FloatingChat: React.FC = () => {
     currentUser,
     candidates,
     setActiveTab,
+    respondRoommateRequest,
+    isRoommateFinalized,
   } = useApp();
 
   const [inputVal, setInputVal] = useState('');
@@ -73,8 +75,13 @@ export const FloatingChat: React.FC = () => {
             </div>
           )}
           <div>
-            <h4 className="text-xs font-bold leading-tight line-clamp-1">
+            <h4 className="text-xs font-bold leading-tight line-clamp-1 flex items-center gap-1">
               {activeChatRecipient?.name || 'Flatmate Messages'}
+              {activeChatRecipient && isRoommateFinalized(activeChatRecipient.id) && (
+                <span className="text-[9px] px-1.5 py-0.2 bg-[#10b981] text-white rounded-full font-bold">
+                  Roommate
+                </span>
+              )}
             </h4>
             <span className="text-[10px] text-white/80 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" /> Online
@@ -162,6 +169,53 @@ export const FloatingChat: React.FC = () => {
                   </div>
                 ) : (
                   activeMessages.map((msg) => {
+                    if (msg.messageType === 'roommate_request') {
+                      const isSelf = msg.senderId === currentUser.id;
+                      const isPending = msg.requestStatus === 'pending';
+                      const isAccepted = msg.requestStatus === 'accepted';
+
+                      return (
+                        <div key={msg.id} className="w-full my-2 p-3 bg-white border border-[#ff385c]/30 rounded-2xl shadow-subtle text-xs space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-[#222222] flex items-center gap-1 text-[11px]">
+                              <Home className="w-3.5 h-3.5 text-[#ff385c]" />
+                              Roommate Request
+                            </span>
+                            <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                              isAccepted ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                            }`}>
+                              {msg.requestStatus || 'pending'}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-[#6a6a6a]">
+                            {isSelf ? 'You proposed living together.' : `${msg.senderName} proposed living together.`}
+                          </p>
+                          {isPending && !isSelf && (
+                            <div className="flex gap-1.5 pt-1">
+                              <button
+                                onClick={() => respondRoommateRequest(msg.id, 'accepted')}
+                                className="flex-1 py-1 px-2 bg-[#10b981] text-white text-[10px] font-bold rounded-lg cursor-pointer"
+                              >
+                                Accept
+                              </button>
+                              <button
+                                onClick={() => respondRoommateRequest(msg.id, 'declined')}
+                                className="py-1 px-2 bg-gray-100 text-gray-600 text-[10px] rounded-lg cursor-pointer"
+                              >
+                                Decline
+                              </button>
+                            </div>
+                          )}
+                          {isAccepted && (
+                            <div className="p-1.5 bg-emerald-50 text-emerald-800 text-[10px] rounded-lg font-medium flex items-center gap-1">
+                              <Sparkles className="w-3 h-3 text-emerald-600 shrink-0" />
+                              <span>Roommates confirmed! Pact & Bills unlocked.</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+
                     const isSelf = msg.senderId === currentUser.id;
                     return (
                       <div

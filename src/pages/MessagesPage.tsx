@@ -1,6 +1,22 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
-import { Send, MessageSquare, Plus, Search, X, Users, Compass, ShieldCheck } from 'lucide-react';
+import {
+  Send,
+  MessageSquare,
+  Plus,
+  Search,
+  X,
+  Users,
+  Compass,
+  ShieldCheck,
+  CheckCircle,
+  Clock,
+  Sparkles,
+  Check,
+  Home,
+  Scroll,
+  Receipt,
+} from 'lucide-react';
 import { VerifiedBadge } from '../components/common/VerifiedBadge';
 import { ChatMessage, UserProfile } from '../types';
 import { isMessageInConversation } from '../utils/chatUtils';
@@ -30,6 +46,10 @@ export const MessagesPage: React.FC = () => {
     setActiveChatRecipient,
     setActiveTab,
     registeredAccounts,
+    finalizedRoommates,
+    isRoommateFinalized,
+    sendRoommateRequest,
+    respondRoommateRequest,
   } = useApp();
 
   const [selectedPartnerId, setSelectedPartnerId] = useState<string | null>(null);
@@ -411,7 +431,60 @@ export const MessagesPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap justify-end">
+                  {!activePartner.isLandlord && (
+                    <>
+                      {isRoommateFinalized(activePartner.id) ? (
+                        <span className="text-xs font-bold text-[#065f46] bg-[#ecfdf5] px-3 py-1.5 rounded-full border border-[#a7f3d0] flex items-center gap-1.5 shadow-xs">
+                          <CheckCircle className="w-3.5 h-3.5 text-[#10b981]" />
+                          <span>Confirmed Roommate</span>
+                        </span>
+                      ) : partnerMessages.some(
+                          (m) => m.messageType === 'roommate_request' && m.requestStatus === 'pending'
+                        ) ? (
+                        (() => {
+                          const pendingReq = partnerMessages.find(
+                            (m) => m.messageType === 'roommate_request' && m.requestStatus === 'pending'
+                          )!;
+                          return pendingReq.senderId === currentUser.id ? (
+                            <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+                              <span>Request Pending</span>
+                            </span>
+                          ) : (
+                            <div className="flex items-center gap-1.5 bg-amber-50 p-1 pl-2.5 rounded-full border border-amber-200 shadow-xs">
+                              <span className="text-xs font-bold text-amber-900 flex items-center gap-1">
+                                <Sparkles className="w-3.5 h-3.5 text-[#ff385c]" />
+                                Roommate Request!
+                              </span>
+                              <button
+                                onClick={() => respondRoommateRequest(pendingReq.id, 'accepted')}
+                                className="px-2.5 py-1 bg-[#10b981] hover:bg-[#059669] text-white rounded-full text-[11px] font-bold transition-colors cursor-pointer"
+                              >
+                                Accept
+                              </button>
+                              <button
+                                onClick={() => respondRoommateRequest(pendingReq.id, 'declined')}
+                                className="px-2 py-1 bg-white hover:bg-[#f7f7f7] text-[#6a6a6a] rounded-full text-[11px] font-medium border border-[#ebebeb] transition-colors cursor-pointer"
+                              >
+                                Decline
+                              </button>
+                            </div>
+                          );
+                        })()
+                      ) : (
+                        <button
+                          onClick={() => sendRoommateRequest(activePartner.id, activePartner.fullName)}
+                          className="px-3.5 py-1.5 bg-[#ff385c] hover:bg-[#e00b41] text-white font-bold text-xs rounded-full shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                          title="Send a formal request to finalize becoming roommates and living together"
+                        >
+                          <Users className="w-3.5 h-3.5" />
+                          <span>Send Roommate Request</span>
+                        </button>
+                      )}
+                    </>
+                  )}
+
                   <span className="text-xs font-medium text-[#10b981] bg-[#ecfdf5] px-2.5 py-1 rounded-full border border-[#a7f3d0] flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" /> Online
                   </span>
@@ -434,6 +507,144 @@ export const MessagesPage: React.FC = () => {
                   </div>
                 ) : (
                   partnerMessages.map((msg) => {
+                    if (msg.messageType === 'roommate_request') {
+                      const isSelf = msg.senderId === currentUser.id;
+                      const isPending = msg.requestStatus === 'pending';
+                      const isAccepted = msg.requestStatus === 'accepted';
+                      const isDeclined = msg.requestStatus === 'declined';
+
+                      return (
+                        <div key={msg.id} className="flex flex-col items-center my-3 w-full animate-in fade-in">
+                          <div
+                            className={`w-full max-w-md p-5 rounded-3xl border shadow-subtle transition-all ${
+                              isAccepted
+                                ? 'bg-gradient-to-br from-[#ecfdf5] to-white border-[#a7f3d0]'
+                                : isDeclined
+                                ? 'bg-[#f7f7f7] border-[#ebebeb] opacity-75'
+                                : 'bg-white border-[#ff385c]/30 ring-4 ring-[#ff385c]/5'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3.5">
+                              <div
+                                className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
+                                  isAccepted
+                                    ? 'bg-[#10b981] text-white shadow-xs'
+                                    : isDeclined
+                                    ? 'bg-gray-200 text-gray-500'
+                                    : 'bg-[#ff385c] text-white shadow-xs'
+                                }`}
+                              >
+                                {isAccepted ? (
+                                  <CheckCircle className="w-5 h-5" />
+                                ) : isDeclined ? (
+                                  <X className="w-5 h-5" />
+                                ) : (
+                                  <Home className="w-5 h-5" />
+                                )}
+                              </div>
+
+                              <div className="flex-1 space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="font-heading font-bold text-sm text-[#222222]">
+                                    Roommate Co-Living Request
+                                  </h4>
+                                  <span
+                                    className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                                      isAccepted
+                                        ? 'bg-[#10b981]/15 text-[#065f46]'
+                                        : isDeclined
+                                        ? 'bg-gray-200 text-gray-600'
+                                        : 'bg-amber-100 text-amber-800 animate-pulse'
+                                    }`}
+                                  >
+                                    {msg.requestStatus || 'pending'}
+                                  </span>
+                                </div>
+
+                                <p className="text-xs text-[#6a6a6a] leading-relaxed">
+                                  {isSelf
+                                    ? `You sent a request to ${activePartner.fullName} to finalize living together as roommates.`
+                                    : `${msg.senderName} has sent you a request to finalize living together as roommates.`}
+                                </p>
+
+                                {/* Action Buttons when Pending */}
+                                {isPending && (
+                                  <div className="pt-3">
+                                    {!isSelf ? (
+                                      <div className="flex items-center gap-2">
+                                        <button
+                                          onClick={() => respondRoommateRequest(msg.id, 'accepted')}
+                                          className="flex-1 py-2 px-3 bg-[#10b981] hover:bg-[#059669] text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                                        >
+                                          <Check className="w-4 h-4" />
+                                          <span>Accept & Start Living Together</span>
+                                        </button>
+                                        <button
+                                          onClick={() => respondRoommateRequest(msg.id, 'declined')}
+                                          className="py-2 px-3 bg-[#f7f7f7] hover:bg-[#ebebeb] text-[#6a6a6a] text-xs font-semibold rounded-xl border border-[#ebebeb] transition-colors cursor-pointer"
+                                        >
+                                          Decline
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center justify-between bg-[#f7f7f7] p-2.5 rounded-xl border border-[#ebebeb]">
+                                        <span className="text-[11px] text-[#6a6a6a] flex items-center gap-1.5">
+                                          <Clock className="w-3 h-3 text-amber-500" /> Waiting for {activePartner.fullName} to accept...
+                                        </span>
+                                        <button
+                                          onClick={() => respondRoommateRequest(msg.id, 'accepted')}
+                                          className="text-[10px] font-bold text-[#ff385c] hover:underline cursor-pointer"
+                                          title="Simulate partner accepting for testing"
+                                        >
+                                          (Test: Simulate Accept)
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Action Shortcuts when Accepted */}
+                                {isAccepted && (
+                                  <div className="pt-2 space-y-2">
+                                    <div className="p-2.5 bg-[#ecfdf5] rounded-xl border border-[#a7f3d0] text-xs text-[#065f46] font-medium flex items-center gap-1.5">
+                                      <Sparkles className="w-4 h-4 text-[#10b981] shrink-0" />
+                                      <span>Roommates confirmed! Roommate Pact & Bill Splitter are now unlocked.</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 pt-1">
+                                      <button
+                                        onClick={() => setActiveTab('pact')}
+                                        className="flex-1 py-2 px-3 bg-[#222222] hover:bg-black text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                      >
+                                        <Scroll className="w-3.5 h-3.5 text-[#ff385c]" />
+                                        <span>Create Roommate Pact &rarr;</span>
+                                      </button>
+                                      <button
+                                        onClick={() => setActiveTab('bills')}
+                                        className="flex-1 py-2 px-3 bg-white hover:bg-[#f7f7f7] text-[#222222] text-xs font-bold rounded-xl border border-[#ebebeb] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                      >
+                                        <Receipt className="w-3.5 h-3.5 text-[#ff385c]" />
+                                        <span>Split Flat Bills &rarr;</span>
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {isDeclined && (
+                                  <div className="pt-1 text-[11px] text-[#6a6a6a]">
+                                    This roommate co-living request was declined.
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="mt-2 text-right">
+                              <span className="text-[10px] text-[#6a6a6a]">{msg.timestamp}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+
                     const isSelf = msg.senderId === currentUser.id;
                     return (
                       <div

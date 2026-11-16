@@ -249,6 +249,17 @@ export interface Review {
   date: string;
 }
 
+export interface FinalizedRoommate {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  upi?: string;
+  avatarUrl?: string;
+  collegeOrCompany?: string;
+  finalizedAt: string;
+}
+
 export interface ChatMessage {
   id: string;
   conversationId: string;
@@ -260,6 +271,9 @@ export interface ChatMessage {
   text: string;
   timestamp: string;
   isSelf: boolean;
+  messageType?: 'text' | 'roommate_request';
+  requestStatus?: 'pending' | 'accepted' | 'declined';
+  requestId?: string;
 }
 
 export interface VisitAlert {
