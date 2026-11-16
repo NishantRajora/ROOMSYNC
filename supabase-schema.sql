@@ -48,6 +48,16 @@ create table if not exists public.messages (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- 7. ROOMMATES TABLE (Confirmed co-living partnerships & pact unlocks)
+create table if not exists public.roommates (
+  id text primary key,
+  user1_id text not null,
+  user2_id text not null,
+  status text not null default 'confirmed',
+  data jsonb not null default '{}'::jsonb,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
 -- ====================================================================
 -- ROW LEVEL SECURITY (RLS) & PUBLIC POLICIES
 -- ====================================================================
@@ -57,6 +67,7 @@ alter table public.pacts enable row level security;
 alter table public.expenses enable row level security;
 alter table public.reviews enable row level security;
 alter table public.messages enable row level security;
+alter table public.roommates enable row level security;
 
 create policy "Allow all on profiles" on public.profiles for all using (true) with check (true);
 create policy "Allow all on listings" on public.listings for all using (true) with check (true);
@@ -64,4 +75,13 @@ create policy "Allow all on pacts" on public.pacts for all using (true) with che
 create policy "Allow all on expenses" on public.expenses for all using (true) with check (true);
 create policy "Allow all on reviews" on public.reviews for all using (true) with check (true);
 create policy "Allow all on messages" on public.messages for all using (true) with check (true);
+create policy "Allow all on roommates" on public.roommates for all using (true) with check (true);
+
+-- ====================================================================
+-- REALTIME REPLICATION (Instant cross-device updates on Vercel)
+-- ====================================================================
+alter publication supabase_realtime add table public.messages;
+alter publication supabase_realtime add table public.roommates;
+alter publication supabase_realtime add table public.pacts;
+alter publication supabase_realtime add table public.expenses;
 

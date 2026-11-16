@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import {
   UserProfile,
   Listing,
@@ -381,6 +381,90 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return [];
   });
 
+  // Helper to derive & sync finalized roommates across devices from accepted messages & cloud table
+  const deriveAndSyncRoommates = useCallback(
+    (
+      msgs: ChatMessage[],
+      activeUser: UserProfile,
+      cloudRoommates?: any[]
+    ) => {
+      if (!activeUser || !activeUser.id) return;
+
+      setFinalizedRoommates((prev) => {
+        const roommateMap = new Map<string, FinalizedRoommate>();
+        // Keep existing
+        prev.forEach((r) => roommateMap.set(r.id, r));
+
+        // 1. Ingest from cloud roommates table if present
+        if (cloudRoommates && Array.isArray(cloudRoommates)) {
+          cloudRoommates.forEach((cr) => {
+            const partnerId =
+              cr.user1_id === activeUser.id
+                ? cr.user2_id
+                : cr.user2_id === activeUser.id
+                ? cr.user1_id
+                : null;
+            if (partnerId && partnerId !== activeUser.id && !roommateMap.has(partnerId)) {
+              const data = cr.data || {};
+              const partnerName =
+                cr.user1_id === activeUser.id
+                  ? data.user2_name || 'Roommate'
+                  : data.user1_name || 'Roommate';
+              const cand = candidates.find((c) => c.id === partnerId);
+              const reg = registeredAccounts.find((a) => a.id === partnerId || a.profile?.id === partnerId)?.profile;
+              roommateMap.set(partnerId, {
+                id: partnerId,
+                name: cand?.fullName || reg?.fullName || partnerName,
+                email: cand?.email || reg?.email || `${partnerId}@college.edu`,
+                phone: cand?.phone || reg?.phone || '+91 98765 43210',
+                upi: cand?.upiId || reg?.upiId || `${partnerName.toLowerCase().replace(/\s+/g, '.')}@upi`,
+                avatarUrl: cand?.avatarUrl || reg?.avatarUrl,
+                collegeOrCompany: cand?.college || reg?.college || reg?.company || 'Verified Roommate',
+                finalizedAt: cr.created_at || new Date().toISOString(),
+              });
+            }
+          });
+        }
+
+        // 2. Ingest from accepted roommate request messages
+        msgs.forEach((m) => {
+          if (
+            m &&
+            m.messageType === 'roommate_request' &&
+            m.requestStatus === 'accepted' &&
+            (m.senderId === activeUser.id || m.recipientId === activeUser.id)
+          ) {
+            const partnerId = m.senderId === activeUser.id ? m.recipientId : m.senderId;
+            const partnerName =
+              m.senderId === activeUser.id
+                ? m.recipientName || 'Roommate'
+                : m.senderName || 'Roommate';
+
+            if (partnerId && partnerId !== activeUser.id && !roommateMap.has(partnerId)) {
+              const cand = candidates.find((c) => c.id === partnerId);
+              const reg = registeredAccounts.find((a) => a.id === partnerId || a.profile?.id === partnerId)?.profile;
+              roommateMap.set(partnerId, {
+                id: partnerId,
+                name: cand?.fullName || reg?.fullName || partnerName,
+                email: cand?.email || reg?.email || `${partnerId}@college.edu`,
+                phone: cand?.phone || reg?.phone || '+91 98765 43210',
+                upi: cand?.upiId || reg?.upiId || `${partnerName.toLowerCase().replace(/\s+/g, '.')}@upi`,
+                avatarUrl: cand?.avatarUrl || reg?.avatarUrl || (m.senderId === activeUser.id ? m.recipientAvatar : undefined),
+                collegeOrCompany: cand?.college || reg?.college || reg?.company || 'Verified Roommate',
+                finalizedAt: m.timestamp || new Date().toISOString(),
+              });
+            }
+          }
+        });
+
+        const updated = Array.from(roommateMap.values());
+        localStorage.setItem('roomsync_finalized_roommates', JSON.stringify(updated));
+        return updated;
+      });
+    },
+    [candidates, registeredAccounts]
+  );
+
   const [activeVisitAlert, setActiveVisitAlert] = useState<VisitAlert | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [onboardingStep, setOnboardingStep] = useState<number | null>(null);
@@ -449,13 +533,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const loadCloudData = async () => {
       try {
-        const [profilesRes, listingsRes, pactsRes, expensesRes, reviewsRes, messagesRes] = await Promise.allSettled([
+        const [profilesRes, listingsRes, pactsRes, expensesRes, reviewsRes, messagesRes, roommatesRes] = await Promise.allSettled([
           supabase.from('profiles').select('*'),
           supabase.from('listings').select('data'),
           supabase.from('pacts').select('data'),
           supabase.from('expenses').select('data'),
           supabase.from('reviews').select('data'),
           supabase.from('messages').select('data'),
+          supabase.from('roommates').select('*'),
         ]);
 
         if (profilesRes.status === 'fulfilled' && profilesRes.value.data && profilesRes.value.data.length > 0) {
@@ -524,16 +609,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           });
         }
 
+        const cloudRoommates =
+          roommatesRes.status === 'fulfilled' && roommatesRes.value.data
+            ? roommatesRes.value.data
+            : [];
+
         if (messagesRes.status === 'fulfilled' && messagesRes.value.data && messagesRes.value.data.length > 0) {
           const cloudMessages = messagesRes.value.data
             .map((r: any) => r.data as ChatMessage)
             .filter((m: any) => m && m.id !== 'msg_1' && m.id !== 'msg_2');
           setMessages((prev) => {
             const ids = new Set(cloudMessages.map((m) => m.id));
-            return [...cloudMessages, ...prev.filter((m) => !ids.has(m.id))].filter(
+            const merged = [...cloudMessages, ...prev.filter((m) => !ids.has(m.id))].filter(
               (m) => m && m.id !== 'msg_1' && m.id !== 'msg_2'
             );
+            deriveAndSyncRoommates(merged, currentUser, cloudRoommates);
+            return merged;
           });
+        } else {
+          deriveAndSyncRoommates([], currentUser, cloudRoommates);
         }
         if (isSupabaseConfigured) {
           Promise.resolve(supabase.from('messages').delete().in('id', ['msg_1', 'msg_2'])).catch(() => { });
@@ -544,9 +638,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     loadCloudData();
-  }, []);
+  }, [currentUser, deriveAndSyncRoommates]);
 
-  // Supabase Realtime synchronization for messages
+  // Supabase Realtime synchronization for messages & roommates
   useEffect(() => {
     if (!isSupabaseConfigured) return;
 
@@ -565,6 +659,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                   ? [...prev, rowData]
                   : prev.map((message, index) => index === existingIndex ? rowData : message);
                 localStorage.setItem('roomsync_messages', JSON.stringify(updated));
+                deriveAndSyncRoommates(updated, currentUser);
                 return updated;
               });
             }
@@ -580,12 +675,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           }
         }
       )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'roommates' },
+        () => {
+          syncLatestMessages();
+        }
+      )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [currentUser, deriveAndSyncRoommates]);
 
   // Cross-tab storage listener to sync messages in real time between tabs on same device
   useEffect(() => {
@@ -720,14 +822,30 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                 cloud.forEach((m) => map.set(m.id, m));
                 const res = Array.from(map.values());
                 localStorage.setItem('roomsync_messages', JSON.stringify(res));
+                deriveAndSyncRoommates(res, currentUser);
                 return res;
               });
+            }
+          })
+          .catch(() => { });
+
+        Promise.resolve(supabase.from('roommates').select('*'))
+          .then(({ data }) => {
+            if (data && data.length > 0) {
+              deriveAndSyncRoommates(messages, currentUser, data);
             }
           })
           .catch(() => { });
       }
     } catch (_) { }
   };
+
+  // Synchronize finalized roommates whenever currentUser or messages change
+  useEffect(() => {
+    if (currentUser && currentUser.id && messages.length > 0) {
+      deriveAndSyncRoommates(messages, currentUser);
+    }
+  }, [currentUser, messages, deriveAndSyncRoommates]);
 
   // Real Database & Authorization implementations
   const login = async (
@@ -1458,22 +1576,36 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return;
     }
 
-    const convId = getConversationId(currentUser.id, recipientId);
-
-    // Check if there is already a pending request
-    const existingPending = messages.find(
+    // 1. Check if recipient already sent an incoming pending request to currentUser
+    const incomingPending = messages.find(
       (m) =>
         m.messageType === 'roommate_request' &&
         m.requestStatus === 'pending' &&
-        ((m.senderId === currentUser.id && m.recipientId === recipientId) ||
-          (m.senderId === recipientId && m.recipientId === currentUser.id))
+        m.senderId === recipientId &&
+        m.recipientId === currentUser.id
     );
 
-    if (existingPending) {
+    if (incomingPending) {
+      showToast(`${recipientName} already sent you a request! Confirming roommates...`);
+      await respondRoommateRequest(incomingPending.id, 'accepted');
+      return;
+    }
+
+    // 2. Check if currentUser already has an outgoing pending request to recipient
+    const existingOutgoing = messages.find(
+      (m) =>
+        m.messageType === 'roommate_request' &&
+        m.requestStatus === 'pending' &&
+        m.senderId === currentUser.id &&
+        m.recipientId === recipientId
+    );
+
+    if (existingOutgoing) {
       showToast('A roommate request is already pending between you two!');
       return;
     }
 
+    const convId = getConversationId(currentUser.id, recipientId);
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const reqMsg: ChatMessage = {
       id: `req_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -1510,6 +1642,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const respondRoommateRequest = async (messageId: string, status: 'accepted' | 'declined') => {
     let targetMsg: ChatMessage | undefined;
+    let partnerId: string | undefined;
+    let partnerName: string | undefined;
+
+    const currentList = [...messages];
+    const found = currentList.find((m) => m.id === messageId);
+    if (found) {
+      partnerId = found.senderId === currentUser.id ? found.recipientId : found.senderId;
+      partnerName = found.senderId === currentUser.id ? (found.recipientName || 'Roommate') : found.senderName;
+    }
 
     setMessages((prev) => {
       const updated = prev.map((m) => {
@@ -1517,42 +1658,85 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           targetMsg = { ...m, requestStatus: status };
           return targetMsg;
         }
+        // If accepting, also mark any other pending requests between these two users as accepted
+        if (
+          status === 'accepted' &&
+          partnerId &&
+          m.messageType === 'roommate_request' &&
+          m.requestStatus === 'pending' &&
+          ((m.senderId === currentUser.id && m.recipientId === partnerId) ||
+            (m.senderId === partnerId && m.recipientId === currentUser.id))
+        ) {
+          return { ...m, requestStatus: 'accepted' as const };
+        }
         return m;
       });
       localStorage.setItem('roomsync_messages', JSON.stringify(updated));
       return updated;
     });
 
-    if (targetMsg && isSupabaseConfigured) {
+    if (isSupabaseConfigured) {
       try {
-        await supabase.from('messages').upsert({ id: targetMsg.id, data: targetMsg });
+        if (targetMsg) {
+          await supabase.from('messages').upsert({ id: targetMsg.id, data: targetMsg });
+        }
+        if (status === 'accepted' && partnerId) {
+          // Update any other pending requests between these two users in Supabase
+          const otherPending = currentList.filter(
+            (m) =>
+              m.id !== messageId &&
+              m.messageType === 'roommate_request' &&
+              m.requestStatus === 'pending' &&
+              ((m.senderId === currentUser.id && m.recipientId === partnerId) ||
+                (m.senderId === partnerId && m.recipientId === currentUser.id))
+          );
+          for (const op of otherPending) {
+            const resolved = { ...op, requestStatus: 'accepted' as const };
+            await supabase.from('messages').upsert({ id: resolved.id, data: resolved });
+          }
+
+          // Upsert into Supabase roommates table if present
+          const roommatePairId = [currentUser.id, partnerId].sort().join('_');
+          await supabase.from('roommates').upsert({
+            id: roommatePairId,
+            user1_id: currentUser.id,
+            user2_id: partnerId,
+            status: 'confirmed',
+            data: {
+              user1_id: currentUser.id,
+              user1_name: currentUser.fullName,
+              user2_id: partnerId,
+              user2_name: partnerName,
+              finalizedAt: new Date().toISOString(),
+            },
+          });
+        }
       } catch (err) {
         console.warn('Supabase update message failed:', err);
       }
     }
 
-    if (status === 'accepted' && targetMsg) {
-      // Determine partner ID (the other participant)
-      const partnerId = targetMsg.senderId === currentUser.id ? targetMsg.recipientId : targetMsg.senderId;
-      const partnerName = targetMsg.senderId === currentUser.id ? (targetMsg.recipientName || 'Roommate') : targetMsg.senderName;
+    if (status === 'accepted') {
+      const pId = partnerId || (targetMsg ? (targetMsg.senderId === currentUser.id ? targetMsg.recipientId : targetMsg.senderId) : undefined);
+      const pName = partnerName || (targetMsg ? (targetMsg.senderId === currentUser.id ? (targetMsg.recipientName || 'Roommate') : targetMsg.senderName) : 'Roommate');
 
-      if (partnerId) {
-        const cand = candidates.find((c) => c.id === partnerId);
-        const reg = registeredAccounts.find((a) => a.id === partnerId || a.profile?.id === partnerId)?.profile;
+      if (pId) {
+        const cand = candidates.find((c) => c.id === pId);
+        const reg = registeredAccounts.find((a) => a.id === pId || a.profile?.id === pId)?.profile;
 
         const newRoommate: FinalizedRoommate = {
-          id: partnerId,
-          name: cand?.fullName || reg?.fullName || partnerName,
-          email: cand?.email || reg?.email || `${partnerId}@college.edu`,
+          id: pId,
+          name: cand?.fullName || reg?.fullName || pName,
+          email: cand?.email || reg?.email || `${pId}@college.edu`,
           phone: cand?.phone || reg?.phone || '+91 98765 43210',
-          upi: cand?.upiId || reg?.upiId || `${(cand?.fullName || partnerName).toLowerCase().replace(/\s+/g, '.')}@upi`,
+          upi: cand?.upiId || reg?.upiId || `${(cand?.fullName || pName).toLowerCase().replace(/\s+/g, '.')}@upi`,
           avatarUrl: cand?.avatarUrl || reg?.avatarUrl,
           collegeOrCompany: cand?.college || reg?.college || reg?.company || 'Verified Roommate',
           finalizedAt: new Date().toISOString(),
         };
 
         setFinalizedRoommates((prev) => {
-          if (prev.some((r) => r.id === partnerId)) return prev;
+          if (prev.some((r) => r.id === pId)) return prev;
           const updated = [...prev, newRoommate];
           localStorage.setItem('roomsync_finalized_roommates', JSON.stringify(updated));
           return updated;
@@ -1569,14 +1753,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
         // Send a celebratory confirmation message into the thread
         const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const convId = targetMsg.conversationId || getConversationId(currentUser.id, partnerId);
+        const convId = (targetMsg && targetMsg.conversationId) || getConversationId(currentUser.id, pId);
         const confirmMsg: ChatMessage = {
           id: `conf_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
           conversationId: convId,
           senderId: currentUser.id,
           senderName: currentUser.fullName,
-          recipientId: partnerId,
-          recipientName: partnerName,
+          recipientId: pId,
+          recipientName: pName,
           text: `🎉 Roommates Confirmed! We are now official flatmates living together. Roommate Pact & Bill Splitter are unlocked!`,
           timestamp: now,
           isSelf: true,
@@ -1595,7 +1779,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           } catch { }
         }
 
-        showToast(`🎉 Roommates confirmed with ${partnerName}! Roommate Pact and Bill Splitter unlocked.`);
+        showToast(`🎉 Roommates confirmed with ${pName}! Roommate Pact and Bill Splitter unlocked.`);
       }
     } else if (status === 'declined') {
       showToast('Roommate request declined.');
@@ -1608,6 +1792,32 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       localStorage.setItem('roomsync_finalized_roommates', JSON.stringify(updated));
       return updated;
     });
+
+    if (isSupabaseConfigured) {
+      const pairId = [currentUser.id, roommateId].sort().join('_');
+      Promise.resolve(supabase.from('roommates').delete().eq('id', pairId)).catch(() => {});
+    }
+
+    setMessages((prev) => {
+      const updated = prev.map((m) => {
+        if (
+          m.messageType === 'roommate_request' &&
+          m.requestStatus === 'accepted' &&
+          ((m.senderId === currentUser.id && m.recipientId === roommateId) ||
+            (m.senderId === roommateId && m.recipientId === currentUser.id))
+        ) {
+          const declined = { ...m, requestStatus: 'declined' as const };
+          if (isSupabaseConfigured) {
+            Promise.resolve(supabase.from('messages').upsert({ id: declined.id, data: declined })).catch(() => {});
+          }
+          return declined;
+        }
+        return m;
+      });
+      localStorage.setItem('roomsync_messages', JSON.stringify(updated));
+      return updated;
+    });
+
     showToast('Roommate co-living status removed.');
   };
 

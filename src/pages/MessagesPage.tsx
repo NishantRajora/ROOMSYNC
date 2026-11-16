@@ -439,49 +439,65 @@ export const MessagesPage: React.FC = () => {
                           <CheckCircle className="w-3.5 h-3.5 text-[#10b981]" />
                           <span>Confirmed Roommate</span>
                         </span>
-                      ) : partnerMessages.some(
-                          (m) => m.messageType === 'roommate_request' && m.requestStatus === 'pending'
-                        ) ? (
-                        (() => {
-                          const pendingReq = partnerMessages.find(
-                            (m) => m.messageType === 'roommate_request' && m.requestStatus === 'pending'
-                          )!;
-                          return pendingReq.senderId === currentUser.id ? (
-                            <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 flex items-center gap-1.5">
-                              <Clock className="w-3.5 h-3.5 text-amber-600 animate-spin" />
-                              <span>Request Pending</span>
-                            </span>
-                          ) : (
+                      ) : (() => {
+                        // Priority 1: Check for an INCOMING pending request sent to current user
+                        const incomingReq = partnerMessages.find(
+                          (m) =>
+                            m.messageType === 'roommate_request' &&
+                            m.requestStatus === 'pending' &&
+                            m.senderId === activePartner.id
+                        );
+                        if (incomingReq) {
+                          return (
                             <div className="flex items-center gap-1.5 bg-amber-50 p-1 pl-2.5 rounded-full border border-amber-200 shadow-xs">
                               <span className="text-xs font-bold text-amber-900 flex items-center gap-1">
                                 <Sparkles className="w-3.5 h-3.5 text-[#ff385c]" />
                                 Roommate Request!
                               </span>
                               <button
-                                onClick={() => respondRoommateRequest(pendingReq.id, 'accepted')}
+                                onClick={() => respondRoommateRequest(incomingReq.id, 'accepted')}
                                 className="px-2.5 py-1 bg-[#10b981] hover:bg-[#059669] text-white rounded-full text-[11px] font-bold transition-colors cursor-pointer"
                               >
                                 Accept
                               </button>
                               <button
-                                onClick={() => respondRoommateRequest(pendingReq.id, 'declined')}
+                                onClick={() => respondRoommateRequest(incomingReq.id, 'declined')}
                                 className="px-2 py-1 bg-white hover:bg-[#f7f7f7] text-[#6a6a6a] rounded-full text-[11px] font-medium border border-[#ebebeb] transition-colors cursor-pointer"
                               >
                                 Decline
                               </button>
                             </div>
                           );
-                        })()
-                      ) : (
-                        <button
-                          onClick={() => sendRoommateRequest(activePartner.id, activePartner.fullName)}
-                          className="px-3.5 py-1.5 bg-[#ff385c] hover:bg-[#e00b41] text-white font-bold text-xs rounded-full shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
-                          title="Send a formal request to finalize becoming roommates and living together"
-                        >
-                          <Users className="w-3.5 h-3.5" />
-                          <span>Send Roommate Request</span>
-                        </button>
-                      )}
+                        }
+
+                        // Priority 2: Check for an OUTGOING pending request sent by current user
+                        const outgoingReq = partnerMessages.find(
+                          (m) =>
+                            m.messageType === 'roommate_request' &&
+                            m.requestStatus === 'pending' &&
+                            m.senderId === currentUser.id
+                        );
+                        if (outgoingReq) {
+                          return (
+                            <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+                              <span>Request Pending</span>
+                            </span>
+                          );
+                        }
+
+                        // Priority 3: No pending requests -> Send Request button
+                        return (
+                          <button
+                            onClick={() => sendRoommateRequest(activePartner.id, activePartner.fullName)}
+                            className="px-3.5 py-1.5 bg-[#ff385c] hover:bg-[#e00b41] text-white font-bold text-xs rounded-full shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                            title="Send a formal request to finalize becoming roommates and living together"
+                          >
+                            <Users className="w-3.5 h-3.5" />
+                            <span>Send Roommate Request</span>
+                          </button>
+                        );
+                      })()}
                     </>
                   )}
 
