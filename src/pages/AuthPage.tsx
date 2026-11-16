@@ -344,34 +344,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialMode, onNavigate }) =
                   <span>{isSubmitting ? 'Authenticating...' : 'Log In to Dashboard'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
-
-                <div className="relative flex py-1 items-center">
-                  <div className="flex-grow border-t border-[#ebebeb]"></div>
-                  <span className="flex-shrink mx-3 text-[11px] font-semibold text-[#6a6a6a]">OR</span>
-                  <div className="flex-grow border-t border-[#ebebeb]"></div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={async () => {
-                    setEmail('aarav.sharma@college.edu');
-                    setPassword('password123');
-                    setIsSubmitting(true);
-                    try {
-                      await login('aarav.sharma@college.edu', 'password123');
-                      onNavigate('/dashboard');
-                    } catch {
-                      // ignore
-                    } finally {
-                      setIsSubmitting(false);
-                    }
-                  }}
-                  disabled={isSubmitting}
-                  className="w-full py-2.5 px-4 bg-[#f7f7f7] hover:bg-[#ebebeb] text-[#222222] font-semibold text-xs rounded-xl border border-[#ebebeb] transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-[#ff385c]" />
-                  <span>1-Click Quick Demo Login</span>
-                </button>
               </form>
             </div>
           ) : (
