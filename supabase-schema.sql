@@ -69,6 +69,15 @@ alter table public.reviews enable row level security;
 alter table public.messages enable row level security;
 alter table public.roommates enable row level security;
 
+-- Drop existing policies if any to prevent duplicate errors
+drop policy if exists "Allow all on profiles" on public.profiles;
+drop policy if exists "Allow all on listings" on public.listings;
+drop policy if exists "Allow all on pacts" on public.pacts;
+drop policy if exists "Allow all on expenses" on public.expenses;
+drop policy if exists "Allow all on reviews" on public.reviews;
+drop policy if exists "Allow all on messages" on public.messages;
+drop policy if exists "Allow all on roommates" on public.roommates;
+
 create policy "Allow all on profiles" on public.profiles for all using (true) with check (true);
 create policy "Allow all on listings" on public.listings for all using (true) with check (true);
 create policy "Allow all on pacts" on public.pacts for all using (true) with check (true);
@@ -80,8 +89,23 @@ create policy "Allow all on roommates" on public.roommates for all using (true) 
 -- ====================================================================
 -- REALTIME REPLICATION (Instant cross-device updates on Vercel)
 -- ====================================================================
-alter publication supabase_realtime add table public.messages;
-alter publication supabase_realtime add table public.roommates;
-alter publication supabase_realtime add table public.pacts;
-alter publication supabase_realtime add table public.expenses;
+do $$
+begin
+  begin
+    alter publication supabase_realtime add table public.messages;
+  exception when duplicate_object then null;
+  end;
+  begin
+    alter publication supabase_realtime add table public.roommates;
+  exception when duplicate_object then null;
+  end;
+  begin
+    alter publication supabase_realtime add table public.pacts;
+  exception when duplicate_object then null;
+  end;
+  begin
+    alter publication supabase_realtime add table public.expenses;
+  exception when duplicate_object then null;
+  end;
+end $$;
 
