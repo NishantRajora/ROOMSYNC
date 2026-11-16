@@ -108,7 +108,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               className="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-[#f7f7f7] text-[#222222] border border-[#ebebeb] font-semibold text-sm rounded-full shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Sparkles className="w-4 h-4 text-[#ff385c]" />
-              <span>Scan Lease (Free AI)</span>
+              <span>Agreement Analyzer</span>
             </button>
             <button
               onClick={scrollToHowItWorks}
