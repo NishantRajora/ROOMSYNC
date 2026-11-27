@@ -20,9 +20,9 @@ import {
 } from 'lucide-react';
 
 export const MatchesPage: React.FC = () => {
-  const { currentUser, candidates, openChatWith, showToast } = useApp();
+  const { currentUser, candidates, registeredAccounts, openChatWith, showToast } = useApp();
 
-  const [minScore, setMinScore] = useState<number>(50);
+  const [minScore, setMinScore] = useState<number>(0);
   const [selectedGender, setSelectedGender] = useState<string>('all');
   const [selectedLocality, setSelectedLocality] = useState<string>('all');
 
@@ -30,8 +30,19 @@ export const MatchesPage: React.FC = () => {
   const [radarCandidate, setRadarCandidate] = useState<UserProfile | null>(null);
   const [radarCompat, setRadarCompat] = useState<CompatibilityResult | null>(null);
 
-  // Compute live match scores for each candidate
-  const evaluatedCandidates = candidates.map((cand) => {
+  const allCandidates = new Map(candidates.map((candidate) => [candidate.id, candidate]));
+  registeredAccounts.forEach(({ id, profile }) => {
+    if (!profile) return;
+    const candidateId = profile.id || id;
+    if (candidateId) allCandidates.set(candidateId, { ...profile, id: candidateId });
+  });
+
+  const availableCandidates = Array.from(allCandidates.values()).filter(
+    (candidate) => candidate.id !== currentUser.id
+  );
+
+  // Compute live match scores for each available profile
+  const evaluatedCandidates = availableCandidates.map((cand) => {
     const result = computeCompatibility(currentUser, cand);
     return {
       candidate: cand,
@@ -72,7 +83,7 @@ export const MatchesPage: React.FC = () => {
             </span>
           </div>
           <p className="text-xs text-[#6a6a6a] mt-1">
-            Comparing your lifestyle vectors (Sleep, Cleanliness, Social, Food, Budget) with active verified flatmates.
+            Comparing your lifestyle vectors (Sleep, Cleanliness, Social, Food, Budget) with available roommate profiles.
           </p>
         </div>
       </div>
@@ -109,13 +120,17 @@ export const MatchesPage: React.FC = () => {
           </select>
         </div>
 
+        <span className="text-xs text-[#6a6a6a]">
+          Showing {filtered.length} of {availableCandidates.length} profiles
+        </span>
+
         {/* Min Match % Slider */}
         <div className="flex items-center gap-2 text-xs">
           <span className="text-[#6a6a6a]">Min Compatibility:</span>
           <span className="font-semibold text-[#ff385c]">{minScore}%</span>
           <input
             type="range"
-            min={40}
+            min={0}
             max={90}
             step={5}
             value={minScore}

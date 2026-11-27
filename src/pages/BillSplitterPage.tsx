@@ -29,7 +29,7 @@ export const BillSplitterPage: React.FC = () => {
     expenses,
     addExpense,
     deleteExpense,
-    clearAllExpenses,
+    clearExpensesByIds,
     toggleSettleExpense,
     showToast,
     hasFinalizedRoommates,
@@ -53,9 +53,10 @@ export const BillSplitterPage: React.FC = () => {
   const [paidByName, setPaidByName] = useState(currentUser.fullName);
   const [paidByUpi, setPaidByUpi] = useState(currentUser.upiId);
   const [category, setCategory] = useState<Expense['category']>('WiFi');
+  const otherRoommates = finalizedRoommates.filter((roommate) => roommate.id !== currentUser.id);
   const flatmateOptions = [
     { name: currentUser.fullName, upi: currentUser.upiId },
-    ...finalizedRoommates.map((r) => ({
+    ...otherRoommates.map((r) => ({
       name: r.name,
       upi: r.upi || `${r.name.toLowerCase().replace(/\s+/g, '.')}@upi`,
     })),
@@ -63,7 +64,7 @@ export const BillSplitterPage: React.FC = () => {
 
   const [splitWith, setSplitWith] = useState<string[]>(() => [
     currentUser.fullName,
-    ...finalizedRoommates.map((r) => r.name),
+    ...otherRoommates.map((r) => r.name),
   ]);
 
   React.useEffect(() => {
@@ -71,7 +72,7 @@ export const BillSplitterPage: React.FC = () => {
     setPaidByUpi(currentUser.upiId);
     const newSplit = [
       currentUser.fullName,
-      ...finalizedRoommates.map((r) => r.name),
+      ...otherRoommates.map((r) => r.name),
     ];
     setSplitWith(newSplit);
   }, [currentUser, finalizedRoommates]);
@@ -81,7 +82,27 @@ export const BillSplitterPage: React.FC = () => {
     return acc;
   }, {} as Record<string, string>);
 
-  const { balances, settlements } = computeSettlements(expenses, upiDirectory);
+  const memberNameByNormalized = new Map(
+    flatmateOptions.map((flatmate) => [flatmate.name.trim().toLocaleLowerCase(), flatmate.name])
+  );
+  const groupExpenses = expenses.flatMap((expense) => {
+    const paidByName = memberNameByNormalized.get(expense.paidByName.trim().toLocaleLowerCase());
+    const mappedSplitNames = expense.splitWithNames.map((name) =>
+      memberNameByNormalized.get(name.trim().toLocaleLowerCase())
+    );
+
+    if (!paidByName || mappedSplitNames.length === 0 || mappedSplitNames.some((name) => !name)) {
+      return [];
+    }
+
+    return [{
+      ...expense,
+      paidByName,
+      splitWithNames: mappedSplitNames.filter((name): name is string => name !== undefined),
+    }];
+  });
+
+  const { balances, settlements } = computeSettlements(groupExpenses, upiDirectory);
 
 
   const handleOpenSettleModal = async (s: { from: string; to: string; toUpi: string; amount: number }) => {
@@ -247,7 +268,7 @@ export const BillSplitterPage: React.FC = () => {
             Flatmate Bill Splitter & UPI Settlements
           </h1>
           <p className="text-xs text-[#6a6a6a] mt-1">
-            Track electricity, WiFi, and cook charges. Generates instant scan-to-pay UPI QR codes for zero awkwardness.
+            Track shared bills for you and your confirmed flatmates. Expenses involving other people stay saved but are excluded from this household’s totals.
           </p>
         </div>
         <button
@@ -360,13 +381,13 @@ export const BillSplitterPage: React.FC = () => {
       <div className="bg-white rounded-3xl border border-[#ebebeb] p-6 shadow-subtle space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-heading text-base font-bold text-[#222222]">
-            Recent Shared Expenses ({expenses.length})
+            Recent Shared Expenses ({groupExpenses.length})
           </h3>
-          {expenses.length > 0 && (
+          {groupExpenses.length > 0 && (
             <button
               onClick={() => {
-                if (window.confirm('Are you sure you want to clear all shared expenses?')) {
-                  clearAllExpenses();
+                if (window.confirm('Are you sure you want to clear this household’s shared expenses?')) {
+                  clearExpensesByIds(groupExpenses.map((expense) => expense.id));
                 }
               }}
               className="text-xs text-[#6a6a6a] hover:text-[#f43f5e] transition-colors cursor-pointer"
@@ -376,7 +397,7 @@ export const BillSplitterPage: React.FC = () => {
           )}
         </div>
 
-        {expenses.length === 0 ? (
+        {groupExpenses.length === 0 ? (
           <div className="py-12 text-center text-xs text-[#6a6a6a] space-y-3">
             <div className="w-12 h-12 rounded-2xl bg-[#ff385c]/10 text-[#ff385c] flex items-center justify-center mx-auto">
               <Receipt className="w-6 h-6" />
@@ -397,7 +418,7 @@ export const BillSplitterPage: React.FC = () => {
           </div>
         ) : (
           <div className="divide-y divide-[#ebebeb]">
-            {expenses.map((exp) => (
+            {groupExpenses.map((exp) => (
               <div
                 key={exp.id}
                 className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"

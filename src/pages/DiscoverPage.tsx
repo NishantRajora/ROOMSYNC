@@ -37,7 +37,15 @@ const LOCALITY_COORDINATES: Record<string, { lat: number; lng: number }> = {
 };
 
 export const DiscoverPage: React.FC = () => {
-  const { listings, addListing, deleteListing, openChatWith, showToast } = useApp();
+  const {
+    currentUser,
+    listings,
+    listingSearchQuery,
+    addListing,
+    deleteListing,
+    openChatWith,
+    showToast,
+  } = useApp();
 
   const [localityFilter, setLocalityFilter] = useState<string>('All');
   const [propertyTypeFilter, setPropertyTypeFilter] = useState<string>('All');
@@ -117,12 +125,26 @@ export const DiscoverPage: React.FC = () => {
     );
   };
 
+  const searchTerm = listingSearchQuery.trim().toLocaleLowerCase();
   const filteredListings = listings.filter((item) => {
     if (localityFilter !== 'All' && item.locality !== localityFilter) return false;
     if (item.rent > maxBudget) return false;
     if (verifiedOnly && !item.landlordVerified) return false;
     if (propertyTypeFilter !== 'All' && item.propertyType && item.propertyType !== propertyTypeFilter) return false;
     if (genderFilter !== 'All' && item.genderAllowed && item.genderAllowed !== genderFilter) return false;
+    if (
+      searchTerm &&
+      ![
+        item.title,
+        item.locality,
+        item.fullAddress,
+        item.description,
+        item.landlordName,
+        item.propertyType,
+        item.roomType,
+        String(item.rent),
+      ].some((value) => (value ?? '').toLocaleLowerCase().includes(searchTerm))
+    ) return false;
     return true;
   });
 
@@ -140,7 +162,7 @@ export const DiscoverPage: React.FC = () => {
 
     const created: Listing = {
       id: `list_${Date.now()}`,
-      ownerId: 'usr_me_001',
+      ownerId: currentUser.id,
       title: newTitle,
       locality: newLocality,
       fullAddress: newAddress || `${newLocality}, Gurugram`,
@@ -330,6 +352,11 @@ export const DiscoverPage: React.FC = () => {
 
       {/* Listing Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {filteredListings.length === 0 && (
+          <p className="col-span-full rounded-2xl border border-dashed border-[#d1d1d1] bg-white p-8 text-center text-sm text-[#6a6a6a]">
+            No listings match your search and filters. Try another term or reset your filters.
+          </p>
+        )}
         {filteredListings.map((listing) => (
           <div
             key={listing.id}
@@ -470,18 +497,20 @@ export const DiscoverPage: React.FC = () => {
                   >
                     View Details
                   </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (window.confirm(`Are you sure you want to remove "${listing.title}"?`)) {
-                        deleteListing(listing.id);
-                      }
-                    }}
-                    className="p-1.5 text-[#6a6a6a] hover:text-red-600 hover:bg-red-50 rounded-full transition-colors cursor-pointer"
-                    title="Remove listing"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  {listing.ownerId === currentUser.id && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (window.confirm(`Are you sure you want to remove "${listing.title}"?`)) {
+                          deleteListing(listing.id);
+                        }
+                      }}
+                      className="p-1.5 text-[#6a6a6a] hover:text-red-600 hover:bg-red-50 rounded-full transition-colors cursor-pointer"
+                      title="Remove listing"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -899,19 +928,21 @@ export const DiscoverPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      if (window.confirm(`Are you sure you want to remove "${selectedListingDetail.title}"?`)) {
-                        deleteListing(selectedListingDetail.id);
-                        setSelectedListingDetail(null);
-                      }
-                    }}
-                    className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-full transition-all cursor-pointer flex items-center gap-1.5"
-                    title="Remove this listing"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                    <span>Remove</span>
-                  </button>
+                  {selectedListingDetail.ownerId === currentUser.id && (
+                    <button
+                      onClick={() => {
+                        if (window.confirm(`Are you sure you want to remove "${selectedListingDetail.title}"?`)) {
+                          deleteListing(selectedListingDetail.id);
+                          setSelectedListingDetail(null);
+                        }
+                      }}
+                      className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-full transition-all cursor-pointer flex items-center gap-1.5"
+                      title="Remove this listing"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Remove</span>
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       openChatWith({

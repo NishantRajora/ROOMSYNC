@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { AppProvider, useApp } from './context/AppContext';
+import React, { useState, useEffect, useRef } from 'react';
+import { AppProvider, NavigationTab, useApp } from './context/AppContext';
 import { AppShell } from './components/layout/AppShell';
 import { DiscoverPage } from './pages/DiscoverPage';
 import { MatchesPage } from './pages/MatchesPage';
@@ -13,8 +13,26 @@ import { ProfilePage } from './pages/ProfilePage';
 import { LandingPage } from './pages/LandingPage';
 import { AuthPage } from './pages/AuthPage';
 
+const TAB_PATHS: Record<NavigationTab, string> = {
+  discover: '/dashboard',
+  matches: '/matches',
+  safetymap: '/safetymap',
+  analyzer: '/analyzer',
+  pact: '/pact',
+  bills: '/bills',
+  reviews: '/reviews',
+  messages: '/messages',
+  profile: '/profile',
+};
+
+const getTabFromPath = (path: string): NavigationTab | null => {
+  const entry = Object.entries(TAB_PATHS).find(([, route]) => route === path);
+  return entry ? (entry[0] as NavigationTab) : null;
+};
+
 const AppContent: React.FC = () => {
   const { activeTab, setActiveTab, isAuthenticated } = useApp();
+  const skipFirstTabNavigation = useRef(true);
 
   // Reactive URL router
   const [currentPath, setCurrentPath] = useState<string>(() => {
@@ -22,6 +40,10 @@ const AppContent: React.FC = () => {
   });
 
   const navigate = (path: string) => {
+    if (window.location.pathname === path) {
+      setCurrentPath(path);
+      return;
+    }
     window.history.pushState({}, '', path);
     setCurrentPath(path);
   };
@@ -34,17 +56,39 @@ const AppContent: React.FC = () => {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // When authenticated, visiting public root or auth routes redirects straight to /dashboard
+  // Keep the selected tab aligned with direct links and browser back/forward navigation.
   useEffect(() => {
-    if (isAuthenticated) {
-      if (currentPath === '/' || currentPath === '/login' || currentPath === '/signup') {
-        navigate('/dashboard');
-      } else if (currentPath === '/analyzer') {
-        setActiveTab('analyzer');
-        navigate('/dashboard');
+    if (!isAuthenticated) {
+      if (currentPath !== '/' && currentPath !== '/login' && currentPath !== '/signup' && currentPath !== '/analyzer') {
+        navigate('/');
       }
+      return;
     }
-  }, [isAuthenticated, currentPath]);
+
+    if (currentPath === '/' || currentPath === '/login' || currentPath === '/signup') {
+      setActiveTab('discover');
+      navigate('/dashboard');
+      return;
+    }
+
+    const tab = getTabFromPath(currentPath);
+    if (tab) {
+      setActiveTab(tab);
+    } else {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, currentPath, setActiveTab]);
+
+  // Selecting a tab updates the URL so inbox links can be shared or bookmarked.
+  useEffect(() => {
+    if (skipFirstTabNavigation.current) {
+      skipFirstTabNavigation.current = false;
+      return;
+    }
+    if (isAuthenticated) {
+      navigate(TAB_PATHS[activeTab]);
+    }
+  }, [activeTab, isAuthenticated]);
 
   // If logged out:
   if (!isAuthenticated) {

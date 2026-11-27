@@ -15,10 +15,10 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
 }) => {
   const { activeVisitAlert, startVisitAlert, cancelVisitAlert, triggerEmergencyAlert } = useApp();
 
-  const [destination, setDestination] = useState(defaultDestination || 'Flat 412, Block C, Sector 23, Gurugram');
+  const [destination, setDestination] = useState(defaultDestination);
   const [durationMinutes, setDurationMinutes] = useState(45);
-  const [contactName, setContactName] = useState('Priya Sharma (Sister)');
-  const [contactPhone, setContactPhone] = useState('+91 98112 99887');
+  const [contactName, setContactName] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
 
   if (!isOpen) return null;
 
@@ -67,12 +67,11 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
                 <div className="p-4 bg-[#f43f5e]/10 border border-[#f43f5e]/30 rounded-2xl text-left space-y-3 animate-pulse">
                   <div className="flex items-center gap-2 text-[#f43f5e] font-bold">
                     <AlertTriangle className="w-5 h-5" />
-                    <span>EMERGENCY SOS BROADCAST ACTIVE</span>
+                    <span>MISSED CHECK-IN ALERT</span>
                   </div>
                   <p className="text-sm text-[#222222]">
-                    Check-in window expired! Automated alert dispatched to{' '}
-                    <strong className="font-semibold">{activeVisitAlert.emergencyContactName}</strong> (
-                    {activeVisitAlert.emergencyContactPhone}) with your destination:
+                    The check-in window expired. RoomSync has not contacted anyone automatically. Call your emergency
+                    contact or 112 using the buttons below.
                   </p>
                   <p className="text-xs font-mono-code bg-white p-2.5 rounded-lg border border-[#f43f5e]/20 text-[#222222]">
                     📍 {activeVisitAlert.destination}
@@ -133,7 +132,7 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
                     onClick={triggerEmergencyAlert}
                     className="w-full py-2 px-4 text-xs text-[#f43f5e] hover:bg-[#f43f5e]/10 rounded-xl transition-colors font-medium cursor-pointer"
                   >
-                    Test / Trigger Immediate SOS Alert
+                    Test alert state (no contact sent)
                   </button>
                 )}
               </div>
@@ -214,7 +213,7 @@ export const SosCheckinModal: React.FC<SosCheckinModalProps> = ({
               <div className="p-3 bg-[#ecfdf5] border border-[#a7f3d0] rounded-xl text-xs text-[#065f46] flex items-start gap-2">
                 <Clock className="w-4 h-4 text-[#10b981] shrink-0 mt-0.5" />
                 <span>
-                  If you do not tap "I'm Safe" before the timer expires, RoomSync will trigger a missed check-in alert to your emergency contact.
+                  This timer runs only in the app. If it expires, no one is contacted automatically; use your phone to call your contact or 112.
                 </span>
               </div>
 

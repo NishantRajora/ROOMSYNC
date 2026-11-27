@@ -30,7 +30,7 @@ export const AgreementAnalyzerPage: React.FC = () => {
 
   // Initialize with synchronous rule engine so there is zero initial delay or blank UI
   const [analysis, setAnalysis] = useState<AgreementAnalysisResult>(() =>
-    analyzeAgreementText(SAMPLE_AGREEMENTS.predatory.text)
+    ({ ...analyzeAgreementText(SAMPLE_AGREEMENTS.predatory.text), engineUsed: 'regex' })
   );
 
   const executeAnalysis = async (textToAnalyze: string, isManualTrigger = false) => {
@@ -73,7 +73,8 @@ export const AgreementAnalyzerPage: React.FC = () => {
     setSelectedSampleKey(key);
     const newText = SAMPLE_AGREEMENTS[key].text;
     setRawText(newText);
-    executeAnalysis(newText, false);
+    setAnalysis({ ...analyzeAgreementText(newText), engineUsed: 'regex' });
+    setLastAnalyzedText(newText);
   };
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -155,6 +156,9 @@ export const AgreementAnalyzerPage: React.FC = () => {
           )}
         </div>
       </div>
+      <p className="text-[11px] text-[#6a6a6a] leading-relaxed">
+        Sample contracts use built-in rules. Choosing an AI scan sends the pasted text to the configured AI service.
+      </p>
 
       {/* Sample Contract Selector Tabs */}
       <div className="bg-white p-3 rounded-2xl border border-[#ebebeb] shadow-subtle flex flex-wrap items-center justify-between gap-3">
@@ -220,7 +224,11 @@ export const AgreementAnalyzerPage: React.FC = () => {
           ) : (
             <>
               <Sparkles className="w-3.5 h-3.5 text-white" />
-              <span>{isTextModified ? 'Scan Changes with AI' : 'Re-scan with AI'}</span>
+              <span>
+                {isAIConfigured
+                  ? isTextModified ? 'Scan Changes with AI' : 'Re-scan with AI'
+                  : 'Analyze with Built-in Rules'}
+              </span>
             </>
           )}
         </button>
@@ -283,7 +291,9 @@ export const AgreementAnalyzerPage: React.FC = () => {
                 <div className="p-3 bg-white rounded-2xl shadow-subtle border border-[#ebebeb] flex items-center gap-3">
                   <Loader2 className="w-5 h-5 text-[#ff385c] animate-spin" />
                   <span className="text-xs font-bold text-[#222222]">
-                    AI is scanning clauses against tenancy guidelines...
+                    {isAIConfigured
+                      ? 'AI is scanning clauses against tenancy guidelines...'
+                      : 'Built-in rules are checking clauses against tenancy guidelines...'}
                   </span>
                 </div>
               </div>
@@ -298,6 +308,11 @@ export const AgreementAnalyzerPage: React.FC = () => {
                   {analysis.engineUsed === 'ai' && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                       <Sparkles className="w-2.5 h-2.5" /> AI Evaluated ({analysis.modelName || AI_MODEL})
+                    </span>
+                  )}
+                  {analysis.engineUsed !== 'ai' && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                      <Zap className="w-2.5 h-2.5" /> Built-in Rules
                     </span>
                   )}
                 </div>
