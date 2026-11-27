@@ -34,6 +34,17 @@ const CLAUSE_RULES: ClauseRule[] = [
     tags: ['Lock-in Period', 'Student Mobility'],
   },
   {
+    type: 'lockin',
+    title: 'Early Exit Deposit Penalty',
+    triggerRegex: /(?:lock[- ]in(?:\s+period)?\s+of\s+\d+\s+months?[\s\S]{0,80}(?:deduct|penalt|forfeit)|(?:leav|exit|vacat)\w*\s+before\s+\d+\s+months?[\s\S]{0,80}(?:deduct|penalt|forfeit))/i,
+    riskLevel: 'medium',
+    plainExplanation:
+      'A deposit deduction for leaving before the end of a lock-in can be disproportionate. Ask for a clear, reasonable exit process and deductions tied to actual losses.',
+    fairerSuggestion:
+      'Either party may end the tenancy with 30 days written notice. Any deduction for early termination must be reasonable, agreed in writing, and limited to actual documented losses.',
+    tags: ['Lock-in Period', 'Early Exit'],
+  },
+  {
     type: 'notice',
     title: 'Asymmetrical or One-Sided Notice Period',
     triggerRegex: /(owner\s+may\s+terminate\s+with\s+(?:7|10|15)\s+days|immediate\s+vacation|without\s+any\s+prior\s+notice)/i,
@@ -78,9 +89,20 @@ const CLAUSE_RULES: ClauseRule[] = [
     tags: ['Maintenance', 'Hidden Costs'],
   },
   {
+    type: 'maintenance',
+    title: 'Tenant-Borne Medium Repairs',
+    triggerRegex: /all\s+minor\s+and\s+medium\s+repairs?\s+(?:inside|within)\s+(?:the\s+)?(?:flat|premises)\s+(?:shall|will)\s+be\s+borne\s+by\s+(?:the\s+)?tenant/i,
+    riskLevel: 'medium',
+    plainExplanation:
+      'Making the tenant responsible for all medium repairs can create unpredictable costs. Define minor routine upkeep separately from repairs that belong to the landlord.',
+    fairerSuggestion:
+      'The tenant is responsible for routine consumables and minor upkeep. The landlord is responsible for structural, major, and other repairs not caused by the tenant.',
+    tags: ['Maintenance', 'Repair Costs'],
+  },
+  {
     type: 'arbitrary',
     title: 'Mandatory Full-Month Painting Deduction',
-    triggerRegex: /(mandatory\s+deduction\s+of\s+one\s+month\s+rent\s+for\s+painting|painting\s+charges\s+deducted\s+regardless)/i,
+    triggerRegex: /(mandatory\s+deduction\s+of\s+one\s+month\s+rent\s+for\s+painting|painting\s+charges\s+deducted\s+regardless|painting\s+charges?\s+(?:will\s+be\s+)?deducted?\s+from\s+(?:the\s+)?deposit)/i,
     riskLevel: 'medium',
     plainExplanation:
       'Automatic 1-month rent deductions for repainting regardless of tenancy length is an unfair extraction tactic common in Delhi-NCR.',

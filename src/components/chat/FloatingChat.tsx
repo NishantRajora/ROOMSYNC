@@ -8,7 +8,7 @@ export const FloatingChat: React.FC = () => {
     isFloatingChatOpen,
     setIsFloatingChatOpen,
     activeChatRecipient,
-    openChatWith,
+    setActiveChatRecipient,
     messages,
     sendMessage,
     closeFloatingChat,
@@ -127,7 +127,7 @@ export const FloatingChat: React.FC = () => {
                   <button
                     key={cand.id}
                     onClick={() =>
-                      openChatWith({
+                      setActiveChatRecipient({
                         id: cand.id,
                         name: cand.fullName,
                         avatarUrl: cand.avatarUrl,

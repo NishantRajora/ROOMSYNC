@@ -53,7 +53,8 @@ Return ONLY a valid JSON object matching this exact structure:
       "isFlagged": <true if high or medium risk, false otherwise>
     }
   ]
-}`;
+}
+Include every material risk-bearing clause and do not repeat neutral provisions. Keep each original excerpt to the shortest relevant sentence (40 words or fewer), each explanation to one short sentence, and each suggested replacement to 50 words or fewer so the JSON stays complete.`;
 
 function cleanJsonResponse(raw: string): string {
   let cleaned = raw.trim();

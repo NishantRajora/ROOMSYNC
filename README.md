@@ -40,7 +40,7 @@ RoomSync is a comprehensive roommate matching and flat-sharing management platfo
 
 ### ⏱️ 7. Safety Visit Alerts (SOS)
 * **Property Visit Timer:** Start a countdown before entering an unfamiliar property.
-* **Emergency Contact Fallback:** If the timer reaches zero without a safe check-in, an emergency alert is triggered with your location details.
+* **Local Check-in Reminder:** If the timer reaches zero, the app displays a missed check-in alert. It does not automatically contact anyone; use the call buttons to contact your emergency contact or emergency services.
 
 ### 💬 8. In-App Messaging
 * **Direct Flatmate Chat:** Floating chat modal and full conversations tab to coordinate flat visits and agreements.
@@ -54,7 +54,7 @@ RoomSync is a comprehensive roommate matching and flat-sharing management platfo
 | **Frontend Framework** | React 19, TypeScript, Vite |
 | **Styling & Animation** | Tailwind CSS 4, Motion (Framer Motion), Canvas Confetti |
 | **Backend & Cloud Database** | **Supabase** (Auth, PostgreSQL Database, Row-Level Security) |
-| **AI & NLP Analysis** | Google Gemini AI (`@google/genai`) |
+| **AI & NLP Analysis** | Groq Chat Completions API (OpenAI-compatible) with built-in local rule fallback |
 | **Interactive Maps** | Leaflet.js, React-Leaflet |
 | **Data Visualizations** | Recharts (Radar Charts) |
 | **Icons** | Lucide React |
@@ -136,9 +136,13 @@ Create a `.env` file in the root directory (refer to `.env.example`):
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-public-key
 
-# Optional: Google Gemini API Key for lease scanning
-GEMINI_API_KEY=your_gemini_api_key
+# Optional: AI provider settings for lease scanning
+VITE_AI_BASE_URL=https://api.groq.com/openai/v1
+VITE_AI_API_KEY=your_api_key_here
+VITE_AI_MODEL=openai/gpt-oss-20b
 ```
+
+AI scans send pasted agreement text to the configured AI provider. Preloaded sample agreements use the built-in rules locally.
 
 ### 4. Supabase Database Setup
 1. In your [Supabase Dashboard](https://supabase.com/dashboard), open the **SQL Editor** tab (`>_`).
@@ -150,6 +154,8 @@ GEMINI_API_KEY=your_gemini_api_key
 npm run dev
 ```
 Open your browser at `http://localhost:3000`.
+
+After signing in, app sections have direct URLs (for example, `/messages`) and browser back/forward follows tab navigation. Chat actions from roommate and listing pages open the selected conversation in the inbox.
 
 ---
 

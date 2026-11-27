@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import {
   UserProfile,
   Listing,
@@ -20,7 +20,11 @@ import {
   SEED_REVIEWS,
 } from '../data/seedData';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { computeSHA256 } from '../lib/crypto';
+import { buildPactDocumentText } from '../lib/pactDocument';
 import confetti from 'canvas-confetti';
+
+const getFinalizedRoommatesStorageKey = (userId: string) => `roomsync_finalized_roommates_${userId}`;
 
 export type NavigationTab =
   | 'discover'
@@ -136,6 +140,8 @@ interface AppContextType {
   isAuthenticated: boolean;
   activeTab: NavigationTab;
   setActiveTab: (tab: NavigationTab) => void;
+  listingSearchQuery: string;
+  setListingSearchQuery: (query: string) => void;
   updateCurrentUser: (updates: Partial<UserProfile>) => void;
   verifyCollegeEmail: (email: string, otp: string) => Promise<{ success: boolean; message: string }>;
   verifyProfessionalEmail: (email: string, otp: string) => Promise<{ success: boolean; message: string }>;
@@ -173,13 +179,13 @@ interface AppContextType {
   pacts: RoommatePact[];
   addPact: (pact: RoommatePact) => void;
   deletePact: (id: string) => void;
-  signPact: (pactId: string, signerName: string, signatureText: string) => void;
+  signPact: (pactId: string, signerName: string, signatureText: string) => Promise<void>;
 
   // Expenses
   expenses: Expense[];
   addExpense: (expense: Expense) => void;
   deleteExpense: (id: string) => void;
-  clearAllExpenses: () => void;
+  clearExpensesByIds: (expenseIds: string[]) => void;
   toggleSettleExpense: (id: string) => void;
 
   // Reviews
@@ -270,6 +276,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
 
   const [activeTab, setActiveTab] = useState<NavigationTab>('discover');
+  const [listingSearchQuery, setListingSearchQuery] = useState('');
   const [generatedOtp, setGeneratedOtp] = useState<string | null>('482910');
 
   const [candidates, setCandidates] = useState<UserProfile[]>(() => {
@@ -370,16 +377,38 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Finalized co-living roommates
   const [finalizedRoommates, setFinalizedRoommates] = useState<FinalizedRoommate[]>(() => {
     try {
-      const saved = localStorage.getItem('roomsync_finalized_roommates');
+      const saved =
+        localStorage.getItem(getFinalizedRoommatesStorageKey(currentUser.id)) ||
+        localStorage.getItem('roomsync_finalized_roommates');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) return parsed.filter((roommate) => roommate?.id !== currentUser.id);
       }
     } catch (e) {
       console.warn('Error parsing cached finalized roommates:', e);
     }
     return [];
   });
+  const hasLoadedInitialRoommates = useRef(false);
+
+  useEffect(() => {
+    if (!hasLoadedInitialRoommates.current) {
+      hasLoadedInitialRoommates.current = true;
+      return;
+    }
+
+    try {
+      const saved = localStorage.getItem(getFinalizedRoommatesStorageKey(currentUser.id));
+      const parsed = saved ? JSON.parse(saved) : [];
+      if (!Array.isArray(parsed)) {
+        throw new Error('Cached roommates must be an array.');
+      }
+      setFinalizedRoommates(parsed.filter((roommate) => roommate?.id !== currentUser.id));
+    } catch (error) {
+      console.warn('Error loading account roommates:', error);
+      setFinalizedRoommates([]);
+    }
+  }, [currentUser.id]);
 
   // Helper to derive & sync finalized roommates across devices from accepted messages & cloud table
   const deriveAndSyncRoommates = useCallback(
@@ -392,8 +421,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
       setFinalizedRoommates((prev) => {
         const roommateMap = new Map<string, FinalizedRoommate>();
-        // Keep existing
-        prev.forEach((r) => roommateMap.set(r.id, r));
+        // Keep this account's existing roommates, but never include the active user.
+        prev.forEach((roommate) => {
+          if (roommate.id !== activeUser.id) roommateMap.set(roommate.id, roommate);
+        });
 
         // 1. Ingest from cloud roommates table if present
         if (cloudRoommates && Array.isArray(cloudRoommates)) {
@@ -458,7 +489,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         });
 
         const updated = Array.from(roommateMap.values());
-        localStorage.setItem('roomsync_finalized_roommates', JSON.stringify(updated));
+        localStorage.setItem(getFinalizedRoommatesStorageKey(activeUser.id), JSON.stringify(updated));
         return updated;
       });
     },
@@ -1394,6 +1425,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const deleteListing = (listingId: string) => {
+    const listing = listings.find((item) => item.id === listingId);
+    if (!listing || listing.ownerId !== currentUser.id) {
+      showToast('You can only remove listings you posted.');
+      return;
+    }
+
     setListings((prev) => {
       const updated = prev.filter((l) => l.id !== listingId);
       localStorage.setItem('roomsync_listings', JSON.stringify(updated));
@@ -1401,7 +1438,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     });
     if (isSupabaseConfigured) {
       Promise.resolve(
-        supabase.from('listings').delete().eq('id', listingId)
+        supabase.from('listings').delete().eq('id', listingId).eq('owner_id', currentUser.id)
       ).catch((err) => console.warn('Supabase listing delete note:', err));
     }
     showToast('Listing removed successfully.');
@@ -1422,35 +1459,47 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     showToast('Roommate Pact successfully generated & digitally hashed!');
   };
 
-  const signPact = (pactId: string, signerName: string, signatureText: string) => {
-    setPacts((prev) =>
-      prev.map((p) => {
-        if (p.id !== pactId) return p;
-        const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) + ' IST';
-        const updatedFlatmates = p.flatmates.map((f) =>
-          f.name.toLowerCase() === signerName.toLowerCase()
-            ? { ...f, signed: true, signedAt: now, signatureText }
-            : f
-        );
-        const allSigned = updatedFlatmates.every((f) => f.signed);
-        const updatedPact: RoommatePact = {
-          ...p,
-          flatmates: updatedFlatmates,
-          status: allSigned ? 'fully_signed' : 'partially_signed',
-        };
-        if (isSupabaseConfigured) {
-          Promise.resolve(
-            supabase.from('pacts').upsert({ id: pactId, data: updatedPact })
-          ).catch((err) => console.warn('Supabase pact sign sync note:', err));
-        }
-        return updatedPact;
-      })
+  const signPact = async (pactId: string, signerName: string, signatureText: string) => {
+    const pact = pacts.find((item) => item.id === pactId);
+    if (!pact) {
+      showToast('This pact could not be found. Refresh and try again.');
+      return;
+    }
+
+    const signer = pact.flatmates.find(
+      (flatmate) => flatmate.name.toLowerCase() === signerName.toLowerCase()
     );
+    if (!signer || signer.signed) {
+      showToast('This account does not have a pending signature on this pact.');
+      return;
+    }
+
+    const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) + ' IST';
+    const updatedFlatmates = pact.flatmates.map((flatmate) =>
+      flatmate === signer
+        ? { ...flatmate, signed: true, signedAt: now, signatureText }
+        : flatmate
+    );
+    const unsignedPact: RoommatePact = {
+      ...pact,
+      flatmates: updatedFlatmates,
+      status: updatedFlatmates.every((flatmate) => flatmate.signed) ? 'fully_signed' : 'partially_signed',
+    };
+    const documentText = buildPactDocumentText(unsignedPact);
+    const sha256Hash = await computeSHA256(documentText);
+    const updatedPact = { ...unsignedPact, documentText, sha256Hash };
+
+    setPacts((prev) => prev.map((item) => (item.id === pactId ? updatedPact : item)));
+    if (isSupabaseConfigured) {
+      Promise.resolve(
+        supabase.from('pacts').upsert({ id: pactId, data: updatedPact })
+      ).catch((err) => console.warn('Supabase pact sign sync note:', err));
+    }
     confetti({
       particleCount: 60,
       spread: 60,
     });
-    showToast(`Signature recorded for ${signerName}. Document tamper hash anchored.`);
+    showToast(`Signature recorded for ${signerName}. Pact text and SHA-256 hash updated.`);
   };
 
   const deletePact = (id: string) => {
@@ -1487,10 +1536,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     showToast('Expense removed.');
   };
 
-  const clearAllExpenses = () => {
-    setExpenses([]);
-    localStorage.removeItem('roomsync_expenses');
-    showToast('All shared expenses cleared.');
+  const clearExpensesByIds = (expenseIds: string[]) => {
+    if (expenseIds.length === 0) return;
+
+    const idsToRemove = new Set(expenseIds);
+    setExpenses((prev) => {
+      const updated = prev.filter((expense) => !idsToRemove.has(expense.id));
+      localStorage.setItem('roomsync_expenses', JSON.stringify(updated));
+      return updated;
+    });
+    if (isSupabaseConfigured) {
+      Promise.resolve(
+        supabase.from('expenses').delete().in('id', expenseIds)
+      ).catch((err) => console.warn('Supabase expense clear note:', err));
+    }
+    showToast('This household’s shared expenses were cleared.');
   };
 
   const toggleSettleExpense = (id: string) => {
@@ -1554,7 +1614,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const openChatWith = (user: { id: string; name: string; avatarUrl?: string }) => {
     setActiveChatRecipient(user);
-    setIsFloatingChatOpen(true);
+    setIsFloatingChatOpen(false);
+    setActiveTab('messages');
   };
 
   const closeFloatingChat = () => {
@@ -1738,7 +1799,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setFinalizedRoommates((prev) => {
           if (prev.some((r) => r.id === pId)) return prev;
           const updated = [...prev, newRoommate];
-          localStorage.setItem('roomsync_finalized_roommates', JSON.stringify(updated));
+          localStorage.setItem(getFinalizedRoommatesStorageKey(currentUser.id), JSON.stringify(updated));
           return updated;
         });
 
@@ -1789,7 +1850,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const removeFinalizedRoommate = (roommateId: string) => {
     setFinalizedRoommates((prev) => {
       const updated = prev.filter((r) => r.id !== roommateId);
-      localStorage.setItem('roomsync_finalized_roommates', JSON.stringify(updated));
+      localStorage.setItem(getFinalizedRoommatesStorageKey(currentUser.id), JSON.stringify(updated));
       return updated;
     });
 
@@ -1853,7 +1914,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         remainingSeconds: 0,
         status: 'alert_triggered',
       });
-      showToast('⚠️ SOS ALERT TRIGGERED! Emergency contact notification sent.');
+      showToast('Missed check-in alert shown in the app. No contact was notified.');
     }
   };
 
@@ -1864,6 +1925,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         isAuthenticated,
         activeTab,
         setActiveTab,
+        listingSearchQuery,
+        setListingSearchQuery,
         updateCurrentUser,
         verifyCollegeEmail,
         verifyProfessionalEmail,
@@ -1890,7 +1953,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         expenses,
         addExpense,
         deleteExpense,
-        clearAllExpenses,
+        clearExpensesByIds,
         toggleSettleExpense,
         reviews,
         addReview,

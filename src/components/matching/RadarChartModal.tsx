@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { UserProfile, CompatibilityResult } from '../../types';
 import { useApp } from '../../context/AppContext';
 import {
@@ -26,6 +26,17 @@ export const RadarChartModal: React.FC<RadarChartModalProps> = ({
   onClose,
 }) => {
   const { currentUser, openChatWith, showToast } = useApp();
+
+  useEffect(() => {
+    if (!candidate || !compatibility) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [candidate, compatibility, onClose]);
 
   if (!candidate || !compatibility) return null;
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { RoommatePact, PactFlatmate } from '../types';
 import { computeSHA256 } from '../lib/crypto';
+import { buildPactDocumentText } from '../lib/pactDocument';
 import {
   Scroll,
   PlusCircle,
@@ -40,8 +41,13 @@ export const RoommatePactPage: React.FC = () => {
   const [selectedPact, setSelectedPact] = useState<RoommatePact | null>(pacts[0] || null);
 
   useEffect(() => {
-    if (selectedPact && !pacts.some((p) => p.id === selectedPact.id)) {
-      setSelectedPact(pacts[0] || null);
+    if (selectedPact) {
+      const currentPact = pacts.find((p) => p.id === selectedPact.id);
+      if (!currentPact) {
+        setSelectedPact(pacts[0] || null);
+      } else if (currentPact !== selectedPact) {
+        setSelectedPact(currentPact);
+      }
     } else if (!selectedPact && pacts.length > 0) {
       setSelectedPact(pacts[0]);
     }
@@ -125,38 +131,9 @@ export const RoommatePactPage: React.FC = () => {
   };
 
   const handleGeneratePact = async () => {
-    const docText = `ROOMMATE CO-LIVING PACT & CODE OF HARMONY
-Property Address: ${address}
-Generated: ${new Date().toLocaleDateString('en-IN')}
-
-1. FLATMATES & RENT ALLOCATION
-${flatmates.map((f, i) => `${i + 1}. ${f.name} (${f.email}, UPI: ${f.upi})`).join('\n')}
-
-2. QUIET HOURS & STUDY CONDUCT
-- Weekdays: ${weekdayQuiet}
-- Weekends: ${weekendQuiet}
-- Conduct: ${quietRules}
-
-3. CHORES, HYGIENE & KITCHEN ETHICS
-- Cleaning: ${cleaningSchedule}
-- Kitchen: ${kitchenRules}
-- Waste Management: ${garbageSchedule}
-
-4. GUESTS, VISITORS & DEPOSIT ALLOCATION
-- Overnight Guests: ${guestAllowed ? `Allowed with ${guestNoticeHours}h advance courtesy notice` : 'Not permitted without prior written consent'}
-- Deposit Split: ${depositSplitRatio}
-- Any damage caused individually shall be paid by the responsible flatmate.
-
-DIGITAL SIGNATURE RECORDS:
-${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PENDING'}`).join('\n')}
-`;
-
-    const sha256 = await computeSHA256(docText);
-
-    const newPact: RoommatePact = {
-      id: `pact_${Date.now()}`,
-      title: pactTitle,
+    const pactContent = {
       address,
+      createdAt: new Date().toISOString(),
       flatmates,
       quietHours: {
         weekdays: weekdayQuiet,
@@ -178,9 +155,16 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
         ratio: depositSplitRatio,
         damageResponsibility: 'Individual responsibility',
       },
+    };
+    const docText = buildPactDocumentText(pactContent);
+    const sha256 = await computeSHA256(docText);
+
+    const newPact: RoommatePact = {
+      id: `pact_${Date.now()}`,
+      title: pactTitle,
+      ...pactContent,
       documentText: docText,
       sha256Hash: sha256,
-      createdAt: new Date().toISOString(),
       status: flatmates.every((f) => f.signed) ? 'fully_signed' : 'partially_signed',
     };
 
@@ -190,11 +174,17 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
     setStep(1);
   };
 
-  const handleSignSelectedPact = () => {
+  const handleSignSelectedPact = async () => {
     if (!selectedPact || !signInput.trim()) return;
-    signPact(selectedPact.id, currentUser.fullName, signInput.trim());
-    setIsSigning(false);
-    setSignInput('');
+    setIsSigning(true);
+    try {
+      await signPact(selectedPact.id, currentUser.fullName, signInput.trim());
+      setSignInput('');
+    } catch (error) {
+      showToast(error instanceof Error ? `Could not record signature: ${error.message}` : 'Could not record signature.');
+    } finally {
+      setIsSigning(false);
+    }
   };
 
   if (!hasFinalizedRoommates) {
@@ -521,11 +511,11 @@ ${flatmates.map((f) => `- ${f.name}: ${f.signed ? `SIGNED [${f.signedAt}]` : 'PE
                       className="flex-1 px-3 py-2 text-xs bg-white border border-[#ebebeb] rounded-xl focus:outline-none focus:border-[#222222]"
                     />
                     <button
-                      onClick={handleSignSelectedPact}
-                      disabled={!signInput.trim()}
+                      onClick={() => void handleSignSelectedPact()}
+                      disabled={!signInput.trim() || isSigning}
                       className="px-5 py-2 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full transition-all disabled:opacity-50 cursor-pointer shadow-xs"
                     >
-                      Submit Signature
+                      {isSigning ? 'Signing…' : 'Submit Signature'}
                     </button>
                   </div>
                 </div>

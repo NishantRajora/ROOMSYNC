@@ -35,6 +35,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
     currentUser,
     activeTab,
     setActiveTab,
+    listingSearchQuery,
+    setListingSearchQuery,
     activeVisitAlert,
     cancelVisitAlert,
     toastMessage,
@@ -52,7 +54,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
   const [isSosModalOpen, setIsSosModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
-  const [globalSearch, setGlobalSearch] = useState('');
+  const [globalSearch, setGlobalSearch] = useState(listingSearchQuery);
+
+  const handleGlobalSearch = (event: React.FormEvent) => {
+    event.preventDefault();
+    setListingSearchQuery(globalSearch.trim());
+    setActiveTab('discover');
+  };
 
   const navItems: { tab: NavigationTab; label: string; icon: React.FC<{ className?: string }> }[] = [
     { tab: 'discover', label: 'Discover Flats', icon: Compass },
@@ -81,7 +89,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
             <ShieldAlert className="w-4 h-4 shrink-0 text-[#ff385c]" />
             <span>
               {activeVisitAlert.status === 'alert_triggered'
-                ? 'EMERGENCY CHECK-IN MISSED: Alert sent for property visit!'
+                ? 'MISSED CHECK-IN: Alert shown in app; no one was contacted automatically.'
                 : `Active Visit Check-in: ${Math.floor(activeVisitAlert.remainingSeconds / 60)}m ${
                     activeVisitAlert.remainingSeconds % 60
                   }s left at ${activeVisitAlert.destination}`}
@@ -136,24 +144,25 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout }) => {
         </div>
 
         {/* Global Search Bar (Airbnb Floating Capsule) */}
-        <div className="hidden md:flex items-center flex-1 max-w-lg mx-6">
+        <form onSubmit={handleGlobalSearch} className="hidden md:flex items-center flex-1 max-w-lg mx-6">
           <div className="relative w-full flex items-center bg-white border border-[#ebebeb] rounded-full p-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.05)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.12),0_6px_16px_rgba(0,0,0,0.08)] transition-all">
             <input
               type="text"
               value={globalSearch}
               onChange={(e) => setGlobalSearch(e.target.value)}
-              placeholder="Search flats, roommates, localities..."
+              placeholder="Search homes or localities..."
               className="w-full pl-4 pr-3 py-1.5 text-xs text-[#222222] placeholder-[#6a6a6a] bg-transparent focus:outline-none"
             />
             <button
-              type="button"
+              type="submit"
               className="w-8 h-8 rounded-full bg-[#ff385c] hover:bg-[#e00b41] text-white flex items-center justify-center shrink-0 cursor-pointer transition-colors"
               title="Search"
+              aria-label="Search listings"
             >
               <Search className="w-3.5 h-3.5 stroke-[2.5]" />
             </button>
           </div>
-        </div>
+        </form>
 
         {/* Right Action Icons & Profile Capsule */}
         <div className="flex items-center gap-3">
